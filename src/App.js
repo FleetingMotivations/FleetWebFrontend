@@ -37,10 +37,10 @@ class AppLocation extends Component{
     return(
       <div className="app-location">
           <span className="location">Rooms</span>
-          <span className="location-divider"></span>
-          <span className="location">RM123</span>
-          <span className="location-divider"></span>
-          <span className="location">Dashboard</span>
+          // <span className="location-divider"></span>
+          // <span className="location">RM123</span>
+          // <span className="location-divider"></span>
+          // <span className="location">Dashboard</span>
       </div>
     );
   }
@@ -90,7 +90,7 @@ class SessionDetails extends Component{
           <h3>Workgroup</h3>
           <ul>
             {workgroup.workstations.map(workstation => {
-              return <li onMouseLeave={this.exitHoverWorkstation} onMouseEnter={this.hoverWorkstation} data-workstation-id={workstation.id}><span className="name">{workstation.name}</span><WorkstationStatus status={workstation.status}/> <div className="remove"></div></li>
+              return <li onMouseOut={this.exitHoverWorkstation} onMouseOver={this.hoverWorkstation} data-workstation-id={workstation.id}><span className="name">{workstation.name}</span><WorkstationStatus status={workstation.status}/> <div className="remove"></div></li>
             })}
           </ul>
         </div>
@@ -98,7 +98,7 @@ class SessionDetails extends Component{
           <h3>Workstations</h3>
           <ul>
             {workstations.map(workstation => {
-              return <li onMouseLeave={this.exitHoverWorkstation} onMouseEnter={this.hoverWorkstation} data-workstation-id={workstation.id}><span className="name">{workstation.name}</span> <WorkstationStatus status={workstation.status} /> <div className="add"></div></li>
+              return <li onMouseOut={this.exitHoverWorkstation} onMouseOver={this.hoverWorkstation} data-workstation-id={workstation.id}><span className="name">{workstation.name}</span> <WorkstationStatus status={workstation.status} /> <div className="add"></div></li>
             })}
           </ul>
         </div>
@@ -341,16 +341,48 @@ class Footer extends Component{
 }
 
 class App extends Component {
+  constructor(props, context) {
+    super(props, context)
+    this.state = {
+      sidebar: '', 
+      username: 'Alistair Woodcock',
+      dash: 'BUILDING_SELECT',
+      room: ''
+    }
+
+    this.delta = this.delta.bind(this);
+  }
+
+  delta(e) {
+
+    switch(this.state.dash)
+    {
+      case 'BUILDING_SELECT':
+        this.setState({ dash: 'ROOM_SELECT' });
+        break;
+      case 'ROOM_SELECT':
+        this.setState({ room: 'RM123', dash: 'START_SESSION', sidebar: 'PRE_SESSION' });
+        break;
+      case 'START_SESSION':
+        this.setState({ dash: 'DISPLAY_SESSION', sidebar: 'SESSION' });
+        break;
+    }
+    
+    console.log(this.state);
+  }
+
   render() {
+    
     return (
       <div className="App">
-        <Nav roomName="RM123" />
-        <Sidebar  currentSidebar="SESSION" username="Alistair Woodcock"/>
-        <Dashboard currentDash="START_SESSION" />
+        <Nav roomName={this.state.room} onClick={this.delta} />
+        <Sidebar currentSidebar={this.state.sidebar} username={this.state.username}/>
+        <Dashboard  currentDash={this.state.dash} />
         <Footer />
       </div>
       );
   }
+
 }
 
 export default App;
