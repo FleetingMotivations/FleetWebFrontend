@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import Select from 'react-select';
+import './Select.css';
+
 import logo from './images/UoNHorse.png';
 import workstationImg from './images/workstation.png'
 import './App.css';
@@ -88,7 +90,7 @@ class SessionDetails extends Component{
           <h3>Workgroup</h3>
           <ul>
             {workgroup.workstations.map(workstation => {
-              return <li data-workstation-id={workstation.id}><span className="name">{workstation.name}</span><WorkstationStatus status={workstation.status}/> <div className="remove"></div></li>
+              return <li onMouseLeave={this.exitHoverWorkstation} onMouseEnter={this.hoverWorkstation} data-workstation-id={workstation.id}><span className="name">{workstation.name}</span><WorkstationStatus status={workstation.status}/> <div className="remove"></div></li>
             })}
           </ul>
         </div>
@@ -96,66 +98,97 @@ class SessionDetails extends Component{
           <h3>Workstations</h3>
           <ul>
             {workstations.map(workstation => {
-              return <li data-workstation-id={workstation.id}><span className="name">{workstation.name}</span> <WorkstationStatus status={workstation.status} /> <div className="add"></div></li>
+              return <li onMouseLeave={this.exitHoverWorkstation} onMouseEnter={this.hoverWorkstation} data-workstation-id={workstation.id}><span className="name">{workstation.name}</span> <WorkstationStatus status={workstation.status} /> <div className="add"></div></li>
             })}
           </ul>
         </div>
       </div>
     );
   }
+
+  hoverWorkstation(e){
+    var hoverWorkstationId = e.target.getAttribute('data-workstation-id');
+    var result = document.querySelectorAll('.workstations .workstation[data-workstation-id="'+hoverWorkstationId+'"]');
+    var workstation = result[0];
+    workstation.className += ' selected';
+  }
+
+  exitHoverWorkstation(e){
+    var hoverWorkstationId = e.target.getAttribute('data-workstation-id');
+    var result = document.querySelectorAll('.workstations .workstation[data-workstation-id="'+hoverWorkstationId+'"]');
+    var workstation = result[0];
+    workstation.className = 'workstation';
+  }
 }
 
 class Sidebar extends Component{
   render(){
+
+    var sidebar;
+    switch(this.props.currentSidebar)
+    {
+      case 'SESSION':
+        sidebar = <SessionDetails/>
+        break;
+      default:
+        sidebar = <div>Welcome {this.props.username}</div>
+        break;
+    }
+
     return(
       <div id="sidebar">
-        <SessionDetails />
+        {sidebar}
       </div>
     );
   }
 }
-
-
 
 class RoomSelect extends Component{
   render(){
     return(
       <div className="room-select">
-          <h2>Please select your building</h2>
-
-          <div className="building-list">
-            <Select
-                name="building-select"
-                value="one"
-                options={buildings}
-                onChange={this.logChange}
-            />
-
-            // <label>Search: <input type="text" placeholder="Building Name" /></label>
-            // <ul>
-            //   {buildings.map(building => {
-            //     return <li>{building.name}</li>
-            //   })}
-            // </ul>
-          </div>
+          <h2>Please select your room</h2>
 
           <div className="room-list">
-            <label>Search: <input type="text" placeholder="Room Number" /></label>
-            <ul>
-              {rooms.map(room => {
-                return <li>{room.name}</li>
-              })}
-            </ul>            
+            <Select
+                name="room-select"
+                value="one"
+                options={rooms.map(room => {return {value: room.name, label: room.name}})}
+                onChange={this.roomSelected}
+            />            
           </div>
       </div>
     );
   }
 
-  logChange(val) {
-    console.log("Selected: " + val);
+  roomSelected(val) {
+    console.log("Building Selected: " + val.label);
   }
 
 
+}
+
+class BuildingSelect extends Component{
+  render(){
+    return(
+      <div className="building-select">
+        <div className="building-list">
+          <h2>Please select your building</h2>
+          <Select
+              name="building-select"
+              value="one"
+              placeholder="Building Name..."
+              options={buildings.map(building => {return {value: building.name, label: building.name}})}
+              onChange={this.buildingSelected}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  buildingSelected(val) {
+    console.log("Building Selected: " + val.label);
+  }
 }
 
 class StartSession extends Component {
@@ -163,6 +196,7 @@ class StartSession extends Component {
     return(
       <div className="start-session">
         <h2>Start a collaboration session</h2>
+        <div className="instruction">Select workstations to join your workgroup</div>
         
         <WorkstationsDisplay/>
 
@@ -170,27 +204,13 @@ class StartSession extends Component {
         <div className="duration">
           <div className="start">Starting from now until: </div>
           <div className="end">
-            <select name="time" id="time">
-
-              <option value="5:00 AM">5:00 AM</option>
-              <option value="5:15 AM">5:15 AM</option>
-              <option value="5:30 AM">5:30 AM</option>
-              <option value="5:45 AM">5:45 AM</option>
-
-              <option value="6:00 AM">6:00 AM</option>
-              <option value="6:15 AM">6:15 AM</option>
-              <option value="6:30 AM">6:30 AM</option>
-              <option value="6:45 AM">6:45 AM</option>
-
-              <option value="7:00 AM">7:00 AM</option>
-              <option value="7:15 AM">7:15 AM</option>
-              <option value="7:30 AM">7:30 AM</option>
-              <option value="7:45 AM">7:45 AM</option>
-
-              <option value="8:00 AM">8:00 AM</option>
-              <option value="8:15 AM">8:15 AM</option>
-              <option value="8:30 AM">8:30 AM</option>
-            </select>
+            <Select
+              id="time"
+              name="session-end-select"
+              value="one"
+              options={[{value: '5:00 AM', label: '5:00 AM'},{value: '5:00 AM', label: '5:00 AM'}]}
+              onChange={this.timeSelected}
+            />
           </div>
         </div>
 
@@ -204,6 +224,10 @@ class StartSession extends Component {
       </div>
 
     );
+  }
+
+  timeSelected(val){
+    console.log("Time selected: "+val);
   }
 }
 
@@ -283,6 +307,9 @@ class Dashboard extends Component{
 
     switch(this.props.currentDash)
     {
+      case 'BUILDING_SELECT':
+        dash = <BuildingSelect/>;
+        break;
       case 'ROOM_SELECT':
         dash = <RoomSelect/>;
         break;
@@ -318,8 +345,8 @@ class App extends Component {
     return (
       <div className="App">
         <Nav roomName="RM123" />
-        <Sidebar />
-        <Dashboard currentDash="ROOM_SELECT" />
+        <Sidebar  currentSidebar="SESSION" username="Alistair Woodcock"/>
+        <Dashboard currentDash="START_SESSION" />
         <Footer />
       </div>
       );
