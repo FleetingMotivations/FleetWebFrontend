@@ -258,6 +258,7 @@ ul {
   margin-left: 15px;
   margin-top: -10px;
   text-align: left;
+  z-index: 100 !important;
 }
 
 #sidebar li .remove{
@@ -382,8 +383,9 @@ ul {
 }
 
 #dashboard .workstations .workstation .name{
-  text-align: center;
-  font-weight: bold;
+    text-align: center;
+    font-weight: bold;
+    white-space: nowrap;
 }
 
 #dashboard .workstations .workstation img{

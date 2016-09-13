@@ -1,7 +1,34 @@
 import React, { Component } from 'react';
+import Select from 'react-select';
 import logo from './images/UoNHorse.png';
 import workstationImg from './images/workstation.png'
 import './App.css';
+
+let applications = [
+  {name: 'App 1', status: 'running'},
+  {name: 'App 2', status: 'closing'},
+  {name: 'App 3', status: 'closed'}
+]
+
+let workstations = [
+  {name: 'Name1', id: '123', status: 'active', top: '50%', left: '50%'},
+  {name: 'Name2', id: '124', status: 'inactive', top: '20%', left: '15%'},
+  {name: 'Name3', id: '125', status: 'offline' , top: '30%', left: '30%' },
+  {name: 'Name4', id: '126', status: 'active' }
+]
+
+let workgroup = {
+  workstations : [
+  {name: 'Name1', id: '123', status: 'active', top: '50%', left: '50%'},
+  {name: 'Name2', id: '124', status: 'inactive', top: '20%', left: '15%'},
+  {name: 'Name3', id: '125', status: 'offline' , top: '30%', left: '30%' }
+  ]
+}
+
+let buildings = [{name:'ICT'},{name:'EE'},{name:'EA'}]
+let rooms = [{name: 'RM123'}, {name: 'RM124'}, {name: 'RM125'}, {name: 'RM126'}]
+
+
 
 class AppLocation extends Component{
   render(){
@@ -36,10 +63,44 @@ class Nav extends Component{
   }
 }
 
+class WorkstationStatus extends Component{
+  render(){
+    return(
+      <div className="status" data-status={this.props.status}> <div className="tooltip"></div></div>
+    );
+  }
+}
+
 class SessionDetails extends Component{
   render(){
     return(
-      
+      <div className="session-details">
+        <div className="application-list">
+          <h3>Applications</h3>
+          <ul>
+          {applications.map(app => {
+            return <li><span className="name">{app.name}</span><span className="app-status" data-app-status={app.status} >{app.status}</span> </li>
+          })}
+          </ul>
+          
+        </div>
+        <div className="workgroup-list">
+          <h3>Workgroup</h3>
+          <ul>
+            {workgroup.workstations.map(workstation => {
+              return <li data-workstation-id={workstation.id}><span className="name">{workstation.name}</span><WorkstationStatus status={workstation.status}/> <div className="remove"></div></li>
+            })}
+          </ul>
+        </div>
+        <div className="workstation-list">
+          <h3>Workstations</h3>
+          <ul>
+            {workstations.map(workstation => {
+              return <li data-workstation-id={workstation.id}><span className="name">{workstation.name}</span> <WorkstationStatus status={workstation.status} /> <div className="add"></div></li>
+            })}
+          </ul>
+        </div>
+      </div>
     );
   }
 }
@@ -48,100 +109,69 @@ class Sidebar extends Component{
   render(){
     return(
       <div id="sidebar">
-      <div className="user-details"></div>
-
-      <div className="session-details">
-        <div className="application-list">
-          <h3>Applications</h3>
-          <ul>
-            <li><span className="name">Application 1</span><span className="app-status" data-app-status="running">Running</span></li>
-            <li><span className="name">Application 2</span><span className="app-status" data-app-status="closing">closing</span></li>
-            <li><span className="name">Application 3</span></li>
-            <li><span className="name">Application 4</span></li>
-          </ul>
-        </div>
-        <div className="workgroup-list">
-          <h3>Workgroup</h3>
-          <ul>
-            <li data-workstation-id="32310i32"><span className="name">workstation 1</span> <div className="status" data-status="active"> <div className="tooltip"></div></div><div className="remove"></div></li>
-            <li data-workstation-id="45344323"><span className="name">workstation 2</span> <div className="status" data-status="inactive"></div><div className="remove"></div></li>
-            <li data-workstation-id="23555653"><span className="name">workstation 3</span> <div className="status" data-status="offline"></div><div className="remove"></div></li>
-            <li data-workstation-id="89785654"><span className="name">workstation 4</span> <div className="status" data-status="active"></div><div className="remove"></div></li>
-          </ul>
-        </div>
-        <div className="workstation-list">
-          <h3>Workstations</h3>
-          <ul>
-            <li data-workstation-id="32310i32"><span className="name">workstation 1</span> <div className="status" data-status="active"> <div className="tooltip"></div></div><div className="add"></div></li>
-            <li data-workstation-id="45344323"><span className="name">workstation 2</span> <div className="status" data-status="inactive"></div><div className="add"></div></li>
-            <li data-workstation-id="23555653"><span className="name">workstation 3</span> <div className="status" data-status="offline"></div><div className="add"></div></li>
-            <li data-workstation-id="89785654"><span className="name">workstation 4</span> <div className="status" data-status="active"></div><div className="add"></div></li>
-          </ul>
-        </div>
+        <SessionDetails />
       </div>
-    </div>
     );
   }
 }
 
-class Dashboard extends Component{
+
+
+class RoomSelect extends Component{
   render(){
     return(
-      <div id="dashboard">
-  
       <div className="room-select">
           <h2>Please select your building</h2>
 
           <div className="building-list">
-            <label>Search: <input type="text" placeholder="Building Name" /></label>
-            <ul>
-              <li>ICT</li>
-              <li>Blah</li>
-              <li>Bloop</li>
-            </ul>
+            <Select
+                name="building-select"
+                value="one"
+                options={buildings}
+                onChange={this.logChange}
+            />
+
+            // <label>Search: <input type="text" placeholder="Building Name" /></label>
+            // <ul>
+            //   {buildings.map(building => {
+            //     return <li>{building.name}</li>
+            //   })}
+            // </ul>
           </div>
 
           <div className="room-list">
             <label>Search: <input type="text" placeholder="Room Number" /></label>
             <ul>
-              <li>RM123</li>
-              <li>RM124</li>
-              <li>RM125</li>
-              <li>RM126</li>
-              <li>RM126</li>
-              <li>RM128</li>
+              {rooms.map(room => {
+                return <li>{room.name}</li>
+              })}
             </ul>            
           </div>
-
-
       </div>
-  
+    );
+  }
+
+  logChange(val) {
+    console.log("Selected: " + val);
+  }
+
+
+}
+
+class StartSession extends Component {
+  render(){
+    return(
       <div className="start-session">
         <h2>Start a collaboration session</h2>
-  
-        <div className="workstations">
-          <div className="workstation">
-              <img src={workstationImg}/>
-              <div className="name"><span data-status="active" className="status"></span>Workstation 1</div>
-          </div>
-          <div className="workstation">
-              <img src={workstationImg}/>
-              <div className="name"><span data-status="inactive" className="status"></span>Workstation 2</div>
-          </div>
-          <div className="workstation">
-              <img src={workstationImg}/>
-              <div className="name"><span data-status="offline" className="status"></span>Workstation 3</div>
-          </div>
-          <div className="workstation">
-              <img src={workstationImg}/>
-              <div className="name"><span data-status="active" className="status"></span>Workstation 4</div>
-          </div>
-        </div>
+        
+        <WorkstationsDisplay/>
+
 
         <div className="duration">
           <div className="start">Starting from now until: </div>
           <div className="end">
             <select name="time" id="time">
+
               <option value="5:00 AM">5:00 AM</option>
               <option value="5:15 AM">5:15 AM</option>
               <option value="5:30 AM">5:30 AM</option>
@@ -173,28 +203,30 @@ class Dashboard extends Component{
 
       </div>
 
-      <div className="current-session">
-        <div className="session-duration">Time Remaining: 1h 30m</div>
+    );
+  }
+}
 
+class WorkstationsDisplay extends Component{
+  render(){
+    return(
         <div className="workstations">
-          <div className="workstation">
-              <img src={workstationImg}/>
-              <div className="name"><span data-status="active" className="status"></span>Workstation 1</div>
-          </div>
-          <div className="workstation">
-              <img src={workstationImg}/>
-              <div className="name"><span data-status="inactive" className="status"></span>Workstation 2</div>
-          </div>
-          <div className="workstation">
-              <img src={workstationImg}/>
-              <div className="name"><span data-status="offline" className="status"></span>Workstation 3</div>
-          </div>
-          <div className="workstation">
-              <img src={workstationImg}/>
-              <div className="name"><span data-status="active" className="status"></span>Workstation 4</div>
-          </div>
+          {workstations.map(workstation =>{
+           return (
+              <div className="workstation" data-workstation-id={workstation.id} style={{top: workstation.top, left:workstation.left}}>
+                <img src={workstationImg} role="presentation"/>
+                <div className="name"><span data-status={workstation.status} className="status"></span>{workstation.name}</div>
+              </div>
+           ); 
+          })}
         </div>
-      
+    );
+  }
+}
+
+class FileShare extends Component{
+  render(){
+    return(
         <div className="sharing">
           <h3>Share files to workstations</h3>
           <div className="drop">
@@ -204,27 +236,70 @@ class Dashboard extends Component{
 
                 <input type="file" name="files[]" id="file" className="file" data-multiple-caption="files selected" multiple=""/>
               </div>
-              <label for="file" className="instruction"><span className="choose">Choose a file</span><span className="dragdrop"> or drag it here</span>.</label>
+              <label htmlfor="file" className="instruction"><span className="choose">Choose a file</span><span className="dragdrop"> or drag it here</span>.</label>
             </form>
           </div>
         </div>  
+    );
+  }
+}
 
-        <div className="control">
+class SessionControl extends Component{
+  render(){
+    return(
+      <div className="control">
           <h3>Control</h3>
-          
           <div className="btn">Pause All Sharing</div>
           <div className="btn">Launch Application</div>
           <div className="btn">Add Workstation</div>
           <div className="btn">Remove Workstation</div>
           <div className="btn red">End session</div>
+      </div>
+    );
+  }
+}
 
-        </div>
+class CurrentSession extends Component{
+  render(){
+    return(
+      <div className="current-session">
+        <div className="session-duration">Time Remaining: 1h 30m</div>
+
+        <WorkstationsDisplay/>
+
+        <FileShare />
+        <SessionControl />
 
       </div>
+        
+    );
+  }
+}
 
+class Dashboard extends Component{
+  render(){
 
-    </div>
+    var dash;
 
+    switch(this.props.currentDash)
+    {
+      case 'ROOM_SELECT':
+        dash = <RoomSelect/>;
+        break;
+      case 'START_SESSION':
+        dash = <StartSession/>;
+        break;
+      case 'DISPLAY_SESSION':
+        dash = <CurrentSession/>;
+        break;
+      default:
+        dash = <div>Error displaying dashboard</div>;
+    }
+
+    return(
+      <div id="dashboard">
+        {dash}
+      </div>
     );
   }
 }
@@ -244,7 +319,8 @@ class App extends Component {
       <div className="App">
         <Nav roomName="RM123" />
         <Sidebar />
-        <Dashboard />
+        <Dashboard currentDash="ROOM_SELECT" />
+        <Footer />
       </div>
       );
   }
