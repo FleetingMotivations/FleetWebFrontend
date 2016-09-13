@@ -13,10 +13,12 @@ let applications = [
 ]
 
 let workstations = [
-  {name: 'Name1', id: '123', status: 'active', top: '50%', left: '50%'},
-  {name: 'Name2', id: '124', status: 'inactive', top: '20%', left: '15%'},
-  {name: 'Name3', id: '125', status: 'offline' , top: '30%', left: '30%' },
-  {name: 'Name4', id: '126', status: 'active' }
+  {name: 'Name1', id: '123', status: 'active',   top: '20%', left: '20%', inWorkgroup: true},
+  {name: 'Name2', id: '124', status: 'inactive', top: '20%', left: '30%', inWorkgroup: true},
+  {name: 'Name3', id: '125', status: 'offline',  top: '30%', left: '40%', inWorkgroup: true },
+  {name: 'Name4', id: '125', status: 'offline',  top: '30%', left: '60%', inWorkgroup: false },
+  {name: 'Name5', id: '125', status: 'active',   top: '20%', left: '70%', inWorkgroup: false },
+  {name: 'Name6', id: '125', status: 'inactive', top: '20%', left: '80%', inWorkgroup: false },
 ]
 
 let workgroup = {
@@ -37,10 +39,7 @@ class AppLocation extends Component{
     return(
       <div className="app-location">
           <span className="location">Rooms</span>
-          // <span className="location-divider"></span>
-          // <span className="location">RM123</span>
-          // <span className="location-divider"></span>
-          // <span className="location">Dashboard</span>
+          
       </div>
     );
   }
@@ -236,8 +235,13 @@ class WorkstationsDisplay extends Component{
     return(
         <div className="workstations">
           {workstations.map(workstation =>{
+            var classessss = "workstation ";
+            if(!workstation.inWorkgroup)
+            {
+              classessss += "not-selected"; 
+            }
            return (
-              <div className="workstation" data-workstation-id={workstation.id} style={{top: workstation.top, left:workstation.left}}>
+              <div className={classessss}   data-workstation-id={workstation.id} style={{top: workstation.top, left:workstation.left}}>
                 <img src={workstationImg} role="presentation"/>
                 <div className="name"><span data-status={workstation.status} className="status"></span>{workstation.name}</div>
               </div>
@@ -375,7 +379,7 @@ class App extends Component {
     
     return (
       <div className="App">
-        <Nav roomName={this.state.room} onClick={this.delta} />
+        <Nav roomName={this.state.room} />
         <Sidebar currentSidebar={this.state.sidebar} username={this.state.username}/>
         <Dashboard  currentDash={this.state.dash} />
         <Footer />
