@@ -400,7 +400,7 @@ ul {
   width: 79%;
 }
 
-#dashboard .start-session h2{
+.start-session h2{
   padding-left: 5px;
   border-bottom: none;
   font-size: 21px;
@@ -408,75 +408,75 @@ ul {
   margin-bottom: 2px;
 }
 
-#dashboard .start-session .instruction{
+.start-session .instruction{
   text-align: center;
   font-size: 12px;
 }
 
-#dashboard .workstations{
+#workstation-display{
   width: 100%;
   height: 300px;
   position: relative;
 }
 
-#dashboard .workstations .workstation{
+#workstation-display .workstation{
   position: absolute;
   width: 7%;
   padding: 10px;
 }
 
-#dashboard .workstations .workstation.not-available{
+#workstation-display .workstation.not-available{
   opacity: 0.6;
 }
 
 
-#dashboard .workstations .workstation:hover{
+#workstation-display .workstation:hover{
   background-color: #66c5ff;
   border-radius: 5px;
 }
 
-#dashboard .workstations .workstation.selected{
+#workstation-display .workstation.selected{
   background-color: #66c5ff;
   border-radius: 5px;
 }
 
-#dashboard .workstations .workstation .name{
+#workstation-display .workstation .name{
     text-align: center;
     font-weight: bold;
     white-space: nowrap;
 }
 
-#dashboard .workstations .workstation img{
+#workstation-display .workstation img{
   width:100%;
 }
 
 
-#dashboard .start-session .duration{
+.start-session .duration{
   width: 380px;
   margin: 0 auto;
   margin-top: 20px;
 }    
-#dashboard .start-session .duration .start{
+.start-session .duration .start{
   display: inline-block;
   float: left;
   margin-right: 20px;
   font-size: 20px;
 }
-#dashboard .start-session .duration .end select[name='time']{
+.start-session .duration .end select[name='time']{
   width: 150px;
   font-size: 18px;
   margin-top: 0px;
   padding: 5px;
   background: #fff;
 }
-#dashboard .start-session .buttons{
+.start-session .buttons{
   width: 500px;
   margin: 0 auto;
   margin-top: 20px;
   height: 30px;
 }
 
-#dashboard .start-session .buttons .btn{    
+.start-session .buttons .btn{    
   float: left;
   margin: 10px;
   width: 21%;

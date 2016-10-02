@@ -38,8 +38,8 @@ class App extends Component {
 
 
 const mapStateToProps = (state) => ({
-	building: state.session.selectedBuildingId ? state.session.buildings[state.session.selectedBuildingId] : null,
-	room : state.session.selectedRoomId ? state.session.rooms[state.session.selectedRoomId] : null
+	building: (state.session.selectedBuildingId != null) ? state.session.buildings[state.session.selectedBuildingId] : null,
+	room : (state.session.selectedRoomId != null) ? state.session.rooms[state.session.selectedRoomId] : null
 })
 
 const mapDispatchToProps = dispatch => ({

@@ -16,7 +16,7 @@ import {
 const initialState = {
 	started: false,
 	startTime: null,
-	duration: null,
+	endTime: null,
 
 	selectedBuildingId: null,
 	selectedRoomId: null,
@@ -27,9 +27,9 @@ const initialState = {
 		{name: 'Name1', id: '123', status: 'active',   top: '20%', left: '20%', inWorkgroup: true, selected: false},
 		{name: 'Name2', id: '124', status: 'inactive', top: '20%', left: '30%', inWorkgroup: true, selected: false},
 		{name: 'Name3', id: '125', status: 'offline',  top: '30%', left: '40%', inWorkgroup: true, selected: false },
-		{name: 'Name4', id: '125', status: 'offline',  top: '30%', left: '60%', inWorkgroup: false, selected: false },
-		{name: 'Name5', id: '125', status: 'active',   top: '20%', left: '70%', inWorkgroup: false, selected: false },
-		{name: 'Name6', id: '125', status: 'inactive', top: '20%', left: '80%', inWorkgroup: false, selected: false },
+		{name: 'Name4', id: '126', status: 'offline',  top: '30%', left: '60%', inWorkgroup: false, selected: false },
+		{name: 'Name5', id: '127', status: 'active',   top: '20%', left: '70%', inWorkgroup: false, selected: false },
+		{name: 'Name6', id: '128', status: 'inactive', top: '20%', left: '80%', inWorkgroup: false, selected: false },
 	],
 
 	workgroup: [
