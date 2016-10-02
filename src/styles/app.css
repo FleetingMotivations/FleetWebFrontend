@@ -165,7 +165,7 @@ ul {
 }
 
 
-#content{
+#root{
   width: 100%;
   height: 100%;
 }
@@ -573,38 +573,38 @@ ul {
 }
 
 
-#dashboard .room-select, #dashboard .building-select{
-  margin-left: 5%;
+.room-select, .building-select{
+  padding-left: 5%;
   width: 80%;
 }
-#dashboard .room-select h2, #dashboard .building-select h2{
+.room-select h2, .building-select h2{
   margin-left: 5%;
 }
 
-#dashboard .room-select .building-list{
+.room-select .building-list{
 }
 
-#dashboard .room-select label{
+.room-select label{
   font-size: 19px;
   font-weight: bold;
 }
 
-#dashboard .room-select input[type='text']{
+.room-select input[type='text']{
   padding: 5px;
   margin-left: 5px;
   font-size: 16px;
 }
 
-#dashboard .room-select ul{
+.room-select ul{
 
 }
-#dashboard .room-select li{
+.room-select li{
   list-style: none;
   padding-bottom: 4px;
   border-bottom: 1px solid #efefef;
 }
 
-#dashboard .room-select li:hover{
+.room-select li:hover{
   color:#59b5ff;
   border-color: #59b5ff;
   cursor: pointer;
@@ -612,7 +612,11 @@ ul {
 
 /*** Login Page  ***/
 
-#content.login:before{
+[data-reactroot]{
+  height: 100%;
+}
+
+#login:before{
   content: "";
   position: fixed;
   left: 0;
@@ -620,7 +624,7 @@ ul {
   z-index: -1;
 
   display: block;
-  background-image: url('./images/image0027.jpg');
+  background-image: url('../images/image0027.jpg');
   background-size:cover;
   width: 100%;
   height: 100%;

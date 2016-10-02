@@ -13,12 +13,12 @@ let applications = [
 ]
 
 let workstations = [
-  {name: 'Name1', id: '123', status: 'active',   top: '20%', left: '20%', inWorkgroup: true},
-  {name: 'Name2', id: '124', status: 'inactive', top: '20%', left: '30%', inWorkgroup: true},
-  {name: 'Name3', id: '125', status: 'offline',  top: '30%', left: '40%', inWorkgroup: true },
-  {name: 'Name4', id: '125', status: 'offline',  top: '30%', left: '60%', inWorkgroup: false },
-  {name: 'Name5', id: '125', status: 'active',   top: '20%', left: '70%', inWorkgroup: false },
-  {name: 'Name6', id: '125', status: 'inactive', top: '20%', left: '80%', inWorkgroup: false },
+  {name: 'Name1', id: '123', status: 'active',   top: '20%', left: '20%', inWorkgroup: true, selected: false},
+  {name: 'Name2', id: '124', status: 'inactive', top: '20%', left: '30%', inWorkgroup: true, selected: false},
+  {name: 'Name3', id: '125', status: 'offline',  top: '30%', left: '40%', inWorkgroup: true, selected: false },
+  {name: 'Name4', id: '125', status: 'offline',  top: '30%', left: '60%', inWorkgroup: false, selected: false },
+  {name: 'Name5', id: '125', status: 'active',   top: '20%', left: '70%', inWorkgroup: false, selected: false },
+  {name: 'Name6', id: '125', status: 'inactive', top: '20%', left: '80%', inWorkgroup: false, selected: false },
 ]
 
 let workgroup = {
@@ -28,6 +28,8 @@ let workgroup = {
   {name: 'Name3', id: '125', status: 'offline' , top: '30%', left: '30%' }
   ]
 }
+
+let newWorkgroup = [];
 
 let buildings = [{name:'ICT'},{name:'EE'},{name:'EA'}]
 let rooms = [{name: 'RM123'}, {name: 'RM124'}, {name: 'RM125'}, {name: 'RM126'}]
@@ -143,6 +145,14 @@ class Sidebar extends Component{
 }
 
 class RoomSelect extends Component{
+  constructor(props) {
+    super(props);
+  
+    this.state = {
+      roomSelected: null
+    };
+  }
+
   render(){
     return(
       <div className="room-select">
@@ -151,23 +161,53 @@ class RoomSelect extends Component{
           <div className="room-list">
             <Select
                 name="room-select"
-                value="one"
+                value={this.state.roomSelected}
                 options={rooms.map(room => {return {value: room.name, label: room.name}})}
-                onChange={this.roomSelected}
+                onChange={this.roomSelected.bind(this)}
             />            
+            <div id="continue-btn" className="btn small grey right" onClick={this.next.bind(this)}>Continue</div>
           </div>
       </div>
     );
   }
 
+  next(){
+    if(this.state.roomSelected != null)
+    {
+      console.log("lets go to the next state");
+    }
+  }
+
   roomSelected(val) {
-    console.log("Building Selected: " + val.label);
+    var btn = document.getElementById("continue-btn");
+
+    this.setState({
+      roomSelected: val.value
+    });
+
+    if(val.value === null)
+    {
+      btn.className = "btn small grey right";
+    }
+    else
+    {
+      btn.className = "btn small green right";
+    }
+
   }
 
 
 }
 
 class BuildingSelect extends Component{
+  constructor(props) {
+    super(props);
+  
+    this.state = {
+      selectedBuilding: null
+    };
+  }
+
   render(){
     return(
       <div className="building-select">
@@ -175,29 +215,60 @@ class BuildingSelect extends Component{
           <h2>Please select your building</h2>
           <Select
               name="building-select"
-              value="one"
+              value={this.state.selectedBuilding}
               placeholder="Building Name..."
               options={buildings.map(building => {return {value: building.name, label: building.name}})}
-              onChange={this.buildingSelected}
+              onChange={this.buildingSelected.bind(this)}
           />
+
+          <div id="continue-btn" className="btn small grey right" onClick={this.next.bind(this)}>Continue</div>
         </div>
       </div>
     );
   }
 
+  next(e){
+    if(this.state.selectedBuilding !== null)
+    {
+      console.log("lets go to the next state");
+    }
+  }
+
   buildingSelected(val) {
-    console.log("Building Selected: " + val.label);
+    var btn = document.getElementById('continue-btn');
+
+    this.setState({
+      selectedBuilding: val.value
+    });
+
+    if(val.value == null)
+    {
+      btn.className = "btn small grey right";
+    }
+    else
+    {
+      btn.className = "btn small green right";
+    }
+
   }
 }
 
 class StartSession extends Component {
+  constructor(props) {
+    super(props);
+  
+    this.state = {
+      timeSelected: null
+    };
+  }
+
   render(){
     return(
       <div className="start-session">
         <h2>Start a collaboration session</h2>
         <div className="instruction">Select workstations to join your workgroup</div>
         
-        <WorkstationsDisplay/>
+        <WorkstationsDisplay workstationClicked={this.workstationSelect.bind(this)}/>
 
 
         <div className="duration">
@@ -206,17 +277,18 @@ class StartSession extends Component {
             <Select
               id="time"
               name="session-end-select"
-              value="one"
+              value={this.state.timeSelected}
               options={[{value: '5:00 AM', label: '5:00 AM'},{value: '5:00 AM', label: '5:00 AM'}]}
-              onChange={this.timeSelected}
+              onChange={this.timeSelected.bind(this)}
+
             />
           </div>
         </div>
 
         <div className="buttons">
-          <div className="deselect-all btn grey">Select None</div>
-          <div className="select-all btn">Select All</div>
-          <div className="start-button btn green">Start Session</div>
+          <div onClick={this.deselectAll.bind(this)}className="deselect-all btn grey">Select None</div>
+          <div onClick={this.selectAll.bind(this)}className="select-all btn">Select All</div>
+          <div onClick={this.next.bind(this)} className="start-button btn grey" id="start-session-btn">Start Session</div>
         </div>
 
 
@@ -225,23 +297,82 @@ class StartSession extends Component {
     );
   }
 
+  workstationSelect(workstation){
+    console.log(workstation);
+  
+    if(!workstation.inWorkgroup)
+    {
+      workstation.selected !== workstation.selected;
+      var index = newWorkgroup.indexOf(workstation)
+      if(index === -1)
+      {
+        newWorkgroup.push(workstation);
+      }
+      else
+      {
+        newWorkgroup.splice(index,1);
+      }
+
+      if(newWorkgroup.length === 0)
+      {
+        btn.className = "start-button btn grey";
+      }
+    }
+  }
+
   timeSelected(val){
-    console.log("Time selected: "+val);
+    var btn = document.getElementById("start-session-btn");
+    if(val === null)
+    {
+      this.setState({
+          timeSelected: null
+      });
+    }
+    else
+    {
+      this.setState({
+          timeSelected: val.value
+      });
+    }
+    
+    if(val === null || val.value === null || newWorkgroup.length === 0)
+    {
+      btn.className = "start-button btn grey";
+    }
+    else
+    {
+      btn.className = "start-button btn green";
+    }
+  }
+
+  next(e){
+    console.log("lets go to the next state");
   }
 }
 
 class WorkstationsDisplay extends Component{
+  
+  workstationClicked(workstation){
+    this.props.workstationClicked(workstation);
+  }
+
   render(){
     return(
         <div className="workstations">
           {workstations.map(workstation =>{
             var classessss = "workstation ";
-            if(!workstation.inWorkgroup)
+            if(workstation.inWorkgroup)
             {
-              classessss += "not-selected"; 
+              classessss += "not-available"; 
             }
+
+            if(workstation.selected)
+            {
+              classessss += "selected";
+            }
+
            return (
-              <div className={classessss}   data-workstation-id={workstation.id} style={{top: workstation.top, left:workstation.left}}>
+              <div className={classessss} onClick={this.workstationClicked.bind(this, workstation)}  data-workstation-id={workstation.id} style={{top: workstation.top, left:workstation.left}}>
                 <img src={workstationImg} role="presentation"/>
                 <div className="name"><span data-status={workstation.status} className="status"></span>{workstation.name}</div>
               </div>
@@ -350,29 +481,10 @@ class App extends Component {
     this.state = {
       sidebar: '', 
       username: 'Alistair Woodcock',
-      dash: 'BUILDING_SELECT',
+      dash: 'START_SESSION',
       room: ''
     }
 
-    this.delta = this.delta.bind(this);
-  }
-
-  delta(e) {
-
-    switch(this.state.dash)
-    {
-      case 'BUILDING_SELECT':
-        this.setState({ dash: 'ROOM_SELECT' });
-        break;
-      case 'ROOM_SELECT':
-        this.setState({ room: 'RM123', dash: 'START_SESSION', sidebar: 'PRE_SESSION' });
-        break;
-      case 'START_SESSION':
-        this.setState({ dash: 'DISPLAY_SESSION', sidebar: 'SESSION' });
-        break;
-    }
-    
-    console.log(this.state);
   }
 
   render() {
