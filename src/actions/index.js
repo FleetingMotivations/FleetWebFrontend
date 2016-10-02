@@ -58,7 +58,7 @@ export const loadSessionHistory = loginDetails => (dispatch, getState) => {
 }
 
 
-/** SESSION RUNNING **/
+/** SESSION STARTUP **/
 export const startSession = () => ({type: types.START_SESSION });
 
 export const selectRoom = (roomId) => ({type: types.SELECT_ROOM, roomId });
@@ -68,3 +68,10 @@ export const commitRoomSelection = () => ({type: types.COMMIT_ROOM_SELECTION});
 export const selectBuilding = (buildingId) => ({type: types.SELECT_BUILDING, buildingId});
 export const deselectBuilding = () => ({type: types.DESELECT_BUILDING});
 export const commitBuildingSelection = () => ({type: types.COMMIT_BUILDING_SELECTION});
+
+export const selectWorkstation = (workstationId) => ({type: types.SELECT_WORKSTATION, workstationId});
+export const deselectWorkstation = (workstationId) => ({type: types.DESELECT_WORKSTATION, workstationId});
+export const selectEndTime = (time) => ({type: types.SELECT_END_TIME, time});
+export const deselectAllWorkstations = () => ({type: types.DESELECT_ALL_WORKSTATIONS});
+export const selectAllWorkstations = () => ({type: types.SELECT_ALL_WORKSTATION});
+export const commitSession = () => ({type: types.COMMIT_SESSION});

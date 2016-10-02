@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as FleetActions from '../actions';
 /** import components here **/
+
 import NavBar from '../components/NavBar';
 import Footer from '../components/Footer';
 
