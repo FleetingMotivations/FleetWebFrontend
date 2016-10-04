@@ -1,33 +1,38 @@
 import fetch from 'isomorphic-fetch';
 import * as types from '../constants/ActionTypes';
+import * as config from '../../config.json';
+
+const apiURL = config.dev.apiURL;
+
+function query(dispatch, request, receive, endpoint) {
+		dispatch(request());
+
+	return fetch(apiURL+endpoint)
+		.then(response => response.json())
+		.then(json => dispatch(receive(json)))
+		.catch(err => dispatch(receive(null, err)))	
+}
+
+/** CAMPUS RETEIVAL **/
+export const requestCampuses = () => ({type: types.REQUEST_CAMPUSES});
+export const receiveCampuses = (json, error) => ({type: types.RECEIVE_CAMPUSES, campusList: json.data, error});
+export const fetchCampuses = () => (dispatch) => { return query(dispatch, requestCampuses, receiveCampuses, 'campuses/') }
 
 /** BUILDING RETREIVAL **/ 
-export const setBuilding = (id, name) => ({type: types.SET_BUILDING, id, name });
 export const requestBuildings = () => ({type: types.REQUEST_BUILDINGS});
-export const receiveBuildings = (json, error) => ({type: types.RECEIVE_BUILDINGS, buildingsList: json.data.buildings, error });
+export const receiveBuildings = (json, error) => ({type: types.RECEIVE_BUILDINGS, buildingsList: json.data, error });
+export const fetchBuildings = () => (dispatch) => { return query(dispatch, requestBuildings, receiveBuildings, 'buildings/') }
 
-export const fetchBuildings = () => (dispatch) => {
+/** ROOM RETREIVAL **/
+export const requestRooms = () => ({type: types.REQUEST_ROOMS});
+export const receiveRooms = (json, error) => ({type: types.RECEIVE_ROOMS, campusList: json.data, error});
+export const fetchRooms = () => (dispatch) => { return query(dispatch, requestRooms, receiveRooms, 'rooms/') }
 
-	dispatch(requestBuildings());
+/** WORKSTATION RETREIVAL **/
+export const requestWorkstations = () => ({type: types.REQUEST_WORKSTATIONS});
+export const receiveWorkstations = (json, error) => ({type: types.RECEIVE_WORKSTATIONS, campusList: json.data, error});
+export const fetchWorkstations = () => (dispatch) => { return query(dispatch, requestWorkstations, receiveWorkstations, 'workstations/') }
 
-	return fetch('http://localhost:3000/buildings/')
-		.then(response => response.json())
-		.then(json => dispatch(receiveBuildings(json)))
-		.catch(err => dispatch(receiveBuildings(null, err)))
-}
-
-export const fetchBuildingsIfNeeded = () => (dispatch, getState) => {
-	const buildings = getState().buildings;
-
-	if(!buildings) 
-	{
-		return dispatch(fetchBuildings());
-	}
-	else
-	{
-		return Promise.resolve();
-	}
-}
 
 /** SESSION HISTORY **/
 export const requestSessionHistory = () => ({type: types.REQUEST_SESSION_HISTORY});
@@ -61,6 +66,10 @@ export const loadSessionHistory = loginDetails => (dispatch, getState) => {
 /** SESSION STARTUP **/
 export const startSession = () => ({type: types.START_SESSION });
 
+export const selectCampus = (campusId) => ({type: types.SELECT_CAMPUS, campusId });
+export const deselectCampus = () => ({type: types.DESELECT_CAMPUS });
+export const commitCampusSelection = () => ({type: types.COMMIT_CAMPUS_SELECTION});
+
 export const selectRoom = (roomId) => ({type: types.SELECT_ROOM, roomId });
 export const deselectRoom = () => ({type: types.DESELECT_ROOM });
 export const commitRoomSelection = () => ({type: types.COMMIT_ROOM_SELECTION});
@@ -73,5 +82,5 @@ export const selectWorkstation = (workstationId) => ({type: types.SELECT_WORKSTA
 export const deselectWorkstation = (workstationId) => ({type: types.DESELECT_WORKSTATION, workstationId});
 export const selectEndTime = (time) => ({type: types.SELECT_END_TIME, time});
 export const deselectAllWorkstations = () => ({type: types.DESELECT_ALL_WORKSTATIONS});
-export const selectAllWorkstations = () => ({type: types.SELECT_ALL_WORKSTATION});
+export const selectAllWorkstations = () => ({type: types.SELECT_ALL_WORKSTATIONS});
 export const commitSession = () => ({type: types.COMMIT_SESSION});

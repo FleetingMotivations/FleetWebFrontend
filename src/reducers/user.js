@@ -1,10 +1,11 @@
 import * as All from '../constants/ActionTypes';
 
 const initialState = {
+	userId: null,
+	username: null,
 	firstname: null,
 	lastname: null,
-	title: null ,
-	token: "lolololol"
+	token: null
 }
 
 export default function user(state = initialState, action) {

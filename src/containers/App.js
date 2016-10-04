@@ -20,9 +20,9 @@ class App extends Component {
 	}
 
 	render(){
-		var { children, room, building } = this.props;
+		var { children, room, building, campus } = this.props;
 
-		var navTitle = (building ? building.name + (room ? " | "+room.name : "") : "") ;
+		var navTitle = campus ? (campus.name + (building ? " | " + building.name + (room ? " | "+room.name : "") : "")) : "";
 
 		return (
 			<div className="App">
@@ -39,6 +39,7 @@ class App extends Component {
 
 
 const mapStateToProps = (state) => ({
+	campus: (state.session.selectedCampusId != null) ? state.session.campuses[state.session.selectedCampusId] : null,
 	building: (state.session.selectedBuildingId != null) ? state.session.buildings[state.session.selectedBuildingId] : null,
 	room : (state.session.selectedRoomId != null) ? state.session.rooms[state.session.selectedRoomId] : null
 })

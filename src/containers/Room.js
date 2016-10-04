@@ -18,24 +18,18 @@ class Room extends Component{
 
 	}
 
-	workstationSelect(workstationId){
-		this.props.selectWorkstation(workstationId)
-	}
-
-	workstationDeselect(workstationId){
-		this.props.deselectWorkstation(workstationId)
+	workstationClicked(workstationId){
+		var filter = this.props.selectedWorkstations.filter((w)=>{return w === workstationId});
+		if(filter.length > 0){
+			this.props.deselectWorkstation(workstationId);
+		} else {
+			this.props.selectWorkstation(workstationId);
+		}
 	}
 
 	selectTime(val){
-		this.props.selectEndTime(val.value);
-	}
-
-	deselectAll(){
-		this.props.deselectAllWorkstations();
-	}
-
-	selectAll(){
-		this.props.selectAllWorkstations();
+		var v = val ? val.value : null
+		this.props.selectEndTime(v);
 	}
 
 	commitSession(){
@@ -85,7 +79,7 @@ class Room extends Component{
 				<h2>Start a collaboration session</h2>
 				<div className="instruction">Select workstations to join your workgroup</div>
 				
-				<WorkstationsDisplay workstations={workstations} workstationClicked={this.workstationSelect.bind(this)}/>
+				<WorkstationsDisplay workstations={workstations} workstationClicked={this.workstationClicked.bind(this)}/>
 
 
 				<div className="duration">
@@ -94,7 +88,7 @@ class Room extends Component{
 					<Select
 					  id="time"
 					  name="session-end-select"
-					  value={endTime ? {value: endTime.time, label: endTime.text} : null}
+					  value={endTime ? {value: endTime, label: formatAMPM(endTime)} : null}
 					  options={timeOptions}
 					  onChange={this.selectTime.bind(this)}
 
@@ -103,8 +97,8 @@ class Room extends Component{
 				</div>
 
 				<div className="buttons">
-				  <div onClick={this.deselectAll.bind(this)}className="deselect-all btn grey">Select None</div>
-				  <div onClick={this.selectAll.bind(this)}className="select-all btn">Select All</div>
+				  <div onClick={this.props.deselectAllWorkstations}className="deselect-all btn grey">Select None</div>
+				  <div onClick={this.props.selectAllWorkstations}className="select-all btn">Select All</div>
 				  <div onClick={this.commitSession.bind(this)} className={startSessionClass} >Start Session</div>
 				</div>
 			</div>
