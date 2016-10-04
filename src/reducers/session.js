@@ -138,8 +138,8 @@ export default function session(state = initialState, action) {
 				workstations: workstations
 			})
 
-		case DESELECT_WORKSTATIONS:
-			var selectedWorkstations = state.selectedWorkstations.slice();
+		case DESELECT_WORKSTATION:
+			
 
 		case SELECT_ALL_WORKSTATIONS:
 			var workstations = state.workstations.map((workstation) =>{
