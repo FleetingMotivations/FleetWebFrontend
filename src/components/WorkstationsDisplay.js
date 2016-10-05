@@ -7,8 +7,9 @@ export default class WorkstationsDisplay extends Component{
 		var { workstationClicked } = this.props;
 
 		var wclass = "workstation " 
-								+ (workstation.inWorkgroup ? " not-available " : "") 
-								+ (workstation.selected ? " selected " : "");
+								+ (workstation.inOtherWorkgroup ? " not-available " : "") 
+								+ (workstation.selected ? " selected " : "")
+								+ (workstation.inWorkgroup ? "" : " not-available ");
 		return (
 				<div className={wclass} key={workstation.id} onClick={()=>{workstationClicked(workstation.id)}}  
 						 data-workstation-id={workstation.id} 

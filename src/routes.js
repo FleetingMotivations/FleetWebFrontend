@@ -5,7 +5,8 @@ import App from './containers/App';
 import Home from './containers/Home';
 import Login from './containers/Login';
 import RoomSelect from './containers/RoomSelect';
-import Room from './containers/Room';
+import WorkstationSelect from './containers/WorkstationSelect';
+import Session from './containers/Session';
 
 export default 
 <Route path="/" component={App}> 
@@ -13,6 +14,7 @@ export default
 
 	<Route path="/login" component={Login}></Route>
 	<Route path="/roomSelect" component={RoomSelect}></Route>
-	<Route path="/:building/:room" component={Room}> </Route>
+	<Route path="/workstationSelect" component={WorkstationSelect}> </Route>
+	<Route path="/session" component={Session}> </Route>
 
 </Route>

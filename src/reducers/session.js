@@ -19,12 +19,13 @@ import {
 	SELECT_END_TIME,
 	DESELECT_ALL_WORKSTATIONS,
 	SELECT_ALL_WORKSTATIONS,
-	COMMIT_SESSION
+	COMMIT_SESSION,
+	ADD_WORKSTATION_TO_WORKGROUP,
+	REMOVE_WORKSTATION_FROM_WORKGROUP
 } from '../constants/ActionTypes';
 
 const initialState = {
 	started: false,
-	startTime: null,
 	endTime: null,
 
 	selectedCampusId: null,
@@ -35,23 +36,18 @@ const initialState = {
 	roomCommited: false,
 
 	workstations: [
-		{id: '123', name: 'Name1', status: 'active',   top: '20%', left: '20%', inWorkgroup: true, selected: false},
-		{id: '124', name: 'Name2', status: 'inactive', top: '20%', left: '30%', inWorkgroup: true, selected: false},
-		{id: '125', name: 'Name3', status: 'offline',  top: '30%', left: '40%', inWorkgroup: true, selected: false },
-		{id: '126', name: 'Name4', status: 'offline',  top: '30%', left: '60%', inWorkgroup: false, selected: false },
-		{id: '127', name: 'Name5', status: 'active',   top: '20%', left: '70%', inWorkgroup: false, selected: false },
-		{id: '128', name: 'Name6', status: 'inactive', top: '20%', left: '80%', inWorkgroup: false, selected: false },
+		{id: '123', name: 'Name1', status: 'active',   top: '20%', left: '20%', inWorkgroup: false, available:true, selected: false},
+		{id: '124', name: 'Name2', status: 'inactive', top: '20%', left: '30%', inWorkgroup: false, available:true, selected: false},
+		{id: '125', name: 'Name3', status: 'offline',  top: '30%', left: '40%', inWorkgroup: false, available:true, selected: false },
+		{id: '126', name: 'Name4', status: 'offline',  top: '30%', left: '60%', inWorkgroup: false, available:false,selected: false },
+		{id: '127', name: 'Name5', status: 'active',   top: '20%', left: '70%', inWorkgroup: false, available:false,selected: false },
+		{id: '128', name: 'Name6', status: 'inactive', top: '20%', left: '80%', inWorkgroup: false, available:false,selected: false },
 	],
 
-	workgroup: [
-		{name: 'Name1', id: '123', status: 'active', top: '50%', left: '50%'},
-		{name: 'Name2', id: '124', status: 'inactive', top: '20%', left: '15%'},
-		{name: 'Name3', id: '125', status: 'offline' , top: '30%', left: '30%' }
-	],
+	workgroup: [],
 
 	selectedWorkstations:[],
 
-	applications: [  {name: 'App 1', status: 'running'}, {name: 'App 2', status: 'closing'}, {name: 'App 3', status: 'closed'}],
 	campuses: [{id:0, name:'test'},{id:1, name:'Singapore'},{id:2, name:'Callaghan'}],
 	buildings: [{id:'ICT', name:'ICT'},{id:'EE', name:'EE'},{id:'EA', name:'EA'}],
 	rooms: [{id:'RM123', name: 'RM123'}, {id:'RM124', name: 'RM124'}, {id:'RM125', name: 'RM125'}, {id:'RM126', name: 'RM126'}]
@@ -139,7 +135,22 @@ export default function session(state = initialState, action) {
 			})
 
 		case DESELECT_WORKSTATION:
-			
+			var selectedWorkstations = state.selectedWorkstations.filter((w)=>{return w !== action.workstationId })
+
+			var workstations = state.workstations.map((w)=>{
+				if(w.id === action.workstationId){
+					return {
+						...w,
+						selected: false
+					}
+				}
+				return {...w};
+			})
+
+			return Object.assign({}, state, {
+				selectedWorkstations: selectedWorkstations,
+				workstations: workstations
+			})
 
 		case SELECT_ALL_WORKSTATIONS:
 			var workstations = state.workstations.map((workstation) =>{
@@ -180,7 +191,11 @@ export default function session(state = initialState, action) {
 		case SELECT_END_TIME:
 			return Object.assign({}, state, { endTime: action.time })
 
-		case COMMIT_SESSION: 
+		case COMMIT_SESSION:
+
+			return Object.assign({}, state, {
+
+			});
 			
 		case START_SESSION:
 			return state
@@ -202,6 +217,47 @@ export default function session(state = initialState, action) {
 
 		default:
 			return state
+
+		case ADD_WORKSTATION_TO_WORKGROUP:
+
+			if(state.workgroup.find(id => {return id === action.workstationId})){
+				return state;
+			}
+
+			var workstations = state.workstations.slice();
+			var workgroup = state.workgroup.slice();
+			var n = state.workstations.find(w => {return w.id === action.workstationId});
+			if(n !== undefined) {
+				workgroup.push(n.id);
+				workstations = workstations.map(w => {
+					if(w.id === n.id) {
+						return {...w, inWorkgroup: true }
+					}
+
+					return {...w};
+				})
+			}
+			
+			return Object.assign({}, state, {
+				workgroup: workgroup,
+				workstations: workstations
+			})			
+
+		case REMOVE_WORKSTATION_FROM_WORKGROUP:
+			var workgroup = state.workgroup.filter(id => {return id !== action.workstationId});
+
+			var workstations = state.workstations.map(w => {
+				if(w.id === action.workstationId){
+					return {...w, inWorkgroup: false}
+				}
+
+				return {...w}
+			})
+
+			return Object.assign({}, state, {
+				workgroup: workgroup,
+				workstations: workstations
+			})
 
 	}
 }

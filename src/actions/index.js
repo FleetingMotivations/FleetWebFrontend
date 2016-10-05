@@ -64,8 +64,6 @@ export const loadSessionHistory = loginDetails => (dispatch, getState) => {
 
 
 /** SESSION STARTUP **/
-export const startSession = () => ({type: types.START_SESSION });
-
 export const selectCampus = (campusId) => ({type: types.SELECT_CAMPUS, campusId });
 export const deselectCampus = () => ({type: types.DESELECT_CAMPUS });
 export const commitCampusSelection = () => ({type: types.COMMIT_CAMPUS_SELECTION});
@@ -83,4 +81,31 @@ export const deselectWorkstation = (workstationId) => ({type: types.DESELECT_WOR
 export const selectEndTime = (time) => ({type: types.SELECT_END_TIME, time});
 export const deselectAllWorkstations = () => ({type: types.DESELECT_ALL_WORKSTATIONS});
 export const selectAllWorkstations = () => ({type: types.SELECT_ALL_WORKSTATIONS});
-export const commitSession = () => ({type: types.COMMIT_SESSION});
+
+export const startSession = () => ({type: types.START_SESSION });
+export const endSession = () => ({type: types.END_SESSION});
+export const requestStartSession = () => ({type: types.REQUEST_START_SESSION});
+export const receiveStartSessionResponse = (result) => ({type: types.RECEIVE_START_SESSION_RESPONSE, result});
+
+export const commitSession = (userId, selectedWorkstations, endTime) => (dispatch) => {
+	dispatch(requestStartSession());
+
+	var data = {
+		userId,
+		selectedWorkstations,
+		endTime
+	};
+
+	return fetch(apiURL+'workgroups', {
+				method: "POST",
+		  		body: JSON.stringify(data),
+		  		headers: {"Content-Type": "application/json"}
+			})
+			.then(response => response.json())
+		  	.then(json => dispatch(receiveStartSessionResponse(json)))
+		  	.catch(err => {console.log(err)})
+};
+
+/** SESSION CONTROL **/
+export const addWorkstationToWorkgroup = (workstationId) => ({ type: types.ADD_WORKSTATION_TO_WORKGROUP, workstationId });
+export const removeWorkstationFromWorkgroup = (workstationId) => ({ type: types.REMOVE_WORKSTATION_FROM_WORKGROUP, workstationId });

@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { browserHistory } from 'react-router'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import { push } from 'react-router-redux';
 import { 
 	selectRoom, 
 	deselectRoom, 
@@ -24,9 +25,7 @@ class RoomSelect extends Component{
 
 	selectRoom() {
 		this.props.commitRoomSelection();
-		
-		var newPath = "/"+this.props.selectedBuilding.id+"/"+this.props.selectedRoom.id;
-		browserHistory.push(newPath)
+		browserHistory.push('/workstationSelect');
 	}
 
 	selectBuilding(){
@@ -38,6 +37,7 @@ class RoomSelect extends Component{
 	}
 
 	render() {
+		console.log(this.props);
 		var { 
 			rooms, 
 			buildings, 
@@ -124,7 +124,8 @@ const mapDispatchToProps = dispatch => ({
 	commitBuildingSelection: () => {dispatch(commitBuildingSelection())},
 	selectCampus: (CampusId) => {dispatch(selectCampus(CampusId))},
 	deselectCampus: () => {dispatch(deselectCampus())},
-	commitCampusSelection: () => {dispatch(commitCampusSelection())}
+	commitCampusSelection: () => {dispatch(commitCampusSelection())},
+	changeRoute: (route) => { dispatch(push(route)) }
 })
 
 export default connect(

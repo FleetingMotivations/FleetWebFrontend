@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { browserHistory } from 'react-router'
 import { connect } from 'react-redux';
+import { push } from 'react-router-redux';
 import { loadSessionHistory } from '../actions';
 
 import SessionHistory from '../components/SessionHistory';
@@ -67,7 +68,8 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-	loadSessionHistory: (token) => {dispatch(loadSessionHistory(token))} 
+	loadSessionHistory: (token) => {dispatch(loadSessionHistory(token))},
+	changeRoute: (route) => {dispatch(push(route))}
 })
 
 export default connect(
