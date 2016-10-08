@@ -8,7 +8,13 @@ export default class NavBar extends Component{
   }
 
   render(){
-    var { navTitle } = this.props;
+    var { navTitle, loggedIn, signOutClick } = this.props;
+
+    var signOut = null;
+
+    if(loggedIn) {
+      signOut = <div className="logout" onClick={signOutClick}>Sign out</div>
+    }
 
     return(
       <div id="nav">
@@ -21,7 +27,7 @@ export default class NavBar extends Component{
         <div className="dashboard-top">
           
           <div className="room-name">{ navTitle }</div>
-          <div className="logout">Sign out</div>
+          {signOut}
         </div>
 
       </div>

@@ -2,14 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { browserHistory } from 'react-router'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import {
-	selectWorkstation,
-	deselectWorkstation,
-	selectEndTime,
-	deselectAllWorkstations,
-	selectAllWorkstations,
-	commitSession
-} from '../actions';
+import * as FleetActions from '../actions';
 import Select from 'react-select';
 
 import moment from 'moment';
@@ -24,23 +17,19 @@ class WorkstationSelect extends Component{
 	workstationClicked(workstationId){
 		var filter = this.props.selectedWorkstations.filter((w)=>{return w === workstationId});
 		if(filter.length > 0){
-			this.props.deselectWorkstation(workstationId);
+			this.props.actions.deselectWorkstation(workstationId);
 		} else {
-			this.props.selectWorkstation(workstationId);
+			this.props.actions.selectWorkstation(workstationId);
 		}
 	}
 
 	selectTime(val){
 		var v = val ? val.value : null
-		this.props.selectEndTime(v);
+		this.props.actions.selectEndTime(v);
 	}
 
 	commitSession(){
-		this.props.commitSession(
-			this.props.userId,
-			this.props.selectedWorkstations,
-			this.props.endTime
-		);
+		this.props.actions.commitSession();
 
 		browserHistory.push('/session');
 	}
@@ -51,21 +40,24 @@ class WorkstationSelect extends Component{
 		var timeOptions = [];
 		
 		var mmt = moment().add('m', 15 - moment().minute() % 15);
-		var mmtMidnight = mmt.clone().endOf('day');
+		var mmtMidnight = mmt.clone().hour(23).minute(59).second(59);
+
 
 		// Difference in minutes
 		var diffHours = mmtMidnight.diff(mmt, 'hours');
 
-		for(var i = 0; i < diffHours; i++)
+		console.log(diffHours);
+
+		for(var i = 0; i < diffHours*4; i++)
 		{	
-			var newMoment = mmt.add(i, 'hours');
+			var newMoment = mmt.clone().add(i*15, 'minutes');
 			timeOptions.push({
 				value: newMoment,
 				label: newMoment.format('LT')
 			})
 		}
 
-		var startSessionClass = "start-button btn " + (selectedWorkstations.length > 0 && endTime != null ? "green" : "grey");
+		var startSessionClass = "start-button btn " + (endTime != null ? "green" : "grey");
 
 		return (
 			<div className="start-session">
@@ -91,7 +83,7 @@ class WorkstationSelect extends Component{
 
 				<div className="buttons">
 				  <div onClick={this.props.deselectAllWorkstations}className="deselect-all btn grey">Select None</div>
-				  <div onClick={this.props.selectAllWorkstations}className="select-all btn">Select All</div>
+				  <div onClick={this.props.actions.selectAllWorkstations}className="select-all btn">Select All</div>
 				  <div onClick={()=>{this.commitSession()}} className={startSessionClass} >Start Session</div>
 				</div>
 			</div>
@@ -108,12 +100,7 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-selectWorkstation: (workstationId) => { dispatch(selectWorkstation(workstationId)) },
-deselectWorkstation: (workstationId) => { dispatch(deselectWorkstation(workstationId)) },
-selectEndTime: (time) => { dispatch(selectEndTime(time)) },
-deselectAllWorkstations: () => { dispatch(deselectAllWorkstations()) },
-selectAllWorkstations: () => { dispatch(selectAllWorkstations()) },
-commitSession: (userId, selectedWorkstations, endTime) => { dispatch(commitSession(userId, selectedWorkstations, endTime)) }
+	actions: bindActionCreators(FleetActions, dispatch)
 })
 
 export default connect(

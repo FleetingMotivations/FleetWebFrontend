@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { browserHistory } from 'react-router'
 import { connect } from 'react-redux';
-import { addWorkstationToWorkgroup, removeWorkstationFromWorkgroup } from '../actions';
+import * as FleetActions from '../actions';
 
 import FileShare from '../components/FileShare';
 import SessionControl from '../components/SessionControl';
@@ -16,16 +16,53 @@ class Session extends Component{
 	}
 
 	addWorkstation(id){
-		this.props.addWorkstationToWorkgroup(id);
+		this.props.actions.addWorkstationsToWorkgroup([id]);
+	}
+
+	addWorkstations(){
+		this.props.actions.addWorkstationsToWorkgroup(this.props.selectedWorkstations);
 	}
 
 	removeWorkstation(id){
-		this.props.removeWorkstationFromWorkgroup(id);
+		this.props.actions.removeWorkstationsFromWorkgroup([id]);
+	}
+
+	removeWorkstations(){
+		this.props.actions.removeWorkstationsFromWorkgroup(this.props.selectedWorkstations);
+	}
+
+	workstationClicked(workstationId){
+		var workstation = this.props.selectedWorkstations.find((w)=>{return w === workstationId});
+		if(workstation){
+			this.props.actions.deselectWorkstation(workstationId);
+		} else {
+			this.props.actions.selectWorkstation(workstationId);
+		}
+	}
+
+	disableSharing(){
+		this.props.actions.disableSharing(this.props.selectedWorkstations);
+	}
+
+	enableSharing(){
+		this.props.actions.enableSharing(this.props.selectedWorkstations);
+	}
+
+	pauseSharing(){
+		this.props.actions.disableSharingAll();
+	}
+
+	resumeSharing(){
+		this.props.actions.enableSharingAll();
+	}
+
+	endSession(){
+		this.props.action.endSession();
 	}
 
 	render() {
 
-		var { workstations, applications, workgroup } = this.props;
+		var { workstations, applications, workgroup, allSharingDisabled } = this.props;
 		
 
 		var availableWorkstations = workstations.filter(w => {return !w.inWorkgroup && w.available})
@@ -46,10 +83,19 @@ class Session extends Component{
 				<div className="current-session">
 			        <div className="session-duration">Time Remaining: </div>
 
-			        <WorkstationsDisplay workstations={workstations} />
+			        <WorkstationsDisplay workstations={workstations} workstationClicked={this.workstationClicked.bind(this)}/>
 						
 
-			        <SessionControl />
+			        <SessionControl
+			        	allSharingPaused={allSharingDisabled}
+			        	addWorkstations={this.addWorkstations.bind(this)}
+			        	removeWorkstations={this.removeWorkstations.bind(this)}
+			        	disableSharing={this.disableSharing.bind(this)}
+			        	enableSharing={this.enableSharing.bind(this)}
+			        	pauseAllSharing={this.pauseSharing.bind(this)}
+			        	resumeAllSharing={this.resumeSharing.bind(this)}
+			        	endSession={this.endSession.bind(this)}
+			         />
 
 		      	</div>
 	      	</div>
@@ -61,13 +107,15 @@ class Session extends Component{
 const mapStateToProps = state => ({
 	workstations: state.session.workstations,
 	applications: state.session.applications,
-	workgroup: state.session.workgroup
+	workgroup: state.session.workgroup,
+	selectedWorkstations: state.session.selectedWorkstations,
+	allSharingDisabled: state.session.allSharingDisabled
 })
 
 const mapDispatchToProps = dispatch => ({
-	addWorkstationToWorkgroup: (workstationId) => { dispatch(addWorkstationToWorkgroup(workstationId)) },
-	removeWorkstationFromWorkgroup: (workstationId) => { dispatch(removeWorkstationFromWorkgroup(workstationId)) }
+	actions: bindActionCreators(FleetActions, dispatch)
 })
+
 
 export default connect(
 	mapStateToProps,

@@ -1,6 +1,6 @@
 {
 	"dev":{
-		"apiURL": "http://localhost/api/" 
+		"apiURL": "http://fleetp-api-docs.surge.sh/api/" 
 	},
 	"prod":{
 		"apiURL": ""

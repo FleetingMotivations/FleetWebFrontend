@@ -1,15 +1,48 @@
-import * as All from '../constants/ActionTypes';
-
 const initialState = {
+	loggedIn: false,
+	loginError: false,
+	username: '',
+	password: '',
 	userId: null,
-	username: null,
 	firstname: null,
 	lastname: null,
-	token: null
+	token: null,
+	tokenExpiry: null
 }
 
 export default function user(state = initialState, action) {
 	switch(action.type) {
+		
+		case 'SET_USERNAME':
+			return Object.assign({}, state, {
+				username: action.username
+			})	
+
+		case 'SET_PASSWORD':
+			return Object.assign({}, state, {
+				password: action.password
+			})	
+
+		case 'REQUEST_LOGIN':
+			return Object.assign({}, state, {loginError: false})
+			
+		case 'RECEIVE_LOGIN_RESULT':
+
+			if(action.success) {
+				return Object.assign({}, state, {
+					loggedIn: true,
+					firstname: action.result.firstName,
+					lastname: action.result.lastName,
+					username: action.result.username,
+					token: action.result.token,
+					tokenExpiry: action.result.expires
+				})	
+			}
+
+			return Object.assign({}, state, {loginError: true})
+
+		case 'LOGOUT':
+				return initialState
 		
 		default:
 			return state

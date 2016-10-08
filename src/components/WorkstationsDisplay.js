@@ -7,15 +7,15 @@ export default class WorkstationsDisplay extends Component{
 		var { workstationClicked } = this.props;
 
 		var wclass = "workstation " 
-								+ (workstation.inOtherWorkgroup ? " not-available " : "") 
+								+ (!workstation.available ? " not-available " : "") 
 								+ (workstation.selected ? " selected " : "")
-								+ (workstation.inWorkgroup ? "" : " not-available ");
+								+ (workstation.inWorkgroup ? " in-workgroup " : "");
 		return (
 				<div className={wclass} key={workstation.id} onClick={()=>{workstationClicked(workstation.id)}}  
 						 data-workstation-id={workstation.id} 
 						 style={{top: workstation.top, left:workstation.left}}>
 					<img src={workstationImg} role="presentation"/>
-					<div className="name"><span data-status={workstation.status} className="status"></span>{workstation.name}</div>
+					<div className="name">{workstation.name}</div>
 				</div>
 		);
 	}

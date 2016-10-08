@@ -3,17 +3,7 @@ import { browserHistory } from 'react-router'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
-import { 
-	selectRoom, 
-	deselectRoom, 
-	commitRoomSelection,
-	selectBuilding,
-	deselectBuilding,
-	commitBuildingSelection,
-	selectCampus,
-	deselectCampus,
-	commitCampusSelection
-} from '../actions';
+import * as FleetActions from '../actions';
 
 import Select from 'react-select';
 import '../styles/Select.css';
@@ -23,21 +13,27 @@ class RoomSelect extends Component{
 
 	}
 
+	componentWillMount() {
+	 	this.props.actions.fetchCampuses();
+	}
+
 	selectRoom() {
-		this.props.commitRoomSelection();
+		this.props.actions.commitRoomSelection();
 		browserHistory.push('/workstationSelect');
 	}
 
 	selectBuilding(){
-		this.props.commitBuildingSelection();
+		this.props.actions.commitBuildingSelection();
+		this.props.actions.fetchRooms();
 	}
 
 	selectCampus(){
-		this.props.commitCampusSelection();
+		this.props.actions.commitCampusSelection();
+		this.props.actions.fetchBuildings();
 	}
 
 	render() {
-		console.log(this.props);
+
 		var { 
 			rooms, 
 			buildings, 
@@ -57,23 +53,23 @@ class RoomSelect extends Component{
 			val = selectedCampus ? {value: selectedCampus.id, label: selectedCampus.name} : null;
 			options = campuses;
 			cont = this.selectCampus.bind(this)			
-			select = this.props.selectCampus;
-			deselect = this.props.deselectCampus;
+			select = this.props.actions.selectCampus;
+			deselect = this.props.actions.deselectCampus;
 			
 		} else if(!buildingCommited) {
 			instruction = "Please select your building";
 			val = selectedBuilding ? {value: selectedBuilding.id, label: selectedBuilding.name} : null;
 			options = buildings;
 			cont = this.selectBuilding.bind(this)
-			select = this.props.selectBuilding;
-			deselect = this.props.deselectBuilding;
+			select = this.props.actions.selectBuilding;
+			deselect = this.props.actions.deselectBuilding;
 		} else if(!roomCommited) {
 			instruction = "Please select your room";
 			val = selectedRoom ? {value: selectedRoom.id, label: selectedRoom.name} : null;
 			options = rooms;
 			cont = this.selectRoom.bind(this);
-			select = this.props.selectRoom;
-			deselect = this.props.deselectRoom;
+			select = this.props.actions.selectRoom;
+			deselect = this.props.actions.deselectRoom;
 			
 		} else {
 			instruction = "oops something went wrong...";
@@ -112,20 +108,15 @@ const mapStateToProps = state => ({
 		selectedBuilding: (state.session.selectedBuildingId != null) ? state.session.buildings[state.session.selectedBuildingId] : null,
 		roomCommited: state.session.roomCommited,
 		buildingCommited: state.session.buildingCommited,
-		campusCommited: state.session.campusCommited
+		campusCommited: state.session.campusCommited,
+		fetchingRooms: state.session.fetchingRooms,
+		fetcingBuildings: state.session.fetcingBuildings,
+		fetchingCampuses: state.session.fetchingCampuses
 })
 
+
 const mapDispatchToProps = dispatch => ({
-	selectRoom: (roomId) => {dispatch(selectRoom(roomId))},
-	deselectRoom: () => {dispatch(deselectRoom())},
-	commitRoomSelection: () => {dispatch(commitRoomSelection())},
-	selectBuilding: (buildingId) => {dispatch(selectBuilding(buildingId))},
-	deselectBuilding: () => {dispatch(deselectBuilding())},
-	commitBuildingSelection: () => {dispatch(commitBuildingSelection())},
-	selectCampus: (CampusId) => {dispatch(selectCampus(CampusId))},
-	deselectCampus: () => {dispatch(deselectCampus())},
-	commitCampusSelection: () => {dispatch(commitCampusSelection())},
-	changeRoute: (route) => { dispatch(push(route)) }
+	actions: bindActionCreators(FleetActions, dispatch)
 })
 
 export default connect(

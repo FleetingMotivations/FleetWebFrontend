@@ -7,24 +7,28 @@ export default class SessionHistory extends Component{
   }
 
   static defaultProps = {
-    isFetching: true,
     loadingLabel: 'loading...'
   }
 
   render(){
-    var {isFetching, loadingLabel, sessions, renderSession } = this.props;
+    var {isFetching, loadingLabel, sessions, renderSession, fetchError } = this.props;
+
+    var sessionMsg = null;
 
     if (isFetching) {
-      return <h2><i>{loadingLabel}</i></h2>
-    }
-
-    if(sessions.length === 0) {
-      return <h2>You have no previous sessions</h2>
+      sessionMsg = <div><i>{loadingLabel}</i></div>
+    } else if(fetchError){
+      sessionMsg = <div><i>There was an issue retrieving your sessions</i></div>
+    } else if (sessions.length === 0) {
+      sessionMsg = <div>You have no previous sessions</div>
+    } else {
+      sessionMsg = sessions.map(renderSession)
     }
 
     return(
       <div>
-      {sessions.map(renderSession)}
+        <h3>Previous Sessions</h3>
+        {sessionMsg}
       </div>
     );
   }

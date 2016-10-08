@@ -1,6 +1,7 @@
 import fetch from 'isomorphic-fetch';
-import * as types from '../constants/ActionTypes';
 import * as config from '../../config.json';
+
+import moment from 'moment';
 
 const apiURL = config.dev.apiURL;
 
@@ -9,91 +10,111 @@ function query(dispatch, request, receive, endpoint) {
 
 	return fetch(apiURL+endpoint)
 		.then(response => response.json())
-		.then(json => dispatch(receive(json)))
+		.then(json => dispatch(receive(json, null)))
 		.catch(err => dispatch(receive(null, err)))	
 }
 
+/** LOGIN **/
+export const setUsername = (username) => ({type: 'SET_USERNAME', username});
+export const setPassword = (password) => ({type: 'SET_PASSWORD', password});
+
+export const requestLogin = () => ({type: 'REQUEST_LOGIN'});
+export const receiveLoginResult = (success, err) => ({type: 'RECEIVE_LOGIN_RESULT', success, error:err});
+
+export const login = () => (dispatch, getState) => {
+
+	const login = getState().user;
+
+	dispatch(requestLogin());
+
+	return 	fetch(apiURL+'login?username='+login.username+'&password='+login.password)
+			.then(response => response.json())
+			.then(json => dispatch(receiveLoginResult(json, null)))
+			.catch(err => dispatch(receiveLoginResult(null, err)))
+
+}
+
 /** CAMPUS RETEIVAL **/
-export const requestCampuses = () => ({type: types.REQUEST_CAMPUSES});
-export const receiveCampuses = (json, error) => ({type: types.RECEIVE_CAMPUSES, campusList: json.data, error});
-export const fetchCampuses = () => (dispatch) => { return query(dispatch, requestCampuses, receiveCampuses, 'campuses/') }
+export const requestCampuses = () => ({type: 'REQUEST_CAMPUSES'});
+export const receiveCampuses = (campuses, error) => ({type: 'RECEIVE_CAMPUSES', campuses, error});
+export const fetchCampuses = () => (dispatch) => { return query(dispatch, requestCampuses, receiveCampuses, 'campuses/') };
 
 /** BUILDING RETREIVAL **/ 
-export const requestBuildings = () => ({type: types.REQUEST_BUILDINGS});
-export const receiveBuildings = (json, error) => ({type: types.RECEIVE_BUILDINGS, buildingsList: json.data, error });
-export const fetchBuildings = () => (dispatch) => { return query(dispatch, requestBuildings, receiveBuildings, 'buildings/') }
+export const requestBuildings = () => ({type: 'REQUEST_BUILDINGS'});
+export const receiveBuildings = (buildings, error) => ({type: 'RECEIVE_BUILDINGS', buildings, error });
+export const fetchBuildings = () => (dispatch, getState) => { 
+	const { selectedCampusId } = getState().session;
+	return query(dispatch, requestBuildings, receiveBuildings, 'campuses/'+selectedCampusId+'/buildings') 
+}
 
 /** ROOM RETREIVAL **/
-export const requestRooms = () => ({type: types.REQUEST_ROOMS});
-export const receiveRooms = (json, error) => ({type: types.RECEIVE_ROOMS, campusList: json.data, error});
-export const fetchRooms = () => (dispatch) => { return query(dispatch, requestRooms, receiveRooms, 'rooms/') }
+export const requestRooms = () => ({type: 'REQUEST_ROOMS'});
+export const receiveRooms = (rooms, error) => ({type: 'RECEIVE_ROOMS', rooms, error});
+export const fetchRooms = () => (dispatch, getState) => { 
+	const { selectedBuildingId } = getState().session;
+	return query(dispatch, requestRooms, receiveRooms, 'buildings/'+selectedBuildingId+'/rooms') 
+}
 
 /** WORKSTATION RETREIVAL **/
-export const requestWorkstations = () => ({type: types.REQUEST_WORKSTATIONS});
-export const receiveWorkstations = (json, error) => ({type: types.RECEIVE_WORKSTATIONS, campusList: json.data, error});
-export const fetchWorkstations = () => (dispatch) => { return query(dispatch, requestWorkstations, receiveWorkstations, 'workstations/') }
-
+export const requestWorkstations = () => ({type: 'REQUEST_WORKSTATIONS'});
+export const receiveWorkstations = (workstations, error) => ({type: 'RECEIVE_WORKSTATIONS', workstations, error});
+export const fetchWorkstations = () => (dispatch, getState) => { 
+	const { selectedRoomId } = getState().session;
+	return query(dispatch, requestWorkstations, receiveWorkstations, 'rooms/'+selectedRoomId+'/workstations') 
+}
 
 /** SESSION HISTORY **/
-export const requestSessionHistory = () => ({type: types.REQUEST_SESSION_HISTORY});
-export const receiveSessionHistory = (json, error) => ({type: types.RECEIVE_SESSION_HISTORY, error});
-
-
-const fetchSessionHistory = loginDetails => dispatch => {
-	console.log(loginDetails);
-
-	dispatch(requestSessionHistory());
-
-	return fetch('http://localhost:3000/sessionHistory/')
-		.then(response => response.json())
-		.then(json => dispatch(receiveSessionHistory(json)))
-		.catch(err => dispatch(receiveSessionHistory(null, err)))
+export const requestSessionHistory = () => ({type: 'REQUEST_SESSION_HISTORY'});
+export const receiveSessionHistory = (history, error) => ({type: 'RECEIVE_SESSION_HISTORY', history, error});
+export const fetchSessionHistory = () => (dispatch, getState) => {
+  const { username } = getState().user;
+  return query(dispatch, requestSessionHistory, receiveSessionHistory, 'users/'+username+'/workgroups?count=6')
 }
 
-export const loadSessionHistory = loginDetails => (dispatch, getState) => {
-  console.log(loginDetails);
-  const sessionHistory = getState().sessionHistory;
+// export const loadSessionHistory = () => (dispatch, getState) => {
 
-  if(sessionHistory.length > 0)
-  {
-  	return null;
-  }
-
-  return dispatch(fetchSessionHistory(loginDetails))
-}
+//   return dispatch(fetchSessionHistory(user))
+// }
 
 
 /** SESSION STARTUP **/
-export const selectCampus = (campusId) => ({type: types.SELECT_CAMPUS, campusId });
-export const deselectCampus = () => ({type: types.DESELECT_CAMPUS });
-export const commitCampusSelection = () => ({type: types.COMMIT_CAMPUS_SELECTION});
+export const selectCampus = (campusId) => ({type: 'SELECT_CAMPUS', campusId });
+export const deselectCampus = () => ({type: 'DESELECT_CAMPUS' });
+export const commitCampusSelection = () => ({type: 'COMMIT_CAMPUS_SELECTION'});
 
-export const selectRoom = (roomId) => ({type: types.SELECT_ROOM, roomId });
-export const deselectRoom = () => ({type: types.DESELECT_ROOM });
-export const commitRoomSelection = () => ({type: types.COMMIT_ROOM_SELECTION});
+export const selectRoom = (roomId) => ({type: 'SELECT_ROOM', roomId });
+export const deselectRoom = () => ({type: 'DESELECT_ROOM' });
+export const commitRoomSelection = () => ({type: 'COMMIT_ROOM_SELECTION'});
 
-export const selectBuilding = (buildingId) => ({type: types.SELECT_BUILDING, buildingId});
-export const deselectBuilding = () => ({type: types.DESELECT_BUILDING});
-export const commitBuildingSelection = () => ({type: types.COMMIT_BUILDING_SELECTION});
+export const selectBuilding = (buildingId) => ({type: 'SELECT_BUILDING', buildingId});
+export const deselectBuilding = () => ({type: 'DESELECT_BUILDING'});
+export const commitBuildingSelection = () => ({type: 'COMMIT_BUILDING_SELECTION'});
 
-export const selectWorkstation = (workstationId) => ({type: types.SELECT_WORKSTATION, workstationId});
-export const deselectWorkstation = (workstationId) => ({type: types.DESELECT_WORKSTATION, workstationId});
-export const selectEndTime = (time) => ({type: types.SELECT_END_TIME, time});
-export const deselectAllWorkstations = () => ({type: types.DESELECT_ALL_WORKSTATIONS});
-export const selectAllWorkstations = () => ({type: types.SELECT_ALL_WORKSTATIONS});
+export const selectWorkstation = (workstationId) => ({type: 'SELECT_WORKSTATION', workstationId});
+export const deselectWorkstation = (workstationId) => ({type: 'DESELECT_WORKSTATION', workstationId});
+export const selectEndTime = (time) => ({type: 'SELECT_END_TIME', time});
+export const deselectAllWorkstations = () => ({type: 'DESELECT_ALL_WORKSTATIONS'});
+export const selectAllWorkstations = () => ({type: 'SELECT_ALL_WORKSTATIONS'});
 
-export const startSession = () => ({type: types.START_SESSION });
-export const endSession = () => ({type: types.END_SESSION});
-export const requestStartSession = () => ({type: types.REQUEST_START_SESSION});
-export const receiveStartSessionResponse = (result) => ({type: types.RECEIVE_START_SESSION_RESPONSE, result});
+export const startSession = () => ({type: 'START_SESSION' });
+export const endSession = () => ({type: 'END_SESSION'});
+export const requestStartSession = () => ({type: 'REQUEST_START_SESSION'});
+export const receiveStartSessionResponse = (result, error) => ({type: 'RECEIVE_START_SESSION_RESPONSE', result, error});
 
-export const commitSession = (userId, selectedWorkstations, endTime) => (dispatch) => {
+export const commitSession = () => (dispatch, getState) => {
 	dispatch(requestStartSession());
 
+	const state = getState();
+
+	var durationMinutes = -moment().diff(state.session.endTime, 'minutes');
+	
 	var data = {
-		userId,
-		selectedWorkstations,
-		endTime
+		userId: state.user.username,
+		roomId: state.session.selectedRoomId,
+		allowedApplications: [],
+		workstations: state.session.selectedWorkstations,
+		duration: durationMinutes,
+		sharingEnabled: true
 	};
 
 	return fetch(apiURL+'workgroups', {
@@ -102,10 +123,99 @@ export const commitSession = (userId, selectedWorkstations, endTime) => (dispatc
 		  		headers: {"Content-Type": "application/json"}
 			})
 			.then(response => response.json())
-		  	.then(json => dispatch(receiveStartSessionResponse(json)))
-		  	.catch(err => {console.log(err)})
+		  	.then(json => dispatch(receiveStartSessionResponse(json, null)))
+		  	.catch(err => dispatch(receiveStartSessionResponse(null, err)))
 };
 
 /** SESSION CONTROL **/
-export const addWorkstationToWorkgroup = (workstationId) => ({ type: types.ADD_WORKSTATION_TO_WORKGROUP, workstationId });
-export const removeWorkstationFromWorkgroup = (workstationId) => ({ type: types.REMOVE_WORKSTATION_FROM_WORKGROUP, workstationId });
+export const requestEnableWorkstation = (workstationId) => ({type: 'REQUEST_ENABLE_WORKSTATION', workstationId});
+export const responseEnableWorkstation = (workstationId, success, error) => ({type: 'RESPONE_ENABLE_WORKSTATION', workstationId, success, error});
+export const enableSharing = (workstationIds) => (dispatch, getState) => {
+	workstationIds.map(workstationId => {
+		dispatch(requestEnableWorkstation(workstationId));
+
+		const { workgroupId } = getState().session
+
+		return fetch(apiURL+'workgroups/'+workgroupId+'/workstations/'+workstationId+'/sharing')
+		.then(response => response.json())
+		.then(json => dispatch(responseEnableWorkstation(workstationId, true, null)))
+		.catch(err => dispatch(responseEnableWorkstation(workstationId, false, err)))
+	})
+} 
+
+export const requestDisableWorkstation = (workstationId) => ({type: 'REQUEST_DISABLE_WORKSTATION', workstationId});
+export const responseDisableWorkstation = (workstationId, success, error) => ({type: 'RESPONE_DISABLE_WORKSTATION', workstationId, success, error});
+export const disableSharing = (workstationIds) => (dispatch, getState) => {
+	workstationIds.map(workstationId => {
+		dispatch(requestEnableWorkstation(workstationId))
+
+		const { workgroupId } = getState().session
+
+		return fetch(apiURL+'workgroups/'+workgroupId+'/workstations/'+workstationId+'/sharing')
+		.then(response => response.json())
+		.then(json => dispatch(responseEnableWorkstation(workstationId, true, null)))
+		.catch(err => dispatch(responseEnableWorkstation(workstationId, false, err)))
+	})
+} 
+
+export const requestEnableAllWorkstations = () => ({type: 'REQUEST_ENABLE_ALL_WORKSTATIONS'});
+export const responseEnableAllWorkstations = (success, error) => ({type: 'RESPONSE_ENABLE_ALL_WORKSTATIONS', success, error});
+export const enableSharingAll = () => (dispatch, getState) => {
+	dispatch(requestEnableAllWorkstations())
+
+	const { workgroupId } = getState().session
+
+	return fetch(apiURL+'workgroups/'+workgroupId+'/sharing')
+	.then(response => response.json())
+	.then(json => dispatch(responseEnableAllWorkstations(true, null)))
+	.catch(err => dispatch(responseEnableAllWorkstations(false, err)))
+}
+
+export const requestDisableAllWorkstations = () => ({type: 'REQUEST_DISABLE_ALL_WORKSTATIONS'});
+export const responseDisableAllWorkstations = (success, error) => ({type: 'RESPONSE_DISABLE_ALL_WORKSTATIONS', success, error});
+export const disableSharingAll = () => (dispatch, getState) => {
+	dispatch(requestDisableAllWorkstations())
+
+	const { workgroupId } = getState().session
+
+	return fetch(apiURL+'workgroups/'+workgroupId+'/sharing')
+	.then(response => response.json())
+	.then(json => dispatch(responseDisableAllWorkstations(true, null)))
+	.catch(err => dispatch(responseDisableAllWorkstations(false, err)))
+}
+
+export const requestAddWorkstationToWorkgroup = (workstationId) => ({type: 'REQUEST_ADD_WORKSTATION_TO_WORKGROUP', workstationId});
+export const responseAddWorkstationToWorkgroup = (workstationId, success, error) => ({type: 'RESPONSE_ADD_WORKSTATION_TO_WORKGROUP', workstationId, success, error});
+export const addWorkstationsToWorkgroup = (workstationIds) => (dispatch, getState) => {
+	workstationIds.map(workstationId => {
+		dispatch(requestAddWorkstationToWorkgroup(workstationId))
+
+		const { workgroupId } = getState().session
+	
+		return fetch(apiURL+'workgroups/'+workgroupId+'/workstations/'+workstationId, {
+			method: "POST",
+	  		headers: {"Content-Type": "application/json"}
+		})
+		.then(response => response.json())
+		.then(json => dispatch(responseAddWorkstationToWorkgroup(workstationId, true, null)))
+		.catch(err => dispatch(responseAddWorkstationToWorkgroup(workstationId, false, err)))
+	})
+}
+
+export const requestRemoveWorkstationToWorkgroup = (workstationId) => ({type: 'REQUEST_REMOVE_WORKSTATION_TO_WORKGROUP', workstationId});
+export const responseRemoveWorkstationToWorkgroup = (workstationId, success, error) => ({type: 'RESPONSE_REMOVE_WORKSTATION_TO_WORKGROUP', workstationId, success, error});
+export const removeWorkstationsFromToWorkgroup = (workstationIds) => (dispatch, getState) => {
+	workstationIds.map(workstationId => {
+		dispatch(requestRemoveWorkstationToWorkgroup(workstationId))
+
+		const { workgroupId } = getState().session
+
+		return fetch(apiURL+'workgroups/'+workgroupId+'/workstations/'+workstationId, {
+			method: "DELETE",
+	  		headers: {"Content-Type": "application/json"}
+		})
+		.then(response => response.json())
+		.then(json => dispatch(responseRemoveWorkstationToWorkgroup(workstationId, true, null)))
+		.catch(err => dispatch(responseRemoveWorkstationToWorkgroup(workstationId, false, err)))
+	})
+}

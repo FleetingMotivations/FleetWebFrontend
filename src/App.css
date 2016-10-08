@@ -245,6 +245,19 @@ ul {
   margin-right: 5px;
 }
 
+.home{
+  margin-left: 20%;
+
+}
+
+.home .welcome{
+    float: left;
+    font-size: 20px;
+    width: 100%;
+}
+
+
+
 
 #sidebar{
   width: calc(20% - 10px);
