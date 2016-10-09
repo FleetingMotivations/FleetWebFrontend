@@ -1,6 +1,6 @@
 import fetch from 'isomorphic-fetch';
 import * as config from '../../config.json';
-
+import { browserHistory } from 'react-router'
 import moment from 'moment';
 
 const apiURL = config.dev.apiURL;
@@ -19,20 +19,40 @@ export const setUsername = (username) => ({type: 'SET_USERNAME', username});
 export const setPassword = (password) => ({type: 'SET_PASSWORD', password});
 
 export const requestLogin = () => ({type: 'REQUEST_LOGIN'});
-export const receiveLoginResult = (success, err) => ({type: 'RECEIVE_LOGIN_RESULT', success, error:err});
+export const receiveLoginResult = (success, result, error) => ({type: 'RECEIVE_LOGIN_RESULT', success, result, error});
 
+export const logout = () => ({type: 'LOGOUT'});
 export const login = () => (dispatch, getState) => {
 
 	const login = getState().user;
 
 	dispatch(requestLogin());
 
+	// if(login.username === "c3138738" && login.password === "lolthx") {
+	// 	dispatch(receiveLoginResult(
+	// 		true,
+	// 		{
+	// 			loggedIn: true,
+	// 			firstname: "Alistair",
+	// 			lastname: "Woodcock",
+	// 			username: "c3138738",
+	// 			token: "boopbooptoken20-i1f0inefg8394ghbw[e0g8h3489pf-hw",
+	// 			tokenExpiry: "never-cool-okay"
+	// 		}
+	// 		, null)
+	// 	);
+	// } else {
+	// 	dispatch(receiveLoginResult(false, null, 'error here'));
+	// }
+	
 	return 	fetch(apiURL+'login?username='+login.username+'&password='+login.password)
 			.then(response => response.json())
 			.then(json => dispatch(receiveLoginResult(json, null)))
 			.catch(err => dispatch(receiveLoginResult(null, err)))
 
+
 }
+
 
 /** CAMPUS RETEIVAL **/
 export const requestCampuses = () => ({type: 'REQUEST_CAMPUSES'});
@@ -42,25 +62,22 @@ export const fetchCampuses = () => (dispatch) => { return query(dispatch, reques
 /** BUILDING RETREIVAL **/ 
 export const requestBuildings = () => ({type: 'REQUEST_BUILDINGS'});
 export const receiveBuildings = (buildings, error) => ({type: 'RECEIVE_BUILDINGS', buildings, error });
-export const fetchBuildings = () => (dispatch, getState) => { 
-	const { selectedCampusId } = getState().session;
-	return query(dispatch, requestBuildings, receiveBuildings, 'campuses/'+selectedCampusId+'/buildings') 
+export const fetchBuildings = (campusId) => (dispatch, getState) => { 
+	return query(dispatch, requestBuildings, receiveBuildings, 'campuses/'+campusId+'/buildings') 
 }
 
 /** ROOM RETREIVAL **/
 export const requestRooms = () => ({type: 'REQUEST_ROOMS'});
 export const receiveRooms = (rooms, error) => ({type: 'RECEIVE_ROOMS', rooms, error});
-export const fetchRooms = () => (dispatch, getState) => { 
-	const { selectedBuildingId } = getState().session;
-	return query(dispatch, requestRooms, receiveRooms, 'buildings/'+selectedBuildingId+'/rooms') 
+export const fetchRooms = (buildingId) => (dispatch, getState) => { 
+	return query(dispatch, requestRooms, receiveRooms, 'buildings/'+buildingId+'/rooms') 
 }
 
 /** WORKSTATION RETREIVAL **/
 export const requestWorkstations = () => ({type: 'REQUEST_WORKSTATIONS'});
 export const receiveWorkstations = (workstations, error) => ({type: 'RECEIVE_WORKSTATIONS', workstations, error});
-export const fetchWorkstations = () => (dispatch, getState) => { 
-	const { selectedRoomId } = getState().session;
-	return query(dispatch, requestWorkstations, receiveWorkstations, 'rooms/'+selectedRoomId+'/workstations') 
+export const fetchWorkstations = (roomId) => (dispatch, getState) => { 
+	return query(dispatch, requestWorkstations, receiveWorkstations, 'rooms/'+roomId+'/workstations') 
 }
 
 /** SESSION HISTORY **/
@@ -71,13 +88,53 @@ export const fetchSessionHistory = () => (dispatch, getState) => {
   return query(dispatch, requestSessionHistory, receiveSessionHistory, 'users/'+username+'/workgroups?count=6')
 }
 
-// export const loadSessionHistory = () => (dispatch, getState) => {
+export const removePreviousSessionDetails = (sessionId) => ({type: 'REMOVE_PREVIOUS_SESSION_DETAILS', sessionId});
+export const requestPreviousSessionDetails = () => ({type: 'REQUEST_SESSION_DETAILS'});
+export const receivePreviousSessionDetails = (sessionDetails, error) => ({type: 'RECEIVE_SESSION_DETAILS', sessionDetails, error});
+export const getPreviousSessionDetails = (workgroupId) => (dispatch, getState) => {
+	dispatch(requestPreviousSessionDetails());
 
-//   return dispatch(fetchSessionHistory(user))
-// }
+	const { userId } = getState().user;
 
+	return fetch(apiURL+'users/'+userId+'/workgroups/'+workgroupId)
+			.then(response => response.json())
+		  	.then(json => {
+		  		dispatch(fetchRooms())
+		  		dispatch(receivePreviousSessionDetails(json, null))
+		  	})
+		  	.catch(err => dispatch(receivePreviousSessionDetails(null, err)))
+}
 
 /** SESSION STARTUP **/
+export const creatingSessionFromPrevious = (sessionId) => ({type: 'CREATING_SESSION_FROM_PREVIOUS', sessionId});
+export const creatingSessionFromPreviousFailed = (error) => ({type: 'CREATING_SESSION_FROM_PREVIOUS_FAILED', error})
+export const createSessionFromPrevious = (sessionId) => (dispatch, getState) => {
+	dispatch(creatingSessionFromPrevious());
+
+	const { selectedSession } = getState().sessionHistory;
+
+	return fetch(apiURL+'rooms/'+selectedSession.room.id)
+			.then(response => response.json())
+		  	.then(room => {
+
+		  		dispatch(fetchCampuses())
+		  		dispatch(fetchBuildings(room.campusId))
+		  		dispatch(fetchRooms(room.id))
+		  		dispatch(selectCampus(room.campusId))
+		  		dispatch(selectBuilding(room.buildingId))
+		  		dispatch(selectRoom(room.id))
+		  		selectedSession.workstations.map(w => {
+		  			dispatch(selectWorkstation(w.id))
+		  		})
+		  		dispatch(selectEndTime(moment().add(selectedSession.duration, 'minutes')))
+
+		  		browserHistory.push('/workstationSelect')
+
+		  	})
+		  	.catch(err => {dispatch(creatingSessionFromPreviousFailed(err))})
+
+};
+
 export const selectCampus = (campusId) => ({type: 'SELECT_CAMPUS', campusId });
 export const deselectCampus = () => ({type: 'DESELECT_CAMPUS' });
 export const commitCampusSelection = () => ({type: 'COMMIT_CAMPUS_SELECTION'});
@@ -96,7 +153,6 @@ export const selectEndTime = (time) => ({type: 'SELECT_END_TIME', time});
 export const deselectAllWorkstations = () => ({type: 'DESELECT_ALL_WORKSTATIONS'});
 export const selectAllWorkstations = () => ({type: 'SELECT_ALL_WORKSTATIONS'});
 
-export const startSession = () => ({type: 'START_SESSION' });
 export const endSession = () => ({type: 'END_SESSION'});
 export const requestStartSession = () => ({type: 'REQUEST_START_SESSION'});
 export const receiveStartSessionResponse = (result, error) => ({type: 'RECEIVE_START_SESSION_RESPONSE', result, error});
@@ -129,32 +185,43 @@ export const commitSession = () => (dispatch, getState) => {
 
 /** SESSION CONTROL **/
 export const requestEnableWorkstation = (workstationId) => ({type: 'REQUEST_ENABLE_WORKSTATION', workstationId});
-export const responseEnableWorkstation = (workstationId, success, error) => ({type: 'RESPONE_ENABLE_WORKSTATION', workstationId, success, error});
+export const responseEnableWorkstation = (workstationId, success, error) => ({type: 'RESPONSE_ENABLE_WORKSTATION', workstationId, success, error});
 export const enableSharing = (workstationIds) => (dispatch, getState) => {
 	workstationIds.map(workstationId => {
-		dispatch(requestEnableWorkstation(workstationId));
 
-		const { workgroupId } = getState().session
+		const workstation = getState().session.workstations.find(w => {return w.id === workstationId})
 
-		return fetch(apiURL+'workgroups/'+workgroupId+'/workstations/'+workstationId+'/sharing')
-		.then(response => response.json())
-		.then(json => dispatch(responseEnableWorkstation(workstationId, true, null)))
-		.catch(err => dispatch(responseEnableWorkstation(workstationId, false, err)))
+		if(workstation && workstation.inWorkgroup){ 
+			dispatch(requestEnableWorkstation(workstationId));
+
+			const { workgroupId } = getState().session
+
+			return fetch(apiURL+'workgroups/'+workgroupId+'/workstations/'+workstationId+'/sharing')
+			.then(response => response.json())
+			.then(json => dispatch(responseEnableWorkstation(workstationId, true, null)))
+			.catch(err => dispatch(responseEnableWorkstation(workstationId, false, err)))
+		}
+
 	})
 } 
 
 export const requestDisableWorkstation = (workstationId) => ({type: 'REQUEST_DISABLE_WORKSTATION', workstationId});
-export const responseDisableWorkstation = (workstationId, success, error) => ({type: 'RESPONE_DISABLE_WORKSTATION', workstationId, success, error});
+export const responseDisableWorkstation = (workstationId, success, error) => ({type: 'RESPONSE_DISABLE_WORKSTATION', workstationId, success, error});
 export const disableSharing = (workstationIds) => (dispatch, getState) => {
 	workstationIds.map(workstationId => {
-		dispatch(requestEnableWorkstation(workstationId))
 
-		const { workgroupId } = getState().session
+		const workstation = getState().session.workstations.find(w => {return w.id === workstationId})
 
-		return fetch(apiURL+'workgroups/'+workgroupId+'/workstations/'+workstationId+'/sharing')
-		.then(response => response.json())
-		.then(json => dispatch(responseEnableWorkstation(workstationId, true, null)))
-		.catch(err => dispatch(responseEnableWorkstation(workstationId, false, err)))
+		if(workstation && workstation.inWorkgroup){ 
+			dispatch(requestDisableWorkstation(workstationId))
+			
+			const { workgroupId } = getState().session
+
+			return fetch(apiURL+'workgroups/'+workgroupId+'/workstations/'+workstationId+'/sharing')
+			.then(response => response.json())
+			.then(json => dispatch(responseDisableWorkstation(workstationId, true, null)))
+			.catch(err => dispatch(responseDisableWorkstation(workstationId, false, err)))
+		}
 	})
 } 
 
@@ -202,11 +269,11 @@ export const addWorkstationsToWorkgroup = (workstationIds) => (dispatch, getStat
 	})
 }
 
-export const requestRemoveWorkstationToWorkgroup = (workstationId) => ({type: 'REQUEST_REMOVE_WORKSTATION_TO_WORKGROUP', workstationId});
-export const responseRemoveWorkstationToWorkgroup = (workstationId, success, error) => ({type: 'RESPONSE_REMOVE_WORKSTATION_TO_WORKGROUP', workstationId, success, error});
-export const removeWorkstationsFromToWorkgroup = (workstationIds) => (dispatch, getState) => {
+export const requestRemoveWorkstationFromWorkgroup = (workstationId) => ({type: 'REQUEST_REMOVE_WORKSTATION_FROM_WORKGROUP', workstationId});
+export const responseRemoveWorkstationFromWorkgroup = (workstationId, success, error) => ({type: 'RESPONSE_REMOVE_WORKSTATION_FROM_WORKGROUP', workstationId, success, error});
+export const removeWorkstationsFromWorkgroup = (workstationIds) => (dispatch, getState) => {
 	workstationIds.map(workstationId => {
-		dispatch(requestRemoveWorkstationToWorkgroup(workstationId))
+		dispatch(requestRemoveWorkstationFromWorkgroup(workstationId))
 
 		const { workgroupId } = getState().session
 
@@ -215,7 +282,25 @@ export const removeWorkstationsFromToWorkgroup = (workstationIds) => (dispatch, 
 	  		headers: {"Content-Type": "application/json"}
 		})
 		.then(response => response.json())
-		.then(json => dispatch(responseRemoveWorkstationToWorkgroup(workstationId, true, null)))
-		.catch(err => dispatch(responseRemoveWorkstationToWorkgroup(workstationId, false, err)))
+		.then(json => dispatch(responseRemoveWorkstationFromWorkgroup(workstationId, true, null)))
+		.catch(err => dispatch(responseRemoveWorkstationFromWorkgroup(workstationId, false, err)))
 	})
 }
+
+/** SESSION SERVER UPDATES **/
+export const requestingWorkstationsUpdate = () => ({type: 'REQUEST_WORKSTATIONS_UPDATE'});
+export const responseWorkstationsUpdate = (response, error) => ({type: 'RESPONSE_WORKSTATIONS_UPDATE', response, error});
+export const pollForWorkstations = () => (dispatch, getState) => {
+	dispatch(requestingWorkstationsUpdate())
+
+	const { selectedRoomId } = getState().session
+
+	return fetch(apiURL+'rooms/'+selectedRoomId+'/workstations')
+	.then(response => response.json())
+	.then(json => dispatch(responseWorkstationsUpdate(json, null)))
+	.catch(err => dispatch(responseWorkstationsUpdate(null, err)))
+}
+
+
+/** SESSION COUNTDOWN **/
+export const timerCountdown = () => ({type: 'TIMER_COUNTDOWN', seconds: 1});

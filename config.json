@@ -1,8 +1,10 @@
 {
 	"dev":{
-		"apiURL": "http://fleetp-api-docs.surge.sh/api/" 
+		"apiURL": "http://fleetp-api-docs.surge.sh/api/",
+		"pollInterval": 7000
 	},
 	"prod":{
-		"apiURL": ""
+		"apiURL": "",
+		"pollInterval": 7000
 	}
 }

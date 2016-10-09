@@ -31,8 +31,8 @@ export default function user(state = initialState, action) {
 			if(action.success) {
 				return Object.assign({}, state, {
 					loggedIn: true,
-					firstname: action.result.firstName,
-					lastname: action.result.lastName,
+					firstname: action.result.firstname,
+					lastname: action.result.lastname,
 					username: action.result.username,
 					token: action.result.token,
 					tokenExpiry: action.result.expires

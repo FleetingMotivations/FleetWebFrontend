@@ -13,26 +13,27 @@ class RoomSelect extends Component{
 	}
 
 	componentWillMount() {
-	 	this.props.actions.fetchRooms(this.props.state.session.selectedBuildingId);
+	 	this.props.actions.fetchCampuses();
 	}
 
-	selectRoom() {
-		this.props.actions.commitRoomSelection();
-		browserHistory.push('/workstationSelect');
+	selectCampus(){
+		this.props.actions.commitCampusSelection();
+		browserHistory.push('/buildingSelect');
 	}
 
 	render() {
 
-		var {rooms, selectedRoom, roomCommited, fetchingRooms } = this.props;
+		var {campuses, selectedCampus, campusCommited, fetchingCampuses } = this.props;
+		
 		var instruction, val, options, select, deselect, cont;
 
-		if(!roomCommited) {
-			instruction = "Please select your room";
-			val = selectedRoom ? {value: selectedRoom.id, label: selectedRoom.name} : null;
-			options = rooms;
-			cont = val ? this.selectRoom.bind(this) : null;
-			select = this.props.actions.selectRoom;
-			deselect = this.props.actions.deselectRoom;
+		if(!campusCommited) {
+			instruction = "Please select your campus";
+			val = selectedCampus ? {value: selectedCampus.id, label: selectedCampus.name} : null;
+			options = campuses;
+			cont = val ? this.selectCampus.bind(this) : null
+			select = this.props.actions.selectCampus;
+			deselect = this.props.actions.deselectCampus;
 			
 		} else {
 			instruction = "oops something went wrong...";
@@ -49,7 +50,7 @@ class RoomSelect extends Component{
 							cont={cont}
 						/>
 
-		if(fetchingRooms) {
+		if(fetchingCampuses) {
 			display = <div className="loader">Loading Campuses...</div>
 		}
 
@@ -69,10 +70,10 @@ class RoomSelect extends Component{
 
 const mapStateToProps = state => ({
 		state: state,
-		rooms: state.session.rooms,
-		selectedRoom: (state.session.selectedRoomId != null) ? state.session.rooms[state.session.selectedRoomId] : null,
-		roomCommited: state.session.roomCommited,
-		fetchingRooms: state.session.fetchingRooms
+		campuses: state.session.campuses,
+		selectedCampus: (state.session.selectedCampusId != null) ? state.session.campuses[state.session.selectedCampusId] : null,
+		campusCommited: state.session.campusCommited,
+		fetchingCampuses: state.session.fetchingCampuses
 })
 
 

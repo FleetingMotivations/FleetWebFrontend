@@ -13,32 +13,34 @@ class RoomSelect extends Component{
 	}
 
 	componentWillMount() {
-	 	this.props.actions.fetchRooms(this.props.state.session.selectedBuildingId);
+		this.props.actions.fetchBuildings(this.props.state.session.selectedCampusId);
 	}
 
-	selectRoom() {
-		this.props.actions.commitRoomSelection();
-		browserHistory.push('/workstationSelect');
+	selectBuilding(){
+		this.props.actions.commitBuildingSelection();
+		browserHistory.push('/roomSelect');
 	}
-
+	
 	render() {
 
-		var {rooms, selectedRoom, roomCommited, fetchingRooms } = this.props;
+		var {buildings, selectedBuilding, buildingCommited, fetchingBuildings } = this.props;
+		
 		var instruction, val, options, select, deselect, cont;
 
-		if(!roomCommited) {
-			instruction = "Please select your room";
-			val = selectedRoom ? {value: selectedRoom.id, label: selectedRoom.name} : null;
-			options = rooms;
-			cont = val ? this.selectRoom.bind(this) : null;
-			select = this.props.actions.selectRoom;
-			deselect = this.props.actions.deselectRoom;
-			
+		if(!buildingCommited) {
+			instruction = "Please select your building";
+			val = selectedBuilding ? {value: selectedBuilding.id, label: selectedBuilding.name} : null;
+			options = buildings;
+			cont = val ? this.selectBuilding.bind(this) : null
+			select = this.props.actions.selectBuilding;
+			deselect = this.props.actions.deselectBuilding;
+		
 		} else {
 			instruction = "oops something went wrong...";
 		}
 		
 		var btnClass = "btn small right " + ((val == null) ? "grey" : "green");
+
 
 		var display =   <Selector 
 							val={val}
@@ -49,7 +51,7 @@ class RoomSelect extends Component{
 							cont={cont}
 						/>
 
-		if(fetchingRooms) {
+		if(fetchingBuildings) {
 			display = <div className="loader">Loading Campuses...</div>
 		}
 
@@ -69,10 +71,10 @@ class RoomSelect extends Component{
 
 const mapStateToProps = state => ({
 		state: state,
-		rooms: state.session.rooms,
-		selectedRoom: (state.session.selectedRoomId != null) ? state.session.rooms[state.session.selectedRoomId] : null,
-		roomCommited: state.session.roomCommited,
-		fetchingRooms: state.session.fetchingRooms
+		buildings: state.session.buildings,
+		selectedBuilding: (state.session.selectedBuildingId != null) ? state.session.buildings[state.session.selectedBuildingId] : null,
+		buildingCommited: state.session.buildingCommited,
+		fetcingBuildings: state.session.fetcingBuildings
 })
 
 

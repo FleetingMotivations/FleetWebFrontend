@@ -14,6 +14,10 @@ class WorkstationSelect extends Component{
 
 	}
 
+	componentWillMount() {
+	 	this.props.actions.fetchWorkstations(this.props.state.session.selectedRoomId);
+	}
+
 	workstationClicked(workstationId){
 		var filter = this.props.selectedWorkstations.filter((w)=>{return w === workstationId});
 		if(filter.length > 0){
@@ -42,7 +46,6 @@ class WorkstationSelect extends Component{
 		var mmt = moment().add('m', 15 - moment().minute() % 15);
 		var mmtMidnight = mmt.clone().hour(23).minute(59).second(59);
 
-
 		// Difference in minutes
 		var diffHours = mmtMidnight.diff(mmt, 'hours');
 
@@ -57,7 +60,9 @@ class WorkstationSelect extends Component{
 			})
 		}
 
-		var startSessionClass = "start-button btn " + (endTime != null ? "green" : "grey");
+		var startSessionClass = "start-button btn " + (endTime ? "green" : "grey");
+
+		var commit = endTime ? this.commitSession.bind(this) : null
 
 		return (
 			<div className="start-session">
@@ -82,9 +87,9 @@ class WorkstationSelect extends Component{
 				</div>
 
 				<div className="buttons">
-				  <div onClick={this.props.deselectAllWorkstations}className="deselect-all btn grey">Select None</div>
+				  <div onClick={this.props.actions.deselectAllWorkstations}className="deselect-all btn">Select None</div>
 				  <div onClick={this.props.actions.selectAllWorkstations}className="select-all btn">Select All</div>
-				  <div onClick={()=>{this.commitSession()}} className={startSessionClass} >Start Session</div>
+				  <div onClick={commit} className={startSessionClass} >Start Session</div>
 				</div>
 			</div>
 		);
@@ -93,6 +98,7 @@ class WorkstationSelect extends Component{
 
 
 const mapStateToProps = state => ({
+	state: state,
 	endTime: state.session.endTime,
 	workstations: state.session.workstations,
 	selectedWorkstations: state.session.selectedWorkstations,

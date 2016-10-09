@@ -11,16 +11,24 @@ class Login extends Component{
 
 	}
 
-	setUsername(e){
-		if(e.target.value){
-			this.props.setUsername(e.target.value);
+	componentWillReceiveProps(nextProps) {
+		if(nextProps.loggedIn) {
+			browserHistory.push('/');
 		}
 	}
 
+	handleKeyPress(e){
+		if (e.key === 'Enter') {
+      		this.login();
+    	}
+	}
+
+	setUsername(e){
+		this.props.setUsername(e.target.value);
+	}
+
 	setPassword(e){
-		if(e.target.value){
-			this.props.setPassword(e.target.value);
-		}
+		this.props.setPassword(e.target.value);
 	}
 
 	login(){
@@ -42,7 +50,7 @@ class Login extends Component{
 			<div className="secure">UoN Secure Login</div>
 			<div className="fields">
 				<input type="text" name="" value={username} placeholder="Username" onChange={this.setUsername.bind(this)}/>
-				<input type="password" name="" value={password} placeholder="Password" onChange={this.setPassword.bind(this)}/>
+				<input type="password" name="" value={password} placeholder="Password" onChange={this.setPassword.bind(this)} onKeyPress={this.handleKeyPress.bind(this)}/>
 			</div>
 			{errorMessage}
 			<div className="login btn" onClick={this.login.bind(this)}>Login</div>
@@ -65,7 +73,8 @@ class Login extends Component{
 const mapStateToProps = state => ({
 	password : state.user.password,
 	username : state.user.username,
-	loginError : state.user.loginError
+	loginError : state.user.loginError,
+	loggedIn: state.user.loggedIn
 })
 
 const mapDispatchToProps = dispatch => ({

@@ -22,36 +22,41 @@ class Home extends Component{
 	}
 
 	handleNewSessionClick(){
-		browserHistory.push('/roomSelect');		
+		browserHistory.push('/campusSelect');		
 	}
 
 	hanldeCreateSession(sessionId){
 		this.props.actions.createSessionFromPrevious(sessionId);
 	}
 
-	renderSession(session){
-
-		return(
-			<div className="prev-session" onClick={() => {this.hanldeCreateSession(session.id)}}>
-			<div className="room">{session.room.name}</div>
-			<div className="started">{session.started}</div>
-			</div>
-		);
+	handleViewSessionDetails(sessionId){
+		this.props.actions.getPreviousSessionDetails(sessionId);
 	}
 
-  	render() {
+	handleCloseSessionDetails(sessionId){
+		this.props.actions.removePreviousSessionDetails(sessionId);
+	}
+
+	render() {
 
 		var { user, sessionHistory } = this.props;
 		
+		console.log(user);
+
 		return (
 			<div className="home">
-				<div className="welcome">Welcome {user.title} {user.lastname}</div>
+				<div className="welcome">Welcome {user.firstname} {user.lastname}</div>
 
 				<div className="instruction-wrapper">
 					<div className="btn new-session" onClick={this.handleNewSessionClick.bind(this)}>Start New Session</div>
 				</div>
 
-				<SessionHistory {...sessionHistory}/>
+				<SessionHistory 
+					{...sessionHistory} 
+					viewSession={this.handleViewSessionDetails.bind(this)}
+					startSession={this.hanldeCreateSession.bind(this)}
+					backToAllSessions={this.handleCloseSessionDetails.bind(this)}
+				/>
 
 			</div>
 		);

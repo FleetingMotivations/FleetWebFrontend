@@ -19,6 +19,10 @@ class App extends Component {
  		actions: PropTypes.object.isRequired   
 	}
 
+	signOut(){
+		this.props.actions.logout();
+	}
+
 	render(){
 		const { children, room, building, campus, loggedIn } = this.props;
 
@@ -27,7 +31,7 @@ class App extends Component {
 		return (
 			<div className="App">
 				
-				<NavBar  navTitle={navTitle} loggedIn={loggedIn} />	
+				<NavBar  navTitle={navTitle} loggedIn={loggedIn} signOutClick={this.signOut.bind(this)} />	
 
 				{children}
 

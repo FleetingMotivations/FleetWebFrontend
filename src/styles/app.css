@@ -19,12 +19,14 @@ a {
 
 a:hover {
   text-decoration: underline;
+  
+  transition: all 0.2s;
 }
 
 code {
   background-color: #f8f8f8;
   border: 1px solid #ddd;
-  border-radius: 3px;
+  border-radius: 1px;
   font-family: "Bitstream Vera Sans Mono", Consolas, Courier, monospace;
   font-size: 12px;
   margin: 0 2px;
@@ -73,7 +75,7 @@ ul {
 .Select-control{
   background-color: #fff;
     border-color: #d9d9d9 #ccc #b3b3b3;
-    border-radius: 4px;
+    border-radius: 1px;
     border: 1px solid #ccc;
     color: #333;
     cursor: default;
@@ -113,9 +115,9 @@ ul {
 }
 
 .btn{
-  -webkit-border-radius: 4;
-  -moz-border-radius: 4;
-  border-radius: 4px;
+  -webkit-border-radius: 1;
+  -moz-border-radius: 1;
+  border-radius: 1px;
   color: #ffffff;
   font-size: 21px;
   background: #3490D9;
@@ -133,6 +135,8 @@ ul {
 .btn:hover{
   background: #3CA4FC;
   text-decoration: none;
+
+  transition: all 0.2s;
 }
 
 .btn.small{
@@ -148,6 +152,8 @@ ul {
 
 .green:hover {
   background: #00E234;
+
+  transition: all 0.2s;
 }
 
 .grey.btn{
@@ -157,6 +163,8 @@ ul {
 
 .grey:hover {
   background: #C3C3C3;
+
+  transition: all 0.2s;
 }
 
 .red.btn{
@@ -166,8 +174,78 @@ ul {
 
 .red:hover {
   background: #FF4E3F;
-}
 
+  transition: all 0.2s;
+}
+.loader {
+  color: #DD6E00;
+  font-size: 20px;
+  margin: 100px auto;
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  position: relative;
+  text-indent: -9999em;
+  -webkit-animation: load4 1.3s infinite linear;
+  animation: load4 1.3s infinite linear;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+}
+@-webkit-keyframes load4 {
+  0%,
+  100% {
+    box-shadow: 0 -3em 0 0.2em, 2em -2em 0 0em, 3em 0 0 -1em, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 -1em, -3em 0 0 -1em, -2em -2em 0 0;
+  }
+  12.5% {
+    box-shadow: 0 -3em 0 0, 2em -2em 0 0.2em, 3em 0 0 0, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 -1em, -3em 0 0 -1em, -2em -2em 0 -1em;
+  }
+  25% {
+    box-shadow: 0 -3em 0 -0.5em, 2em -2em 0 0, 3em 0 0 0.2em, 2em 2em 0 0, 0 3em 0 -1em, -2em 2em 0 -1em, -3em 0 0 -1em, -2em -2em 0 -1em;
+  }
+  37.5% {
+    box-shadow: 0 -3em 0 -1em, 2em -2em 0 -1em, 3em 0em 0 0, 2em 2em 0 0.2em, 0 3em 0 0em, -2em 2em 0 -1em, -3em 0em 0 -1em, -2em -2em 0 -1em;
+  }
+  50% {
+    box-shadow: 0 -3em 0 -1em, 2em -2em 0 -1em, 3em 0 0 -1em, 2em 2em 0 0em, 0 3em 0 0.2em, -2em 2em 0 0, -3em 0em 0 -1em, -2em -2em 0 -1em;
+  }
+  62.5% {
+    box-shadow: 0 -3em 0 -1em, 2em -2em 0 -1em, 3em 0 0 -1em, 2em 2em 0 -1em, 0 3em 0 0, -2em 2em 0 0.2em, -3em 0 0 0, -2em -2em 0 -1em;
+  }
+  75% {
+    box-shadow: 0em -3em 0 -1em, 2em -2em 0 -1em, 3em 0em 0 -1em, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 0, -3em 0em 0 0.2em, -2em -2em 0 0;
+  }
+  87.5% {
+    box-shadow: 0em -3em 0 0, 2em -2em 0 -1em, 3em 0 0 -1em, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 0, -3em 0em 0 0, -2em -2em 0 0.2em;
+  }
+}
+@keyframes load4 {
+  0%,
+  100% {
+    box-shadow: 0 -3em 0 0.2em, 2em -2em 0 0em, 3em 0 0 -1em, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 -1em, -3em 0 0 -1em, -2em -2em 0 0;
+  }
+  12.5% {
+    box-shadow: 0 -3em 0 0, 2em -2em 0 0.2em, 3em 0 0 0, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 -1em, -3em 0 0 -1em, -2em -2em 0 -1em;
+  }
+  25% {
+    box-shadow: 0 -3em 0 -0.5em, 2em -2em 0 0, 3em 0 0 0.2em, 2em 2em 0 0, 0 3em 0 -1em, -2em 2em 0 -1em, -3em 0 0 -1em, -2em -2em 0 -1em;
+  }
+  37.5% {
+    box-shadow: 0 -3em 0 -1em, 2em -2em 0 -1em, 3em 0em 0 0, 2em 2em 0 0.2em, 0 3em 0 0em, -2em 2em 0 -1em, -3em 0em 0 -1em, -2em -2em 0 -1em;
+  }
+  50% {
+    box-shadow: 0 -3em 0 -1em, 2em -2em 0 -1em, 3em 0 0 -1em, 2em 2em 0 0em, 0 3em 0 0.2em, -2em 2em 0 0, -3em 0em 0 -1em, -2em -2em 0 -1em;
+  }
+  62.5% {
+    box-shadow: 0 -3em 0 -1em, 2em -2em 0 -1em, 3em 0 0 -1em, 2em 2em 0 -1em, 0 3em 0 0, -2em 2em 0 0.2em, -3em 0 0 0, -2em -2em 0 -1em;
+  }
+  75% {
+    box-shadow: 0em -3em 0 -1em, 2em -2em 0 -1em, 3em 0em 0 -1em, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 0, -3em 0em 0 0.2em, -2em -2em 0 0;
+  }
+  87.5% {
+    box-shadow: 0em -3em 0 0, 2em -2em 0 -1em, 3em 0 0 -1em, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 0, -3em 0em 0 0, -2em -2em 0 0.2em;
+  }
+}
 
 #root{
   width: 100%;
@@ -218,6 +296,7 @@ ul {
 #nav .logout:hover{
   color: #59b5ff;
   cursor: pointer;
+  transition: all 0.2s;
 }
 
 #nav .room-name{
@@ -244,6 +323,8 @@ ul {
 }
 #nav .app-location .location:hover{
   color: #59b5ff;
+
+  transition: all 0.2s;
 }
 
 #nav .app-location .location-divider{
@@ -283,6 +364,90 @@ ul {
     margin-bottom: 20px;
 }
 
+.home .session-history h3{
+  border-bottom: 2px solid #CECECE;
+}
+
+.home .prev-sessions{
+  display: flex;
+  flex-direction: row;
+}
+
+.home .prev-session{
+    margin: 20px;
+    border: 2px solid #DEDEDE;
+    border-radius: 1px;
+    padding: 10px;
+    min-width: 200px;
+}
+.home .prev-session .started{
+    font-size: 13px;
+    text-align: center;
+    color: #7d7d7d;
+    margin-bottom: 40px;
+}
+
+.home .prev-session .start{
+    padding: 5px;
+    font-size: 15px;
+    width: 80%;
+    margin: 0 auto;
+}
+
+.home .prev-session:hover{
+  border-color: #6E98FF;
+  transition: all 0.2s;
+}
+
+
+.home .prev-session .room{ 
+  text-align: center;
+  margin-bottom: 0px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.home .prev-sessions .selected-session{
+  width: 100%;
+}
+.home .prev-sessions .selected-session .btn.exit{
+  float: right;
+  margin-right: 10px;
+  width: 25px;
+  height: 25px;
+  line-height: 23px;
+  padding: 0px;
+}
+
+.home .prev-sessions .selected-session .room-name{
+  font-weight: bold;
+  font-size: 24px;
+}
+
+.home .prev-sessions .selected-session .duration-wrapper{
+  width: 100%;
+  height: 20px;
+}
+
+.home .prev-sessions .selected-session .duration-label{
+  font-size: 14px;
+  font-weight: bold;
+  float: left;
+}
+
+.home .prev-sessions .selected-session .duration{
+  float: left;
+  font-size: 13px;
+  color: #7d7d7d;
+  margin-left: 10px;
+}
+
+.home .prev-sessions .selected-session .btn.launch-session{
+    float: right;
+    width: 125px;
+    margin-right: 10px;
+}
+
 #sidebar{
   width: calc(20% - 10px);
   padding-left: 10px;
@@ -317,6 +482,7 @@ ul {
   margin-bottom: 9px;
   border-bottom: 1px solid #C2D8DF;
   color: #3490D9;
+  transition: all 0.2s;
 }
 
 #sidebar li .status:after,
@@ -335,7 +501,7 @@ ul {
   padding: 2px;
   padding-left: 10px;
   padding-right: 10px;
-  border-radius: 2px;
+  border-radius: 1px;
   font-size:12px; 
   background: #5D5D5D;
   color: #fff;
@@ -344,6 +510,8 @@ ul {
   margin-top: -10px;
   text-align: left;
   z-index: 100 !important;
+
+  transition: all 0.2s;
 }
 
 #sidebar li .remove{
@@ -362,6 +530,8 @@ ul {
 }
 #sidebar li .remove:hover{
   color: red;
+
+  transition: all 0.2s;
 }
 
 #sidebar li .add{
@@ -381,6 +551,8 @@ ul {
 
 #sidebar li .add:hover{
   color: #19D000;
+
+  transition: all 0.2s;
 }
 
 #sidebar .app-status{
@@ -463,7 +635,14 @@ ul {
 #workstation-display .workstation{
   position: absolute;
   width: 7%;
-  padding: 10px;
+  top: 3.1%;
+  left: 20.1%;
+  padding: 0px;
+  border: 2px solid #dadada;
+  border-radius: 1px;
+  padding: 2%;
+  cursor: pointer;
+  user-select: none;
 }
 
 #workstation-display .workstation.not-available{
@@ -471,30 +650,69 @@ ul {
 }
 
 #workstation-display .workstation.in-workgroup{
-  background-color: #7AFF82;
-  border-radius: 3px;
+  border-color: #7AFF82;
+  border-radius: 1px;
+  transition: all 0.3s;
 }
 
+#workstation-display .workstation.in-workgroup.selected{
+  border-color: #7AFF82;
+  background-color: #49e653;
+  transition: all 0.5s;
+}
+
+#workstation-display .workstation.in-workgroup:hover{
+  border-color: #27EE33;
+
+  transition: all 0.3s;
+}
 
 #workstation-display .workstation:hover{
-  background-color: #BAE5FF;
-  border-radius: 5px;
+  border-color: #2A99FF;
+  border-radius: 1px;
+
+  transition: all 0.3s;
 }
 
 #workstation-display .workstation.selected{
-  background-color: #66c5ff;
-  border-radius: 5px;
+  background-color: #34B2FF;
+  border-color: #51BDFF;
+  border-radius: 1px;
+  transition: all 0.3s;
 }
 
 #workstation-display .workstation .name{
     text-align: center;
-    font-weight: bold;
-    white-space: nowrap;
 }
 
 #workstation-display .workstation img{
   width:100%;
 }
+
+#workstation-display .workstation img.share{
+    position: absolute;
+    top: 20%;
+    right: 40%;
+    width: 22%;
+}
+
+#workstation-display .workstation .loader{
+  font-size: 50%;
+  position: absolute;
+  top: 45%;
+  left: 43%;
+  margin: 0px;
+}
+
+#workstation-display .workstation.pending{
+  border-color: #BBFFBF;
+}
+#workstation-display .workstation.pending img.workstationImg,
+#workstation-display .workstation.pending .name,
+#workstation-display .workstation.pending img.share{
+    opacity: 0.5;
+}
+
 
 
 .start-session .duration{
@@ -545,6 +763,19 @@ ul {
 .current-session .session-duration{
   font-size: 17px;
   text-align: center;
+}
+
+.current-session .end-session-wrapper{
+  width: 100%;
+  height: 20px;
+}
+
+.current-session .end-session-wrapper .end-session{
+  float: right;
+  width: 125px;
+  font-size: 13px;
+  padding: 4px;
+  text-transform: uppercase;
 }
 
 .current-session h3{
@@ -613,6 +844,8 @@ ul {
 
 .drop-box .instruction .choose:hover{
   color:#38ACF2;
+
+  transition: all 0.2s;
 }
 
 .drop-box .instruction .dragdrop{
@@ -623,12 +856,32 @@ ul {
   float: left;
   width: 79%;
   margin-left: 1.5%;
+  display: flex;
+  flex-direction: row;
+}
+.current-session .control h3{
+  width: 100%;
 }
 
 .current-session .control .btn{
-  font-size: 14px;
-  float: left;
-  margin: 10px;
+    font-size: 14px;
+    padding: 2px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    margin: 10px;
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    text-transform: uppercase;
+}
+
+.current-session .control .all-workstations{
+  border-top: 2px solid #B9B9B9;
+}
+
+.current-session .control .selected-workstations{
+  
 }
 
 
@@ -667,6 +920,8 @@ ul {
   color:#59b5ff;
   border-color: #59b5ff;
   cursor: pointer;
+
+  transition: all 0.2s;
 }
 
 /*** Login Page  ***/
@@ -722,6 +977,8 @@ ul {
 
 #login .login.btn:hover{
   background-color:#A7A7A7;
+
+  transition: all 0.2s;
 }
 
 #login .fields input{
