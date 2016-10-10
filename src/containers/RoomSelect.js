@@ -23,35 +23,24 @@ class RoomSelect extends Component{
 	render() {
 
 		var {rooms, selectedRoom, roomCommited, fetchingRooms } = this.props;
-		var instruction, val, options, select, deselect, cont;
 
-		if(!roomCommited) {
-			instruction = "Please select your room";
-			val = selectedRoom ? {value: selectedRoom.id, label: selectedRoom.name} : null;
-			options = rooms;
-			cont = val ? this.selectRoom.bind(this) : null;
-			select = this.props.actions.selectRoom;
-			deselect = this.props.actions.deselectRoom;
-			
-		} else {
-			instruction = "oops something went wrong...";
-		}
-		
-		var btnClass = "btn small right " + ((val == null) ? "grey" : "green");
-
-		var display =   <Selector 
-							val={val}
-							options={options}
-							btnClass={btnClass}
-							select={select}
-							deselect={deselect}
-							cont={cont}
-						/>
+		var display = null;
+		var instruction = "Please select your room";
 
 		if(fetchingRooms) {
 			display = <div className="loader">Loading Campuses...</div>
-		}
+		} else {
+			var val = selectedRoom ? {value: selectedRoom.id, label: selectedRoom.name} : null;
+			var options = rooms;
+			var cont = val ? this.selectRoom.bind(this) : null;
+			var select = this.props.actions.selectRoom;
+			var deselect = this.props.actions.deselectRoom;
+			
+			var btnClass = "btn small right " + ((val == null) ? "grey" : "green");
 
+			var display = <Selector val={val} options={options} btnClass={btnClass} select={select} deselect={deselect} cont={cont} />
+		}
+		
 		return(
 			<div>
 				<div className="room-select">

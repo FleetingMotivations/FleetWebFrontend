@@ -17,10 +17,10 @@ class App extends Component {
 	}
 
 	render(){
-		const { children, room, building, campus, loggedIn } = this.props;
+		const { children, room, building, campus, loggedIn, sessionStarted } = this.props;
 
-		var navTitle = campus ? (campus.name + (building ? " | " + building.name + (room ? " | "+room.name : "") : "")) : "";
-
+		var navTitle =  sessionStarted ? (campus ? (campus.name + (building ? " | " + building.name + (room ? " | "+room.name : "") : "")) : "") : "";
+		
 		return (
 			<div className="App">
 				
@@ -39,7 +39,8 @@ const mapStateToProps = (state) => ({
 	campus: (state.session.selectedCampusId != null) ? state.session.campuses[state.session.selectedCampusId] : null,
 	building: (state.session.selectedBuildingId != null) ? state.session.buildings[state.session.selectedBuildingId] : null,
 	room : (state.session.selectedRoomId != null) ? state.session.rooms[state.session.selectedRoomId] : null,
-	loggedIn: state.user.loggedIn
+	loggedIn: state.user.loggedIn,
+	sessionStarted: state.session.started
 })
 
 const mapDispatchToProps = dispatch => ({

@@ -21,35 +21,22 @@ class RoomSelect extends Component{
 
 		var {buildings, selectedBuilding, buildingCommited, fetchingBuildings } = this.props;
 		
-		var instruction, val, options, select, deselect, cont;
-
-		if(!buildingCommited) {
-			instruction = "Please select your building";
-			val = selectedBuilding ? {value: selectedBuilding.id, label: selectedBuilding.name} : null;
-			options = buildings;
-			cont = val ? this.selectBuilding.bind(this) : null
-			select = this.props.actions.selectBuilding;
-			deselect = this.props.actions.deselectBuilding;
-		
-		} else {
-			instruction = "oops something went wrong...";
-		}
-		
-		var btnClass = "btn small right " + ((val == null) ? "grey" : "green");
-
-
-		var display =   <Selector 
-							val={val}
-							options={options}
-							btnClass={btnClass}
-							select={select}
-							deselect={deselect}
-							cont={cont}
-						/>
+		var instruction = "Please select your building";
+		var display = null;
 
 		if(fetchingBuildings) {
 			display = <div className="loader">Loading Campuses...</div>
-		}
+		} else {
+			var val = selectedBuilding ? {value: selectedBuilding.id, label: selectedBuilding.name} : null;
+			var options = buildings;
+			var cont = val ? this.selectBuilding.bind(this) : null
+			var select = this.props.actions.selectBuilding;
+			var deselect = this.props.actions.deselectBuilding;
+			
+			var btnClass = "btn small right " + ((val == null) ? "grey" : "green");
+
+			var display = <Selector val={val} options={options} btnClass={btnClass} select={select} deselect={deselect} cont={cont} />
+		}	
 
 		return(
 			<div>

@@ -188,7 +188,7 @@ export const createSessionFromPrevious = (sessionId) => (dispatch, getState) => 
 export const requestEnableWorkstation = (workstationId) => ({type: 'REQUEST_ENABLE_WORKSTATION', workstationId});
 export const responseEnableWorkstation = (workstationId, success, error) => ({type: 'RESPONSE_ENABLE_WORKSTATION', workstationId, success, error});
 export const enableSharing = (workstationIds) => (dispatch, getState) => {
-	workstationIds.each(workstationId => {
+	workstationIds.map(workstationId => {
 
 		const workstation = getState().session.workstations.find(w => {return w.id === workstationId})
 
@@ -209,7 +209,7 @@ export const enableSharing = (workstationIds) => (dispatch, getState) => {
 export const requestDisableWorkstation = (workstationId) => ({type: 'REQUEST_DISABLE_WORKSTATION', workstationId});
 export const responseDisableWorkstation = (workstationId, success, error) => ({type: 'RESPONSE_DISABLE_WORKSTATION', workstationId, success, error});
 export const disableSharing = (workstationIds) => (dispatch, getState) => {
-	workstationIds.each(workstationId => {
+	workstationIds.map(workstationId => {
 
 		const workstation = getState().session.workstations.find(w => {return w.id === workstationId})
 
@@ -255,7 +255,7 @@ export const disableSharingAll = () => (dispatch, getState) => {
 export const requestAddWorkstationToWorkgroup = (workstationId) => ({type: 'REQUEST_ADD_WORKSTATION_TO_WORKGROUP', workstationId});
 export const responseAddWorkstationToWorkgroup = (workstationId, success, error) => ({type: 'RESPONSE_ADD_WORKSTATION_TO_WORKGROUP', workstationId, success, error});
 export const addWorkstationsToWorkgroup = (workstationIds) => (dispatch, getState) => {
-	workstationIds.each(workstationId => {
+	workstationIds.map(workstationId => {
 		dispatch(requestAddWorkstationToWorkgroup(workstationId))
 
 		const { workgroupId } = getState().session
@@ -273,7 +273,7 @@ export const addWorkstationsToWorkgroup = (workstationIds) => (dispatch, getStat
 export const requestRemoveWorkstationFromWorkgroup = (workstationId) => ({type: 'REQUEST_REMOVE_WORKSTATION_FROM_WORKGROUP', workstationId});
 export const responseRemoveWorkstationFromWorkgroup = (workstationId, success, error) => ({type: 'RESPONSE_REMOVE_WORKSTATION_FROM_WORKGROUP', workstationId, success, error});
 export const removeWorkstationsFromWorkgroup = (workstationIds) => (dispatch, getState) => {
-	workstationIds.each(workstationId => {
+	workstationIds.map(workstationId => {
 		dispatch(requestRemoveWorkstationFromWorkgroup(workstationId))
 
 		const { workgroupId } = getState().session

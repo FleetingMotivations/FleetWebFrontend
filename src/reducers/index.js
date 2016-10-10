@@ -14,14 +14,8 @@ const fleetAppReducer = combineReducers({
 
 const rootReducer = (state, action) => {
 
-	console.log(state);
-
 	switch(action.type)
 	{
-		case '@@router/LOCATION_CHANGE':
-
-			break;
-
 		case 'LOGOUT': {
 			state = undefined
 			

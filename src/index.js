@@ -12,6 +12,8 @@ const persistedState = loadState();
 const store = configureStore(persistedState);
 
 store.subscribe(() => {
+	const session = store.getState().session;
+
 	saveState( {
 		user: store.getState().user
 	});	

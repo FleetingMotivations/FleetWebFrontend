@@ -10,9 +10,6 @@ class RoomSelect extends Component{
 
 	componentWillMount() {
 	 	this.props.actions.fetchCampuses();
-
-	 	console.log(this.props.state.session)
-
 	}
 
 	selectCampus(){
@@ -24,33 +21,21 @@ class RoomSelect extends Component{
 
 		var {campuses, selectedCampus, campusCommited, fetchingCampuses } = this.props;
 		
-		var instruction, val, options, select, deselect, cont;
-
-		if(!campusCommited) {
-			instruction = "Please select your campus";
-			val = selectedCampus ? {value: selectedCampus.id, label: selectedCampus.name} : null;
-			options = campuses;
-			cont = val ? this.selectCampus.bind(this) : null
-			select = this.props.actions.selectCampus;
-			deselect = this.props.actions.deselectCampus;
-			
-		} else {
-			instruction = "oops something went wrong...";
-		}
-		
-		var btnClass = "btn small right " + ((val == null) ? "grey" : "green");
-
-		var display =   <Selector 
-							val={val}
-							options={options}
-							btnClass={btnClass}
-							select={select}
-							deselect={deselect}
-							cont={cont}
-						/>
+		var display = null;
+		var instruction = "Please select your campus";
 
 		if(fetchingCampuses) {
 			display = <div className="loader">Loading Campuses...</div>
+		} else {
+			var val = selectedCampus ? {value: selectedCampus.id, label: selectedCampus.name} : null;
+			var options = campuses;
+			var cont = val ? this.selectCampus.bind(this) : null
+			var select = this.props.actions.selectCampus;
+			var deselect = this.props.actions.deselectCampus;
+				
+			var btnClass = "btn small right " + ((val == null) ? "grey" : "green");
+
+			var display =   <Selector val={val} options={options} btnClass={btnClass} select={select} deselect={deselect} cont={cont} />
 		}
 
 		return(

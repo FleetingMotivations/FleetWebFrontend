@@ -21,6 +21,10 @@ class Home extends Component{
 		browserHistory.push('/campusSelect');		
 	}
 
+	handleCurrentSessionClick(){
+		browserHistory.push('/session');
+	}
+
 	hanldeCreateSession(sessionId){
 		this.props.actions.createSessionFromPrevious(sessionId);
 	}
@@ -35,18 +39,25 @@ class Home extends Component{
 
 	render() {
 
-		var { user, sessionHistory } = this.props;
+		var { user, sessionHistory, session } = this.props;
 		
-		console.log(user);
+		var button =	<div className="instruction-wrapper">
+							<div className="btn new-session" onClick={this.handleNewSessionClick.bind(this)}>Start New Session</div>
+						</div>
 
+
+		if(session.started) {
+			button = 	<div className="instruction-wrapper">
+							<div className="btn new-session" onClick={this.handleCurrentSessionClick.bind(this)}>Continue Current Session</div>
+						</div>
+		}	
+		
 		return (
 			<div className="home">
-				<div className="welcome">Welcome {user.firstname} {user.lastname}</div>
+				<div className="welcome">Welcome {user.firstname} {user.lastname}</div>	
 
-				<div className="instruction-wrapper">
-					<div className="btn new-session" onClick={this.handleNewSessionClick.bind(this)}>Start New Session</div>
-				</div>
-
+				{button}
+					
 				<SessionHistory 
 					{...sessionHistory} 
 					viewSession={this.handleViewSessionDetails.bind(this)}
@@ -62,7 +73,8 @@ class Home extends Component{
 
 const mapStateToProps = state => ({
 	user : state.user,
-	sessionHistory : state.sessionHistory
+	sessionHistory : state.sessionHistory,
+	session: state.session
 })
 
 const mapDispatchToProps = dispatch => ({
