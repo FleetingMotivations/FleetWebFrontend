@@ -133,7 +133,7 @@ export const commitSession = () => (dispatch, getState) => {
 
 	const state = getState();
 
-	var durationMinutes = -moment().diff(state.session.endTime, 'minutes');
+	var durationMinutes = -moment().diff(moment(state.session.endTime), 'minutes');
 	
 	var data = {
 		userId: state.user.username,
@@ -182,7 +182,6 @@ export const createSessionFromPrevious = (sessionId) => (dispatch, getState) => 
 		  	.catch(err => {dispatch(creatingSessionFromPreviousFailed(err))})
 
 };
-
 
 /** SESSION CONTROL **/
 export const requestEnableWorkstation = (workstationId) => ({type: 'REQUEST_ENABLE_WORKSTATION', workstationId});
@@ -305,3 +304,10 @@ export const pollForWorkstations = () => (dispatch, getState) => {
 
 /** SESSION COUNTDOWN **/
 export const timerCountdown = () => ({type: 'TIMER_COUNTDOWN', seconds: 1});
+export const checkSessionRunning = () => (dispatch, getState) => {
+	const { session } = getState()
+
+	if(moment(session.endTime) < moment()) {
+		dispatch(endSession())
+	}
+}

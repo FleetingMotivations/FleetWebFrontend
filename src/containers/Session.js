@@ -15,6 +15,9 @@ var countdownIntervalId = null;
 
 class Session extends Component{
 	componentDidMount(){
+		this.props.actions.checkSessionRunning()
+
+
 		pollIntervalId = window.setInterval(this.props.actions.pollForWorkstations, pollInterval);
 		countdownIntervalId = window.setInterval(this.props.actions.timerCountdown, 1000);
 	}
@@ -88,9 +91,12 @@ class Session extends Component{
 			return (
 				<div>
 					<h3 style={{textAlign: "center", fontWeight: "normal", marginTop: 20}}><i>Error connecting to or creating session</i></h3>
+					<div style={{textAlign: "center", fontWeight: "normal", marginTop: 20}}>The session time may have run out</div>
 				</div>
 			)
 		}
+
+		
 
 
 		var shareButton = <div className="btn" onClick={this.props.actions.disableSharingAll}>Stop All Sharing</div>

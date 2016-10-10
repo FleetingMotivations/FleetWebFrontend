@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import * as FleetActions from '../actions';
 
 import WorkstationsDisplay from '../components/WorkstationsDisplay';
-// import AdminSideBar from '../components/AdminSideBar';
+import AdminSidebar from '../components/AdminSidebar';
 
 import * as config from '../../config.json';
 
@@ -18,12 +18,14 @@ class Admin extends Component{
 
 	render() {
 
+		const { campuses, buildings, rooms} = this.props;
+
 		return (
 			<div>
+				<AdminSidebar campuses={campuses} buildings={buildings} rooms={rooms} />
 				<h2>Admin</h2>
 			</div>
 		)
-
 	}
 }
 
