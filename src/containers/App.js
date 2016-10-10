@@ -17,9 +17,14 @@ class App extends Component {
 	}
 
 	render(){
-		const { children, room, building, campus, loggedIn, sessionStarted } = this.props;
+		const { children, room, building, campus, loggedIn, sessionStarted, requestingStart } = this.props;
 
-		var navTitle =  sessionStarted ? (campus ? (campus.name + (building ? " | " + building.name + (room ? " | "+room.name : "") : "")) : "") : "";
+		var navTitle = '';
+
+		if(sessionStarted || requestingStart || this.props.location.pathname == '/workstationSelect'){
+
+		   navTitle = campus.name + " | " + building.name + " | "+ room.name
+		}
 		
 		return (
 			<div className="App">
@@ -40,7 +45,8 @@ const mapStateToProps = (state) => ({
 	building: (state.session.selectedBuildingId != null) ? state.session.buildings[state.session.selectedBuildingId] : null,
 	room : (state.session.selectedRoomId != null) ? state.session.rooms[state.session.selectedRoomId] : null,
 	loggedIn: state.user.loggedIn,
-	sessionStarted: state.session.started
+	sessionStarted: state.session.started,
+	requestingStart: state.session.requestingStart
 })
 
 const mapDispatchToProps = dispatch => ({

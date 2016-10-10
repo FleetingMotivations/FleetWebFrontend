@@ -14,7 +14,6 @@ var pollIntervalId = null;
 var countdownIntervalId = null;
 
 class Session extends Component{
-
 	componentDidMount(){
 		pollIntervalId = window.setInterval(this.props.actions.pollForWorkstations, pollInterval);
 		countdownIntervalId = window.setInterval(this.props.actions.timerCountdown, 1000);
@@ -65,14 +64,34 @@ class Session extends Component{
 
 	render() {
 
-		var { workstations, workgroup, allSharingDisabled, countDown, selectedWorkstations } = this.props;
+		var { workstations, workgroup, allSharingDisabled, countDown, selectedWorkstations, started, requestingStart } = this.props;
 		
-
 		var availableWorkstations = workstations.filter(w => {return !w.inWorkgroup && w.available}).sort( (a,b) => {return a.name >= b.name})
 		var takenWorkstations = workstations.filter(w => {return !w.available})
 		var workgroupWorkstations = workstations.filter(w => {
 			return workgroup.find(id => {return id === w.id}) !== undefined
 		})
+		
+
+		if(requestingStart) {
+			return (
+				<div>
+					<SideBar 
+			        	workstations={workstations}
+			        	workgroup={[]}
+			        	unavailableWorkstations={workstations}
+					/>
+					<div className="loader sessionStart">Requesting Session Start...</div>
+				</div>
+			)
+		} else if(!requestingStart && !started) {
+			return (
+				<div>
+					<h3 style={{textAlign: "center", fontWeight: "normal", marginTop: 20}}><i>Error connecting to or creating session</i></h3>
+				</div>
+			)
+		}
+
 
 		var shareButton = <div className="btn" onClick={this.props.actions.disableSharingAll}>Stop All Sharing</div>
 
@@ -115,8 +134,6 @@ class Session extends Component{
 			btn6.style += "grey";
 			btn6.func = null
 		}
-
-		console.log(btn1.func);
 
 		return (
 			<div>
@@ -167,7 +184,9 @@ const mapStateToProps = state => ({
 	workgroup: state.session.workgroup,
 	selectedWorkstations: state.session.selectedWorkstations,
 	allSharingDisabled: state.session.allSharingDisabled,
-	countDown: state.session.countDown
+	countDown: state.session.countDown,
+	started: state.session.started,
+	requestingStart: state.session.requestingStart
 })
 
 const mapDispatchToProps = dispatch => ({

@@ -755,6 +755,12 @@ ul {
   font-size: 14px;
 }
 
+.loader.sessionStart{
+    position: absolute;
+    top: 110px;
+    left: 50%;
+}
+
 .current-session{
     float: left;
     width: 79%;

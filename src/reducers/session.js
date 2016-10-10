@@ -527,7 +527,8 @@ export default function session(state = initialState, action) {
 		}
 		case 'TIMER_COUNTDOWN':{
 			if(state.endTime) {
-				let totalSec = state.endTime.diff(moment(), 'seconds');
+				var end = moment(state.endTime)
+				let totalSec = end.diff(moment(), 'seconds');
 				let hours = parseInt( totalSec / 3600, 10 ) % 24;
 				let minutes = parseInt( totalSec / 60, 10 ) % 60;
 				let seconds = totalSec % 60;

@@ -2,6 +2,7 @@ import React from 'react';
 import { Route, IndexRoute } from 'react-router';
 
 import App from './containers/App';
+import Admin from './containers/Admin';
 import Home from './containers/Home';
 import Login from './containers/Login';
 import CampusSelect from './containers/CampusSelect';
@@ -20,4 +21,5 @@ export default
 	<Route path="/roomSelect" component={requireAuthentication(RoomSelect)}></Route>
 	<Route path="/workstationSelect" component={requireAuthentication(WorkstationSelect)}> </Route>
 	<Route path="/session" component={requireAuthentication(Session)}> </Route>
+	<Route path="/admin" component={requireAuthentication(Admin, true)}></Route>
 </Route>

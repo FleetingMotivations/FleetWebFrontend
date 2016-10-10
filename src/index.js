@@ -15,7 +15,8 @@ store.subscribe(() => {
 	const session = store.getState().session;
 
 	saveState( {
-		user: store.getState().user
+		user: store.getState().user, 
+		session
 	});	
 })
 

@@ -171,7 +171,7 @@ export const createSessionFromPrevious = (sessionId) => (dispatch, getState) => 
 		  		dispatch(selectCampus(room.campusId))
 		  		dispatch(selectBuilding(room.buildingId))
 		  		dispatch(selectRoom(room.id))
-		  		selectedSession.workstations.each(w => {
+		  		selectedSession.workstations.map(w => {
 		  			dispatch(selectWorkstation(w.id))
 		  		})
 		  		dispatch(selectEndTime(moment().add(selectedSession.duration, 'minutes')))

@@ -73,7 +73,7 @@ class WorkstationSelect extends Component{
 					<Select
 					  id="time"
 					  name="session-end-select"
-					  value={endTime ? {value: endTime, label: endTime.format('LT')} : null}
+					  value={endTime ? {value: endTime, label: moment(endTime).format('LT')} : null}
 					  options={timeOptions}
 					  onChange={this.selectTime.bind(this)}
 

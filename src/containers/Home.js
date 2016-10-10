@@ -45,7 +45,6 @@ class Home extends Component{
 							<div className="btn new-session" onClick={this.handleNewSessionClick.bind(this)}>Start New Session</div>
 						</div>
 
-
 		if(session.started) {
 			button = 	<div className="instruction-wrapper">
 							<div className="btn new-session" onClick={this.handleCurrentSessionClick.bind(this)}>Continue Current Session</div>
