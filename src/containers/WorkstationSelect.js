@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import { browserHistory } from 'react-router'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -10,9 +10,6 @@ import moment from 'moment';
 import WorkstationsDisplay from '../components/WorkstationsDisplay';
 
 class WorkstationSelect extends Component{
-	static propTypes = {
-
-	}
 
 	componentWillMount() {
 	 	this.props.actions.fetchWorkstations(this.props.state.session.selectedRoomId);
@@ -39,7 +36,7 @@ class WorkstationSelect extends Component{
 	}
 
 	render() {
-		var { endTime, workstations, selectedWorkstations } = this.props;
+		var { endTime, workstations } = this.props;
 
 		var timeOptions = [];
 		
@@ -48,8 +45,6 @@ class WorkstationSelect extends Component{
 
 		// Difference in minutes
 		var diffHours = mmtMidnight.diff(mmt, 'hours');
-
-		console.log(diffHours);
 
 		for(var i = 0; i < diffHours*4; i++)
 		{	

@@ -8,10 +8,6 @@ export default class SessionHistory extends Component{
     createSessionClick: PropTypes.func.isRequired
   }
 
-  static defaultProps = {
-    loadingLabel: 'loading...'
-  }
-
   renderSession(session){
 
     const { viewSession } = this.props;
@@ -32,8 +28,8 @@ export default class SessionHistory extends Component{
         const { startSession, backToAllSessions } = this.props;
 
         var totalSec = session.duration*60;
-        var hours = parseInt( totalSec / 3600 ) % 24;
-        var minutes = parseInt( totalSec / 60 ) % 60;
+        var hours = parseInt( totalSec / 3600, 10 ) % 24;
+        var minutes = parseInt( totalSec / 60, 10 ) % 60;
         var seconds = totalSec % 60;
 
         var duration = (hours < 10 ? "0" + hours : hours) + "h " + (minutes < 10 ? "0" + minutes : minutes) + "m " + (seconds  < 10 ? "0" + seconds : seconds)+"s";
@@ -57,7 +53,7 @@ export default class SessionHistory extends Component{
   }
 
   render(){
-    var {isFetching, loadingLabel, sessions , fetchError, fetchingSessionDetails, selectedSession } = this.props;
+    var {isFetching, sessions , fetchError, fetchingSessionDetails, selectedSession } = this.props;
 
     var prevSessions = null;
 

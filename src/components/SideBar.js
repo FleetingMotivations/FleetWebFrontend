@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import WorkstationStatus from './WorkstationStatus';
 
 export default class SessionDetails extends Component{

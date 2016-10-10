@@ -16,7 +16,7 @@ const initialState = {
 			      "id": 2
 			    },
 			    "started": "2016-10-06T10:30:29.7525594+11:00",
-			    "id": 2
+			    "id": 1
 			  }
 			],
 	fetchingSessionDetails: false,
@@ -27,7 +27,7 @@ const initialState = {
 					  "allowedApplications": [
 					    {
 					      "name": "sample string 1",
-					      "id": 2
+					      "id": 1
 					    },
 					    {
 					      "name": "sample string 1",

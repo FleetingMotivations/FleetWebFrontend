@@ -28,27 +28,27 @@ export const login = () => (dispatch, getState) => {
 
 	dispatch(requestLogin());
 
-	// if(login.username === "c3138738" && login.password === "lolthx") {
-	// 	dispatch(receiveLoginResult(
-	// 		true,
-	// 		{
-	// 			loggedIn: true,
-	// 			firstname: "Alistair",
-	// 			lastname: "Woodcock",
-	// 			username: "c3138738",
-	// 			token: "boopbooptoken20-i1f0inefg8394ghbw[e0g8h3489pf-hw",
-	// 			tokenExpiry: "never-cool-okay"
-	// 		}
-	// 		, null)
-	// 	);
-	// } else {
-	// 	dispatch(receiveLoginResult(false, null, 'error here'));
-	// }
+	if(login.username === "c3138738" && login.password === "lolthx") {
+		dispatch(receiveLoginResult(
+			true,
+			{
+				loggedIn: true,
+				firstname: "Alistair",
+				lastname: "Woodcock",
+				username: "c3138738",
+				token: "boopbooptoken20-i1f0inefg8394ghbw[e0g8h3489pf-hw",
+				tokenExpiry: "never-cool-okay"
+			}
+			, null)
+		);
+	} else {
+		dispatch(receiveLoginResult(false, null, 'error here'));
+	}
 	
-	return 	fetch(apiURL+'login?username='+login.username+'&password='+login.password)
-			.then(response => response.json())
-			.then(json => dispatch(receiveLoginResult(json, null)))
-			.catch(err => dispatch(receiveLoginResult(null, err)))
+	// return 	fetch(apiURL+'login?username='+login.username+'&password='+login.password)
+	// 		.then(response => response.json())
+	// 		.then(json => dispatch(receiveLoginResult(json, null)))
+	// 		.catch(err => dispatch(receiveLoginResult(null, err)))
 
 
 }
@@ -106,35 +106,6 @@ export const getPreviousSessionDetails = (workgroupId) => (dispatch, getState) =
 }
 
 /** SESSION STARTUP **/
-export const creatingSessionFromPrevious = (sessionId) => ({type: 'CREATING_SESSION_FROM_PREVIOUS', sessionId});
-export const creatingSessionFromPreviousFailed = (error) => ({type: 'CREATING_SESSION_FROM_PREVIOUS_FAILED', error})
-export const createSessionFromPrevious = (sessionId) => (dispatch, getState) => {
-	dispatch(creatingSessionFromPrevious());
-
-	const { selectedSession } = getState().sessionHistory;
-
-	return fetch(apiURL+'rooms/'+selectedSession.room.id)
-			.then(response => response.json())
-		  	.then(room => {
-
-		  		dispatch(fetchCampuses())
-		  		dispatch(fetchBuildings(room.campusId))
-		  		dispatch(fetchRooms(room.id))
-		  		dispatch(selectCampus(room.campusId))
-		  		dispatch(selectBuilding(room.buildingId))
-		  		dispatch(selectRoom(room.id))
-		  		selectedSession.workstations.map(w => {
-		  			dispatch(selectWorkstation(w.id))
-		  		})
-		  		dispatch(selectEndTime(moment().add(selectedSession.duration, 'minutes')))
-
-		  		browserHistory.push('/workstationSelect')
-
-		  	})
-		  	.catch(err => {dispatch(creatingSessionFromPreviousFailed(err))})
-
-};
-
 export const selectCampus = (campusId) => ({type: 'SELECT_CAMPUS', campusId });
 export const deselectCampus = () => ({type: 'DESELECT_CAMPUS' });
 export const commitCampusSelection = () => ({type: 'COMMIT_CAMPUS_SELECTION'});
@@ -183,11 +154,41 @@ export const commitSession = () => (dispatch, getState) => {
 		  	.catch(err => dispatch(receiveStartSessionResponse(null, err)))
 };
 
+export const creatingSessionFromPrevious = (sessionId) => ({type: 'CREATING_SESSION_FROM_PREVIOUS', sessionId});
+export const creatingSessionFromPreviousFailed = (error) => ({type: 'CREATING_SESSION_FROM_PREVIOUS_FAILED', error})
+export const createSessionFromPrevious = (sessionId) => (dispatch, getState) => {
+	dispatch(creatingSessionFromPrevious());
+
+	const { selectedSession } = getState().sessionHistory;
+
+	return fetch(apiURL+'rooms/'+selectedSession.room.id)
+			.then(response => response.json())
+		  	.then(room => {
+
+		  		dispatch(fetchCampuses())
+		  		dispatch(fetchBuildings(room.campusId))
+		  		dispatch(fetchRooms(room.id))
+		  		dispatch(selectCampus(room.campusId))
+		  		dispatch(selectBuilding(room.buildingId))
+		  		dispatch(selectRoom(room.id))
+		  		selectedSession.workstations.each(w => {
+		  			dispatch(selectWorkstation(w.id))
+		  		})
+		  		dispatch(selectEndTime(moment().add(selectedSession.duration, 'minutes')))
+
+		  		browserHistory.push('/workstationSelect')
+
+		  	})
+		  	.catch(err => {dispatch(creatingSessionFromPreviousFailed(err))})
+
+};
+
+
 /** SESSION CONTROL **/
 export const requestEnableWorkstation = (workstationId) => ({type: 'REQUEST_ENABLE_WORKSTATION', workstationId});
 export const responseEnableWorkstation = (workstationId, success, error) => ({type: 'RESPONSE_ENABLE_WORKSTATION', workstationId, success, error});
 export const enableSharing = (workstationIds) => (dispatch, getState) => {
-	workstationIds.map(workstationId => {
+	workstationIds.each(workstationId => {
 
 		const workstation = getState().session.workstations.find(w => {return w.id === workstationId})
 
@@ -208,7 +209,7 @@ export const enableSharing = (workstationIds) => (dispatch, getState) => {
 export const requestDisableWorkstation = (workstationId) => ({type: 'REQUEST_DISABLE_WORKSTATION', workstationId});
 export const responseDisableWorkstation = (workstationId, success, error) => ({type: 'RESPONSE_DISABLE_WORKSTATION', workstationId, success, error});
 export const disableSharing = (workstationIds) => (dispatch, getState) => {
-	workstationIds.map(workstationId => {
+	workstationIds.each(workstationId => {
 
 		const workstation = getState().session.workstations.find(w => {return w.id === workstationId})
 
@@ -254,7 +255,7 @@ export const disableSharingAll = () => (dispatch, getState) => {
 export const requestAddWorkstationToWorkgroup = (workstationId) => ({type: 'REQUEST_ADD_WORKSTATION_TO_WORKGROUP', workstationId});
 export const responseAddWorkstationToWorkgroup = (workstationId, success, error) => ({type: 'RESPONSE_ADD_WORKSTATION_TO_WORKGROUP', workstationId, success, error});
 export const addWorkstationsToWorkgroup = (workstationIds) => (dispatch, getState) => {
-	workstationIds.map(workstationId => {
+	workstationIds.each(workstationId => {
 		dispatch(requestAddWorkstationToWorkgroup(workstationId))
 
 		const { workgroupId } = getState().session
@@ -272,7 +273,7 @@ export const addWorkstationsToWorkgroup = (workstationIds) => (dispatch, getStat
 export const requestRemoveWorkstationFromWorkgroup = (workstationId) => ({type: 'REQUEST_REMOVE_WORKSTATION_FROM_WORKGROUP', workstationId});
 export const responseRemoveWorkstationFromWorkgroup = (workstationId, success, error) => ({type: 'RESPONSE_REMOVE_WORKSTATION_FROM_WORKGROUP', workstationId, success, error});
 export const removeWorkstationsFromWorkgroup = (workstationIds) => (dispatch, getState) => {
-	workstationIds.map(workstationId => {
+	workstationIds.each(workstationId => {
 		dispatch(requestRemoveWorkstationFromWorkgroup(workstationId))
 
 		const { workgroupId } = getState().session

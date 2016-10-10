@@ -19,7 +19,6 @@ export function requireAuthentication(Component) {
         checkAuth (loggedIn) {
             if (!loggedIn) {
                 browserHistory.push('/login');
-                // this.props.dispatch(push(null, '/login'));
             }
         }
 

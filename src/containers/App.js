@@ -1,18 +1,11 @@
-import '../styles/app.css';
-
 import React, { Component, PropTypes } from 'react';
-import { browserHistory } from 'react-router'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import * as FleetActions from '../actions';
-/** import components here **/
 
 import NavBar from '../components/NavBar';
 import Footer from '../components/Footer';
-
-import BGImage from '../images/image0027.jpg';
-
-// browserHistory.push('/roomSelect');
+import '../styles/app.css';
 
 class App extends Component {
 	static propTypes = {

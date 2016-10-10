@@ -1,17 +1,9 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 
 export default class SessionHistory extends Component{
-  static PropTypes = {
-   
-  }
-
-  static defaultProps = {
   
-  }
-
   render(){
-    var {} = this.props;
-
+    
     return(
       <div className="sharing">
         <h3>Share files to workstations</h3>

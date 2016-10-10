@@ -1,11 +1,9 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { browserHistory } from 'react-router'
 import { connect } from 'react-redux';
 import * as FleetActions from '../actions';
 
-import FileShare from '../components/FileShare';
-import SessionControl from '../components/SessionControl';
 import WorkstationsDisplay from '../components/WorkstationsDisplay';
 import SideBar from '../components/SideBar';
 
@@ -16,9 +14,6 @@ var pollIntervalId = null;
 var countdownIntervalId = null;
 
 class Session extends Component{
-	static propTypes = {
-
-	}
 
 	componentDidMount(){
 		pollIntervalId = window.setInterval(this.props.actions.pollForWorkstations, pollInterval);
@@ -70,7 +65,7 @@ class Session extends Component{
 
 	render() {
 
-		var { workstations, applications, workgroup, allSharingDisabled, countDown, selectedWorkstations } = this.props;
+		var { workstations, workgroup, allSharingDisabled, countDown, selectedWorkstations } = this.props;
 		
 
 		var availableWorkstations = workstations.filter(w => {return !w.inWorkgroup && w.available}).sort( (a,b) => {return a.name >= b.name})
@@ -96,27 +91,27 @@ class Session extends Component{
 		var selected = workstations.filter(w => {return selectedWorkstations.indexOf(w.id) > -1})
 		var inWorkgroup = selected.filter(w => {return w.inWorkgroup})
 
-		if(inWorkgroup.filter(w => {return w.canShare}).length == 0) {
+		if(inWorkgroup.filter(w => {return w.canShare}).length === 0) {
 			btn1.style += "grey";
 			btn1.func = null
 		}
 
-		if(inWorkgroup.filter(w => {return !w.canShare}).length == 0) {
+		if(inWorkgroup.filter(w => {return !w.canShare}).length === 0) {
 			btn2.style += "grey";
 			btn2.func = null
 		}
 
-		if(selected.filter(w => {return !w.inWorkgroup}).length == 0) {
+		if(selected.filter(w => {return !w.inWorkgroup}).length === 0) {
 			btn3.style += "grey";
 			btn3.func = null
 		}
 
-		if(selected.filter(w => {return w.inWorkgroup}).length == 0) {
+		if(selected.filter(w => {return w.inWorkgroup}).length === 0) {
 			btn4.style += "grey";
 			btn4.func = null
 		}
 
-		if(selected.length == 0){
+		if(selected.length === 0){
 			btn6.style += "grey";
 			btn6.func = null
 		}

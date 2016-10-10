@@ -82,70 +82,89 @@ export default function session(state = initialState, action) {
 
 	switch(action.type) {
 
-		case 'CREATE_SESSION_FROM_PREVIOUS':
+		
+		case 'CREATE_SESSION_FROM_PREVIOUS':{
 			return Object.assign({}, state, {creatingFromPrevious: true, createFailed: false })
 
-		case 'CREATING_SESSION_FROM_PREVIOUS_FAILED':
+		}
+		case 'CREATING_SESSION_FROM_PREVIOUS_FAILED':{
 			return Object.assign({}, state, {creatingFromPrevious: false, createFailed: true })
 			
-		case 'REQUEST_CAMPUSES':
+		}
+		case 'REQUEST_CAMPUSES':{
 			return Object.assign({}, state, {fetchingCampuses: true })
 
-		case 'RECEIVE_CAMPUSES':
+		}
+		case 'RECEIVE_CAMPUSES':{
 			if(action.error) {
 				return Object.assign({}, state, {fetchError: true, fetchingCampuses: false })
 			}
 			return Object.assign({}, state, {fetchingCampuses: false, campuses: action.campuses })
 	
-		case 'SELECT_CAMPUS':
+		}
+		case 'SELECT_CAMPUS':{
 			return Object.assign({}, state, {selectedCampusId: action.campusId })
 
-		case 'DESELECT_CAMPUS':
+		}
+		case 'DESELECT_CAMPUS':{
 			return Object.assign({}, state, {selectedCampusId: null, campusCommited: false })
 
-		case 'COMMIT_CAMPUS_SELECTION':
+		}
+		case 'COMMIT_CAMPUS_SELECTION':{
 			return Object.assign({}, state, {campusCommited: true })
 
-		case 'REQUEST_BUILDINGS':
+		}
+		case 'REQUEST_BUILDINGS':{
 			return Object.assign({}, state, {fetchingBuildings: true });
 
-		case 'RECEIVE_BUILDINGS':
+		}
+		case 'RECEIVE_BUILDINGS':{
 			if(action.error) {
 				return Object.assign({}, state, {fetchError: true, fetchingBuildings: false })
 			}
 			return Object.assign({}, state, {fetchingBuildings: false, buildings: action.buildings })
 	
-		case 'SELECT_BUILDING':
+		}
+		case 'SELECT_BUILDING':{
 			return Object.assign({}, state, {selectedBuildingId: action.buildingId })
 			
-		case 'DESELECT_BUILDING':
+		}
+		case 'DESELECT_BUILDING':{
 			return Object.assign({}, state, {selectedBuildingId: null, buildingCommited: false })
 
-		case 'COMMIT_BUILDING_SELECTION':
+		}
+		case 'COMMIT_BUILDING_SELECTION':{
 			return Object.assign({}, state, {buildingCommited: true })
 
-		case 'REQUEST_ROOMS':
+		}
+		case 'REQUEST_ROOMS':{
 			return Object.assign({}, state, {fetchingRooms: true });
 
-		case 'RECEIVE_ROOMS':
+		}
+		case 'RECEIVE_ROOMS':{
 			if(action.error) {
 				return Object.assign({}, state, {fetchError: true, fetchingRooms: false })
 			}
 			return Object.assign({}, state, {fetchingRooms: false, buildings: action.buildings })
 
-		case 'SELECT_ROOM':
+		}
+		case 'SELECT_ROOM':{
 			return Object.assign({}, state, {selectedRoomId: action.roomId })
 
-		case 'DESELECT_ROOM':
+		}
+		case 'DESELECT_ROOM':{
 			return Object.assign({}, state, {selectedRoomId: null, roomCommited: false })
 
-		case 'COMMIT_ROOM_SELECTION': 
+		}
+		case 'COMMIT_ROOM_SELECTION': {
 			return Object.assign({}, state, {roomCommited: true })
 
-		case 'REQUEST_WORKSTATIONS':
+		}
+		case 'REQUEST_WORKSTATIONS':{
 			return Object.assign({}, state, {fetchingWorkstations: true })
 
-		case 'RECEIVE_WORKSTATIONS':
+		}
+		case 'RECEIVE_WORKSTATIONS':{
 			if(action.error) {
 				return Object.assign({}, state, {fetchError: true, fetchingWorkstations: false })
 			}
@@ -156,41 +175,44 @@ export default function session(state = initialState, action) {
 				}) 
 			})
 
-		case 'SELECT_WORKSTATION':
+		}
+		case 'SELECT_WORKSTATION':{
 
-			var selectedWorkstations = state.selectedWorkstations.slice();
+			let selectedWorkstations = state.selectedWorkstations.slice();
 			
 			if(!givenWorkstation || givenWorkstation.selected
 			|| !givenWorkstation.available
-			|| selectedWorkstations.find(w => {w.id === givenWorkstation.id}))
+			|| selectedWorkstations.find(id => {return id === givenWorkstation.id}))
 			{
 				return state;
 			}
 			givenWorkstation.selected = true;
 
-			var workstations = state.workstations.filter(w => {return w.id !== givenWorkstation.id })
+			let workstations = state.workstations.filter(w => {return w.id !== givenWorkstation.id })
 
 			workstations.push(givenWorkstation);
 			selectedWorkstations.push(givenWorkstation.id);
 
 			return Object.assign({}, state, {selectedWorkstations, workstations })
 
-		case 'DESELECT_WORKSTATION':
+		}
+		case 'DESELECT_WORKSTATION':{
 			if(!givenWorkstation || !givenWorkstation.selected) {
 				return state;
 			}
 
 			givenWorkstation.selected = false;
 
-			var selectedWorkstations = state.selectedWorkstations.filter((w)=>{return w !== givenWorkstation.id })
-			var workstations = state.workstations.filter((w)=>{ return w.id !== givenWorkstation.id })
+			let selectedWorkstations = state.selectedWorkstations.filter((w)=>{return w !== givenWorkstation.id })
+			let workstations = state.workstations.filter((w)=>{ return w.id !== givenWorkstation.id })
 
 			workstations.push(givenWorkstation);
 
 			return Object.assign({}, state, {selectedWorkstations, workstations })
 
-		case 'SELECT_ALL_WORKSTATIONS':
-			var workstations = state.workstations.map(w =>{
+		}
+		case 'SELECT_ALL_WORKSTATIONS':{
+			let workstations = state.workstations.map(w =>{
 				if(w.available) {
 					return {...w, selected: true }
 				}
@@ -198,28 +220,32 @@ export default function session(state = initialState, action) {
 				return {...w };
 			});
 
-			var selectedWorkstations = workstations.filter((w)=>{return w.available}).map((w)=>{return w.id});
+			let selectedWorkstations = workstations.filter((w)=>{return w.available}).map((w)=>{return w.id});
 
 			return Object.assign({}, state, {selectedWorkstations, workstations })
 
 
-		case 'DESELECT_ALL_WORKSTATIONS':
-			var workstations = state.workstations.map(w =>{return {...w, selected: false } });
+		}
+		case 'DESELECT_ALL_WORKSTATIONS':{
+			let workstations = state.workstations.map(w =>{return {...w, selected: false } });
 
 			return Object.assign({}, state, {selectedWorkstations: [], workstations })
 		
-		case 'SELECT_END_TIME':
+		}
+		case 'SELECT_END_TIME':{
 
 			return Object.assign({}, state, { endTime: action.time })
 
-		case 'REQUEST_START_SESSION':
+		}
+		case 'REQUEST_START_SESSION':{
 			return Object.assign({}, state, { 
 				roomCommited: true,
 				requestingStart: true,
 				requestFailed: false
 			})
 			 
-		case 'RECEIVE_START_SESSION_RESPONSE':
+		}
+		case 'RECEIVE_START_SESSION_RESPONSE':{
 			if(action.error) {
 				return Object.assign({}, state, { 
 					requestingStart: false,
@@ -232,7 +258,7 @@ export default function session(state = initialState, action) {
 						requestingStart: false,
 						requestFailed: false,
 						id: action.result.id,
-						workgroup: selectedWorkstations.slice(),
+						workgroup: state.selectedWorkstations.slice(),
 						selectedWorkstations:[]
 					})
 				} else {
@@ -243,9 +269,10 @@ export default function session(state = initialState, action) {
 				}
 			}
 
-		case 'REQUEST_ENABLE_WORKSTATION':
+		}
+		case 'REQUEST_ENABLE_WORKSTATION':{
 
-			var workstations = state.workstations.map(w => {
+			let workstations = state.workstations.map(w => {
 				if(w.id === action.workstationId) {
 					return {...w, requestEnable: true}
 				}			
@@ -255,7 +282,8 @@ export default function session(state = initialState, action) {
 			return Object.assign({}, state, {workstations})
 
 
-		case 'RESPONSE_ENABLE_WORKSTATION':
+		}
+		case 'RESPONSE_ENABLE_WORKSTATION':{
 			
 			if(!givenWorkstation || !givenWorkstation.requestEnable) {
 				return state;
@@ -268,9 +296,9 @@ export default function session(state = initialState, action) {
 				 givenWorkstation.canShare = action.success
 			}
 
-			var selectedWorkstations = state.selectedWorkstations.filter(id => {return id !== givenWorkstation.id})
+			let selectedWorkstations = state.selectedWorkstations.filter(id => {return id !== givenWorkstation.id})
 
-			var workstations = state.workstations.map(w => {
+			let workstations = state.workstations.map(w => {
 				if(w.id === givenWorkstation.id) {
 					return givenWorkstation
 				}			
@@ -280,8 +308,9 @@ export default function session(state = initialState, action) {
 			return Object.assign({}, state, {workstations, selectedWorkstations})
 
 
-		case 'REQUEST_DISABLE_WORKSTATION':
-			var workstations = state.workstations.map(w => {
+		}
+		case 'REQUEST_DISABLE_WORKSTATION':{
+			let workstations = state.workstations.map(w => {
 				if(w.id === action.workstationId) {
 					return {...w, requestDisable: true}
 				}			
@@ -290,7 +319,8 @@ export default function session(state = initialState, action) {
 
 			return Object.assign({}, state, {workstations})
 
-		case 'RESPONSE_DISABLE_WORKSTATION':
+		}
+		case 'RESPONSE_DISABLE_WORKSTATION':{
 			if(!givenWorkstation || !givenWorkstation.requestDisable) {
 				return state;
 			}
@@ -302,9 +332,9 @@ export default function session(state = initialState, action) {
 				givenWorkstation.canShare = !action.success
 			}
 
-			var selectedWorkstations = state.selectedWorkstations.filter(id => {return id !== givenWorkstation.id})
+			let selectedWorkstations = state.selectedWorkstations.filter(id => {return id !== givenWorkstation.id})
 
-			var workstations = state.workstations.map(w =>{
+			let workstations = state.workstations.map(w =>{
 				if(w.id === givenWorkstation.id) {
 					return givenWorkstation
 				}
@@ -313,10 +343,11 @@ export default function session(state = initialState, action) {
 
 			return Object.assign({}, state, {workstations, selectedWorkstations})
 
-		case 'REQUEST_ENABLE_ALL_WORKSTATIONS':
+		}
+		case 'REQUEST_ENABLE_ALL_WORKSTATIONS':{
 
-			var workstations = state.workstations.map(w => {
-				var wi = state.workgroup.find(id => {return id === w.id})	
+			let workstations = state.workstations.map(w => {
+				let wi = state.workgroup.find(id => {return id === w.id})	
 
 				if(wi >= 0){
 					return {...w, requestEnable: true} 
@@ -327,13 +358,14 @@ export default function session(state = initialState, action) {
 
 			return Object.assign({}, state, {workstations})
 
-		case 'RESPONSE_ENABLE_ALL_WORKSTATIONS':
+		}
+		case 'RESPONSE_ENABLE_ALL_WORKSTATIONS':{
 
-			var workstations = state.workstations.map(w => {
-				var wi = state.workgroup.find(id => {return id === w.id})	
+			let workstations = state.workstations.map(w => {
+				let wi = state.workgroup.find(id => {return id === w.id})	
 
 				if(wi >= 0){
-					var nw = {...w, requestEnable: false}
+					let nw = {...w, requestEnable: false}
 
 					if(action.success) {
 						nw.canShare = true
@@ -345,10 +377,10 @@ export default function session(state = initialState, action) {
 				return w
 			})
 
-			var allSharingDisabled = state.allSharingDisabled;
+			let allSharingDisabled = state.allSharingDisabled;
 
 			if(!action.error){
-				allSharingDisabled = aciton.success;
+				allSharingDisabled = action.success;
 			}
 
 			return Object.assign({}, state, {
@@ -356,9 +388,10 @@ export default function session(state = initialState, action) {
 				allSharingDisabled
 			})
 
-		case 'REQUEST_DISABLE_ALL_WORKSTATIONS':
-			var workstations = state.workstations.map(w => {
-				var wi = state.workgroup.find(id => {return id === w.id})	
+		}
+		case 'REQUEST_DISABLE_ALL_WORKSTATIONS':{
+			let workstations = state.workstations.map(w => {
+				let wi = state.workgroup.find(id => {return id === w.id})	
 
 				if(wi >= 0){
 					return {...w, requestDisable: true} 
@@ -369,12 +402,13 @@ export default function session(state = initialState, action) {
 
 			return Object.assign({}, state, {workstations})
 
-		case 'RESPONSE_DISABLE_ALL_WORKSTATIONS':
-			var workstations = state.workstations.map(w => {
-				var wi = state.workgroup.find(id => {return id === w.id})	
+		}
+		case 'RESPONSE_DISABLE_ALL_WORKSTATIONS':{
+			let workstations = state.workstations.map(w => {
+				let wi = state.workgroup.find(id => {return id === w.id})	
 
 				if(wi >= 0){
-					var nw = {...w, requestDisable: false}
+					let nw = {...w, requestDisable: false}
 					if(action.success) {
 						nw.canShare = true;
 					}
@@ -383,10 +417,10 @@ export default function session(state = initialState, action) {
 				return w;
 			})
 
-			var allSharingDisabled = state.allSharingDisabled;
+			let allSharingDisabled = state.allSharingDisabled;
 
 			if(!action.error){
-				allSharingDisabled = !aciton.success;
+				allSharingDisabled = !action.success;
 			}
 
 			return Object.assign({}, state, {
@@ -394,12 +428,13 @@ export default function session(state = initialState, action) {
 				allSharingDisabled
 			})
 
-		case 'REQUEST_ADD_WORKSTATION_TO_WORKGROUP':
+		}
+		case 'REQUEST_ADD_WORKSTATION_TO_WORKGROUP':{
 			if(!givenWorkstation || givenWorkstation.inWorkgroup){
 				return state;
 			}
 
-			var workstations = state.workstations.map(w => {
+			let workstations = state.workstations.map(w => {
 				if(w.id === givenWorkstation.id) {
 					return {...w, requestAddToWorkgroup: true }
 				}
@@ -409,13 +444,14 @@ export default function session(state = initialState, action) {
 			
 			return Object.assign({}, state, {workstations})
 
-		case 'RESPONSE_ADD_WORKSTATION_TO_WORKGROUP':
+		}
+		case 'RESPONSE_ADD_WORKSTATION_TO_WORKGROUP':{
 
 			if(!givenWorkstation || givenWorkstation.inWorkgroup) {
 				return state;
 			}
 
-			var workgroup = state.workgroup.slice();
+			let workgroup = state.workgroup.slice();
 
 			givenWorkstation.requestAddToWorkgroup = false
 			givenWorkstation.selected = false
@@ -428,9 +464,9 @@ export default function session(state = initialState, action) {
 				}
 			}
 
-			var selectedWorkstations = state.selectedWorkstations.filter(id => {return id !== givenWorkstation.id})
+			let selectedWorkstations = state.selectedWorkstations.filter(id => {return id !== givenWorkstation.id})
 
-			var workstations = state.workstations.map(w => {
+			let workstations = state.workstations.map(w => {
 				if(w.id === givenWorkstation.id) {
 					return givenWorkstation
 				}
@@ -440,12 +476,13 @@ export default function session(state = initialState, action) {
 			return Object.assign({}, state, {workstations, workgroup, selectedWorkstations })
 
 		
-		case 'REQUEST_REMOVE_WORKSTATION_FROM_WORKGROUP':
+		}
+		case 'REQUEST_REMOVE_WORKSTATION_FROM_WORKGROUP':{
 			if(!givenWorkstation || !givenWorkstation.inWorkgroup){
 				return state;
 			}
 
-			var workstations = state.workstations.map(w => {
+			let workstations = state.workstations.map(w => {
 				if(w.id === givenWorkstation.id) {
 					return {...w, requestRemoveFromWorkgroup: true}
 				}
@@ -456,12 +493,13 @@ export default function session(state = initialState, action) {
 			return Object.assign({}, state, {workstations})
 
 		
-		case 'RESPONSE_REMOVE_WORKSTATION_FROM_WORKGROUP':
+		}
+		case 'RESPONSE_REMOVE_WORKSTATION_FROM_WORKGROUP':{
 			if(!givenWorkstation || !givenWorkstation.inWorkgroup) {
 				return state;
 			}
 
-			var workgroup = state.workgroup.slice();
+			let workgroup = state.workgroup.slice();
 
 			givenWorkstation.requestRemoveFromWorkgroup = false
 			givenWorkstation.selected = false
@@ -474,9 +512,9 @@ export default function session(state = initialState, action) {
 				}
 			}
 
-			var selectedWorkstations = state.selectedWorkstations.filter(id => {return id !== givenWorkstation.id})
+			let selectedWorkstations = state.selectedWorkstations.filter(id => {return id !== givenWorkstation.id})
 
-			var workstations = state.workstations.map(w => {
+			let workstations = state.workstations.map(w => {
 				if(w.id === givenWorkstation.id) {
 					return givenWorkstation
 				}
@@ -486,14 +524,15 @@ export default function session(state = initialState, action) {
 		
 			return Object.assign({}, state, {workstations, workgroup, selectedWorkstations })
 
-		case 'TIMER_COUNTDOWN':
+		}
+		case 'TIMER_COUNTDOWN':{
 			if(state.endTime) {
-				var totalSec = state.endTime.diff(moment(), 'seconds');
-				var hours = parseInt( totalSec / 3600 ) % 24;
-				var minutes = parseInt( totalSec / 60 ) % 60;
-				var seconds = totalSec % 60;
+				let totalSec = state.endTime.diff(moment(), 'seconds');
+				let hours = parseInt( totalSec / 3600, 10 ) % 24;
+				let minutes = parseInt( totalSec / 60, 10 ) % 60;
+				let seconds = totalSec % 60;
 
-				var result = (hours < 10 ? "0" + hours : hours) + "-" + (minutes < 10 ? "0" + minutes : minutes) + "-" + (seconds  < 10 ? "0" + seconds : seconds);
+				let result = (hours < 10 ? "0" + hours : hours) + "-" + (minutes < 10 ? "0" + minutes : minutes) + "-" + (seconds  < 10 ? "0" + seconds : seconds);
 
 	    		return Object.assign({}, state, {
 					countDown: result
@@ -502,9 +541,11 @@ export default function session(state = initialState, action) {
 
 			return state;
 
-		case 'END_SESSION':
+		}
+		case 'END_SESSION':{
 				return initialState
 
+		}
 		default:
 			return state
 

@@ -1,14 +1,25 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import Select from 'react-select';
 import '../styles/Select.css';
 
 export default class Selector extends Component{
-  static PropTypes = {
-   
+  
+  valueChange(val){
+  	const { select, deselect } = this.props;
+
+  	if(val) {
+  		select(val.value)
+  	} else {
+  		deselect()
+  	}
   }
 
   render(){
-    var {val, options, btnClass, select, deselect, cont} = this.props;
+    var {val, options, btnClass, cont} = this.props;
+
+    if(!options) {
+    	options = [];
+    }
 
     return(
     	<div>
@@ -17,7 +28,7 @@ export default class Selector extends Component{
 					name="room-select"
 					value={val}
 					options={options.map((option, index) => {return {value: index, label: option.name}})}
-					onChange={(val) => { val ? select(val.value) : deselect() }}
+					onChange={this.valueChange.bind(this)}
 				/>
 			</div>
 			<div id="continue-btn" className={btnClass} onClick={cont}>Continue</div>

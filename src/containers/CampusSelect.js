@@ -1,19 +1,18 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import { browserHistory } from 'react-router'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { push } from 'react-router-redux';
 import * as FleetActions from '../actions';
 
 import Selector from '../components/Selector';
 
 class RoomSelect extends Component{
-	static propTypes = {
-
-	}
 
 	componentWillMount() {
 	 	this.props.actions.fetchCampuses();
+
+	 	console.log(this.props.state.session)
+
 	}
 
 	selectCampus(){

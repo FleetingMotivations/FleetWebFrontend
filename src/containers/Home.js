@@ -1,24 +1,20 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { browserHistory } from 'react-router'
 import { connect } from 'react-redux';
-import { push } from 'react-router-redux';
 import * as FleetActions from '../actions';
 
 import SessionHistory from '../components/SessionHistory';
 
 
 class Home extends Component{
-	static propTypes = {
-
-	}
 
 	componentWillMount() {
 	 	this.props.actions.fetchSessionHistory();
 	}
 
 	componentWillReceiveProps(nextProps) {
-		console.log(nextProps);
+
 	}
 
 	handleNewSessionClick(){

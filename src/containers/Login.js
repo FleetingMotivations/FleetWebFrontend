@@ -1,15 +1,11 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import { browserHistory } from 'react-router'
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { setUsername, setPassword, login } from '../actions';
 
 import logo from '../images/UoNLogo.png';
 
 class Login extends Component{
-	static propTypes = {
-
-	}
 
 	componentWillReceiveProps(nextProps) {
 		if(nextProps.loggedIn) {
@@ -46,7 +42,7 @@ class Login extends Component{
 
 		return (<div>
 		<div id="login">
-			<img src={logo} />
+			<img src={logo} role="presentation" />
 			<div className="secure">UoN Secure Login</div>
 			<div className="fields">
 				<input type="text" name="" value={username} placeholder="Username" onChange={this.setUsername.bind(this)}/>

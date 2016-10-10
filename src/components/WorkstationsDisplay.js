@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import workstationImg from '../images/workstation.png';
 import shareOpen from '../images/share-open.png';
 import shareClosed from '../images/share-closed.png';
