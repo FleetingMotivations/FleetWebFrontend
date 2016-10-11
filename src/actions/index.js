@@ -1,17 +1,25 @@
+/** Defines all application actions that dispatch to the reducers **/ 
+
 import fetch from 'isomorphic-fetch';
 import * as config from '../../config.json';
 import { browserHistory } from 'react-router'
 import moment from 'moment';
 
-const apiURL = config.dev.apiURL;
+/* Sets api URL from config based on environment */
+const apiURL = (process.env.NODE_ENV === 'production') ? config.dev.apiURL : config.prod.apiURL;
 
+/** Query function for general api enpoint query structures **/
 function query(dispatch, request, receive, endpoint) {
-		dispatch(request());
+	/* dispatch request function to the reducer indicating an async request has begun */ 
+	dispatch(request()); 
 
+	/** make request to api using isomorphic-fetch and return result to 
+		action function 'receive' 
+	**/
 	return fetch(apiURL+endpoint)
-		.then(response => response.json())
-		.then(json => dispatch(receive(json, null)))
-		.catch(err => dispatch(receive(null, err)))	
+			.then(response => response.json())
+			.then(json => dispatch(receive(json, null)))
+			.catch(err => dispatch(receive(null, err)))	
 }
 
 /** LOGIN **/
@@ -28,43 +36,24 @@ export const login = () => (dispatch, getState) => {
 
 	dispatch(requestLogin());
 
-	if(login.username === "c3138738" && login.password === "lolthx") {
-		dispatch(receiveLoginResult(
-			true,
-			{
-				loggedIn: true,
-				firstname: "Alistair",
-				lastname: "Woodcock",
-				username: "c3138738",
-				token: "boopbooptoken20-i1f0inefg8394ghbw[e0g8h3489pf-hw",
-				tokenExpiry: "never-cool-okay",
-				userId: 2
-			}
-			, null)
-		);
-	} else {
-		dispatch(receiveLoginResult(false, null, 'error here'));
-	}
-	
-	// return 	fetch(apiURL+'login?username='+login.username+'&password='+login.password)
-	// 		.then(response => response.json())
-	// 		.then(json => dispatch(receiveLoginResult(json, null)))
-	// 		.catch(err => dispatch(receiveLoginResult(null, err)))
-
-
+	return fetch(apiURL+'login?username='+login.username+'&password='+login.password)
+			.then(response => response.json())
+			.then(json => dispatch(receiveLoginResult(json, null)))
+			.catch(err => dispatch(receiveLoginResult(null, err)))
 }
 
 
 /** CAMPUS RETEIVAL **/
 export const requestCampuses = () => ({type: 'REQUEST_CAMPUSES'});
 export const receiveCampuses = (campuses, error) => ({type: 'RECEIVE_CAMPUSES', campuses, error});
-export const fetchCampuses = () => (dispatch) => { return query(dispatch, requestCampuses, receiveCampuses, 'campuses/') };
+export const fetchCampuses = () => (dispatch) => { 
+	return query(dispatch, requestCampuses, receiveCampuses, 'campuses/') 
+};
 
 /** BUILDING RETREIVAL **/ 
 export const requestBuildings = () => ({type: 'REQUEST_BUILDINGS'});
 export const receiveBuildings = (buildings, error) => ({type: 'RECEIVE_BUILDINGS', buildings, error });
 export const fetchBuildings = (campusId) => (dispatch, getState) => { 
-	console.log(campusId)
 	return query(dispatch, requestBuildings, receiveBuildings, 'campuses/'+campusId+'/buildings') 
 }
 
@@ -98,14 +87,9 @@ export const getPreviousSessionDetails = (workgroupId) => (dispatch, getState) =
 
 	const { userId } = getState().user;
 
-
-
 	return fetch(apiURL+'users/'+userId+'/workgroups/'+workgroupId)
 			.then(response => response.json())
-		  	.then(json => {
-		  		dispatch(fetchRooms())
-		  		dispatch(receivePreviousSessionDetails(json, null))
-		  	})
+		  	.then(json => {dispatch(receivePreviousSessionDetails(json, null)) })
 		  	.catch(err => dispatch(receivePreviousSessionDetails(null, err)))
 }
 
@@ -137,8 +121,14 @@ export const commitSession = () => (dispatch, getState) => {
 
 	const state = getState();
 
+	/** using momentjs to get diff between current time and end time
+		sent to server for specifying duration of the session
+	**/ 
 	var durationMinutes = -moment().diff(moment(state.session.endTime), 'minutes');
 	
+	/** data setup for session to start 
+		to be sent as post request via fetch
+	**/
 	var data = {
 		userId: state.user.userId,
 		roomId: state.session.selectedRoomId,
@@ -169,18 +159,26 @@ export const createSessionFromPrevious = (sessionId) => (dispatch, getState) => 
 			.then(response => response.json())
 		  	.then(room => {
 
-
+		  		/** All these dispatches are required to fetch and setup the 
+		  			data to view the workstation select page. It's essentially running
+		  			throug the normal flow but instead with data retrieved regarding the
+		  			selected previous session	
+		  		**/
 		  		dispatch(fetchCampuses())
 		  		dispatch(fetchBuildings(room.campusId))
 		  		dispatch(fetchRooms(room.id))
 		  		dispatch(selectCampus(room.campusId))
 		  		dispatch(selectBuilding(room.buildingId))
 		  		dispatch(selectRoom(room.id))
+
+		  		/* select all workstations that were in previous session */
 		  		selectedSession.workstations.map(w => {
-		  			dispatch(selectWorkstation(w.id))
+		  			dispatch(selectWorkstation(w.id)) 
 		  		})
+		  		
 		  		dispatch(selectEndTime(moment().add(selectedSession.duration, 'minutes')))
 
+		  		/* jump to workstation select page */
 		  		browserHistory.push('/workstationSelect')
 
 		  	})
@@ -192,9 +190,10 @@ export const createSessionFromPrevious = (sessionId) => (dispatch, getState) => 
 export const requestEnableWorkstation = (workstationId) => ({type: 'REQUEST_ENABLE_WORKSTATION', workstationId});
 export const responseEnableWorkstation = (workstationId, success, error) => ({type: 'RESPONSE_ENABLE_WORKSTATION', workstationId, success, error});
 export const enableSharing = (workstationIds) => (dispatch, getState) => {
+	/* go through every workstation sent and request enabling for each */
 	workstationIds.map(workstationId => {
 
-		const workstation = getState().session.workstations.find(w => {return w.id === workstationId})
+		const workstation = getState().session.workstations.find(w => w.id === workstationId)
 
 		if(workstation && workstation.inWorkgroup){ 
 			dispatch(requestEnableWorkstation(workstationId));
@@ -202,9 +201,9 @@ export const enableSharing = (workstationIds) => (dispatch, getState) => {
 			const { id } = getState().session
 
 			return fetch(apiURL+'workgroups/'+id+'/workstations/'+workstationId+'/sharing')
-			.then(response => response.json())
-			.then(json => dispatch(responseEnableWorkstation(workstationId, true, null)))
-			.catch(err => dispatch(responseEnableWorkstation(workstationId, false, err)))
+					.then(response => response.json())
+					.then(json => dispatch(responseEnableWorkstation(workstationId, true, null)))
+					.catch(err => dispatch(responseEnableWorkstation(workstationId, false, err)))
 		}
 
 	})
@@ -213,6 +212,7 @@ export const enableSharing = (workstationIds) => (dispatch, getState) => {
 export const requestDisableWorkstation = (workstationId) => ({type: 'REQUEST_DISABLE_WORKSTATION', workstationId});
 export const responseDisableWorkstation = (workstationId, success, error) => ({type: 'RESPONSE_DISABLE_WORKSTATION', workstationId, success, error});
 export const disableSharing = (workstationIds) => (dispatch, getState) => {
+	/* go through every workstation sent and request disabling for each */
 	workstationIds.map(workstationId => {
 
 		const workstation = getState().session.workstations.find(w => {return w.id === workstationId})
@@ -238,9 +238,9 @@ export const enableSharingAll = () => (dispatch, getState) => {
 	const { id } = getState().session
 
 	return fetch(apiURL+'workgroups/'+id+'/sharing')
-	.then(response => response.json())
-	.then(json => dispatch(responseEnableAllWorkstations(true, null)))
-	.catch(err => dispatch(responseEnableAllWorkstations(false, err)))
+			.then(response => response.json())
+			.then(json => dispatch(responseEnableAllWorkstations(true, null)))
+			.catch(err => dispatch(responseEnableAllWorkstations(false, err)))
 }
 
 export const requestDisableAllWorkstations = () => ({type: 'REQUEST_DISABLE_ALL_WORKSTATIONS'});
@@ -259,6 +259,7 @@ export const disableSharingAll = () => (dispatch, getState) => {
 export const requestAddWorkstationToWorkgroup = (workstationId) => ({type: 'REQUEST_ADD_WORKSTATION_TO_WORKGROUP', workstationId});
 export const responseAddWorkstationToWorkgroup = (workstationId, success, error) => ({type: 'RESPONSE_ADD_WORKSTATION_TO_WORKGROUP', workstationId, success, error});
 export const addWorkstationsToWorkgroup = (workstationIds) => (dispatch, getState) => {
+	/* go through every workstation sent and request adding to workgroup for each */
 	workstationIds.map(workstationId => {
 		dispatch(requestAddWorkstationToWorkgroup(workstationId))
 
@@ -281,6 +282,7 @@ export const addWorkstationsToWorkgroup = (workstationIds) => (dispatch, getStat
 export const requestRemoveWorkstationFromWorkgroup = (workstationId) => ({type: 'REQUEST_REMOVE_WORKSTATION_FROM_WORKGROUP', workstationId});
 export const responseRemoveWorkstationFromWorkgroup = (workstationId, success, error) => ({type: 'RESPONSE_REMOVE_WORKSTATION_FROM_WORKGROUP', workstationId, success, error});
 export const removeWorkstationsFromWorkgroup = (workstationIds) => (dispatch, getState) => {
+	/* go through every workstation sent and request removal for each */
 	workstationIds.map(workstationId => {
 		dispatch(requestRemoveWorkstationFromWorkgroup(workstationId))
 
@@ -296,7 +298,7 @@ export const removeWorkstationsFromWorkgroup = (workstationIds) => (dispatch, ge
 	})
 }
 
-/** SESSION SERVER UPDATES **/
+/** SESSION SERVER UPDATES (POLLING) **/
 export const requestingWorkstationsUpdate = () => ({type: 'REQUEST_WORKSTATIONS_UPDATE'});
 export const responseWorkstationsUpdate = (response, error) => ({type: 'RESPONSE_WORKSTATIONS_UPDATE', response, error});
 export const pollForWorkstations = () => (dispatch, getState) => {
@@ -305,9 +307,9 @@ export const pollForWorkstations = () => (dispatch, getState) => {
 	const { selectedRoomId } = getState().session
 
 	return fetch(apiURL+'rooms/'+selectedRoomId+'/workstations')
-	.then(response => response.json())
-	.then(json => dispatch(responseWorkstationsUpdate(json, null)))
-	.catch(err => dispatch(responseWorkstationsUpdate(null, err)))
+			.then(response => response.json())
+			.then(json => dispatch(responseWorkstationsUpdate(json, null)))
+			.catch(err => dispatch(responseWorkstationsUpdate(null, err)))
 }
 export const requestingWorkgroupUpdate = () => ({type: 'REQUEST_WORKGROUP_UPDATE'});
 export const responseWorkgroupUpdate = (response, error) => ({type: 'RESPONSE_WORKGROUP_UPDATE', response, error});
@@ -317,9 +319,9 @@ export const pollWorkgroup = () => (dispatch, getState) => {
 	const { id } = getState().session
 
 	return fetch(apiURL+'workstations/'+id+'/workstations')
-	.then(response => response.json())
-	.then(json => dispatch(responseWorkgroupUpdate(json, null)))
-	.catch(err => dispatch(responseWorkgroupUpdate(null, err)))
+			.then(response => response.json())
+			.then(json => dispatch(responseWorkgroupUpdate(json, null)))
+			.catch(err => dispatch(responseWorkgroupUpdate(null, err)))
 }
 
 

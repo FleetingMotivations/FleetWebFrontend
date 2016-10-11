@@ -1,3 +1,9 @@
+/** 
+	
+	Provides functions for Persisting redux state accross page loads
+	Serialization and Deserialization of state into and out of browser local storage
+
+**/
 export const loadState = () => {
 	try {
 		const serializedState = localStorage.getItem('state');

@@ -1,3 +1,14 @@
+/* 
+ * Description: Login page for react web application
+ *				
+ *
+ * Project: Fleet
+ * Group Members: Jordan Collins, Tristan Newmann, Hayden Cheers, Alistair Woodcock
+ * Last modified: 11 October 2016
+ * Last Author: Alistair Woodcock
+ * 
+ */
+
 import React, { Component } from 'react';
 import { browserHistory } from 'react-router'
 import { connect } from 'react-redux';
@@ -7,9 +18,11 @@ import logo from '../images/UoNLogo.png';
 
 class Login extends Component{
 
+	/* gets the new properties before they are applied */
 	componentWillReceiveProps(nextProps) {
 		if(nextProps.loggedIn) {
-			browserHistory.push('/');
+			/* since we are logged in we can jump to home view */
+			browserHistory.push('/'); 
 		}
 	}
 
@@ -27,6 +40,7 @@ class Login extends Component{
 		this.props.setPassword(e.target.value);
 	}
 
+	/* login click handler to dispact login action */
 	login(){
 		this.props.login();
 	}

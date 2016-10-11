@@ -1,3 +1,14 @@
+/* 
+ * Description: Campus Selector component for the React web application
+ *				
+ *
+ * Project: Fleet
+ * Group Members: Jordan Collins, Tristan Newmann, Hayden Cheers, Alistair Woodcock
+ * Last modified: 11 October 2016
+ * Last Author: Alistair Woodcock
+ * 
+ */
+
 import React, { Component } from 'react';
 import { browserHistory } from 'react-router'
 import { bindActionCreators } from 'redux';
@@ -8,14 +19,17 @@ import Selector from '../components/Selector';
 
 class RoomSelect extends Component{
 
+	/* dispatched reteive action for list of campuses before the component renders */
 	componentWillMount() {
 	 	this.props.actions.fetchCampuses();
 	}
 
+	/* click handler for commiting the campus selection and redirects to next view */
 	selectCampus(){
 		this.props.actions.commitCampusSelection();
 		browserHistory.push('/buildingSelect');
 	}
+
 
 	render() {
 
@@ -51,7 +65,7 @@ class RoomSelect extends Component{
 	}
 }
 
-
+/* Redux functions for mapping state to props */
 const mapStateToProps = state => ({
 		state: state,
 		campuses: state.session.campuses,

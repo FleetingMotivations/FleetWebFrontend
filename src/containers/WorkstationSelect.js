@@ -1,3 +1,15 @@
+/* 
+ * Description: Workstation Selection Component for React web app. 
+ *				Displays all the available workstations to be selected before
+ *				a workgroup session is started	
+ *
+ * Project: Fleet
+ * Group Members: Jordan Collins, Tristan Newmann, Hayden Cheers, Alistair Woodcock
+ * Last modified: 11 October 2016
+ * Last Author: Alistair Woodcock
+ * 
+ */
+
 import React, { Component } from 'react';
 import { browserHistory } from 'react-router'
 import { bindActionCreators } from 'redux';
@@ -38,12 +50,12 @@ class WorkstationSelect extends Component{
 	render() {
 		var { endTime, workstations } = this.props;
 
+		/* generate list of tiems based on 15 minute increments */
 		var timeOptions = [];
 		
 		var mmt = moment().add('m', 15 - moment().minute() % 15);
 		var mmtMidnight = mmt.clone().hour(23).minute(59).second(59);
 
-		// Difference in minutes
 		var diffHours = mmtMidnight.diff(mmt, 'hours');
 
 		for(var i = 0; i < diffHours*4; i++)

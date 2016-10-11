@@ -1,3 +1,16 @@
+/* 
+ * Description: Session component for React web application
+ *				This displays the current workgroup within a particular room
+ *				This also handles the creation and clearing of polling events to
+ *				the server to maintain a live status of the environment 	
+ * 			
+ * Project: Fleet
+ * Group Members: Jordan Collins, Tristan Newmann, Hayden Cheers, Alistair Woodcock
+ * Last modified: 11 October 2016
+ * Last Author: Alistair Woodcock
+ * 
+ */
+
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { browserHistory } from 'react-router'
@@ -9,43 +22,55 @@ import SideBar from '../components/SideBar';
 
 import * as config from '../../config.json';
 
-const pollInterval = config.dev.pollInterval;
-var pollIntervalId = null;
+/* Polling interval based on environment */
+const pollInterval = (process.env.NODE_ENV === 'production') ? config.prod.pollInterval : config.dev.pollInterval;
+
+/* Polling Ids set when the component mounts, stored here because they are not necessary for state */
+var workstationPollId = null;
 var countdownIntervalId = null;
 var workgroupPollId = null
 
 class Session extends Component{
+	
+	/* before component renders begin polling events and ensure session is currently underway */
 	componentDidMount(){
 		this.props.actions.checkSessionRunning()
 
 		workgroupPollId = window.setInterval(this.props.actions.pollWorkgroups, pollInterval);
-		pollIntervalId = window.setInterval(this.props.actions.pollForWorkstations, pollInterval);
+		workstationPollId = window.setInterval(this.props.actions.pollForWorkstations, pollInterval);
 		countdownIntervalId = window.setInterval(this.props.actions.timerCountdown, 1000);
 	}
 
+	/** reset polling intervals when component is unmounted */
 	componentWillUnmount(){
-		clearInterval(pollIntervalId);
+		clearInterval(workstationPollId);
 		clearInterval(countdownIntervalId);
+		clearInterval(workgroupPollId);
 	}
 
+	/* handler for adding workstation to workgroup */
 	addWorkstation(id){
 		this.props.actions.addWorkstationsToWorkgroup([id]);
 	}
 
+	/* handler for adding all selected workstation to workgroup */
 	addWorkstations(){
 		this.props.actions.addWorkstationsToWorkgroup(this.props.selectedWorkstations);
 	}
 
+	/* handler for removing given workstation from workgroup */
 	removeWorkstation(id){
 		this.props.actions.removeWorkstationsFromWorkgroup([id]);
 	}
 
+	/* handler for removing all selected workstations from workgroup */
 	removeWorkstations(){
 		this.props.actions.removeWorkstationsFromWorkgroup(this.props.selectedWorkstations);
 	}
 
+	/* handler for selecting and deselecting workstation */
 	workstationClicked(workstationId){
-		var workstation = this.props.selectedWorkstations.find((w)=>{return w === workstationId});
+		var workstation = this.props.selectedWorkstations.find(id => id === workstationId);
 		if(workstation){
 			this.props.actions.deselectWorkstation(workstationId);
 		} else {
@@ -53,14 +78,17 @@ class Session extends Component{
 		}
 	}
 
+	/* handler for disabling all sharing workgroup */
 	disableSharing(){
 		this.props.actions.disableSharing(this.props.selectedWorkstations);
 	}
 
+	/* handler for enabling all sharing in workgroup */
 	enableSharing(){
 		this.props.actions.enableSharing(this.props.selectedWorkstations);
 	}
 
+	/* handler for ending workgroup */
 	endSession(){
 		this.props.actions.endSession();
 		browserHistory.push('/');
@@ -97,8 +125,9 @@ class Session extends Component{
 			)
 		}
 
-		
-
+		/** The following buttons are set to dynamically change based on the current state and selection of 
+			workstations in the workgroup. 
+		**/
 
 		var shareButton = <div className="btn" onClick={this.props.actions.disableSharingAll}>Stop All Sharing</div>
 
@@ -116,6 +145,8 @@ class Session extends Component{
 
 		var selected = workstations.filter(w => {return selectedWorkstations.indexOf(w.id) > -1})
 		var inWorkgroup = selected.filter(w => {return w.inWorkgroup})
+
+		/** Checking for different conditions to disable the use of a particular button */
 
 		if(inWorkgroup.filter(w => {return w.canShare}).length === 0) {
 			btn1.style += "grey";

@@ -1,3 +1,13 @@
+/* 
+ * Description: Base App component for the React web application
+ *
+ * Project: Fleet
+ * Group Members: Jordan Collins, Tristan Newmann, Hayden Cheers, Alistair Woodcock
+ * Last modified: 11 October 2016
+ * Last Author: Alistair Woodcock
+ * 
+ */
+
 import React, { Component, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -12,10 +22,12 @@ class App extends Component {
  		actions: PropTypes.object.isRequired   
 	}
 
+	/* signOut component for passing to navbar */
 	signOut(){
 		this.props.actions.logout();
 	}
 
+	/* renders the base structure of the application */
 	render(){
 		const { children, room, building, campus, loggedIn, sessionStarted, requestingStart } = this.props;
 
@@ -27,7 +39,11 @@ class App extends Component {
 		   		navTitle = campus.name + " | " + building.name + " | "+ room.name
 			}
 		}
-		
+			
+		/** {children} is passed from the routes and returns the current route component
+			allowing for the path to change the application output but remain displayed within
+			the same application structure
+		**/
 		return (
 			<div className="App">
 				
@@ -41,6 +57,7 @@ class App extends Component {
 	}
 }
 
+/* Redux functions allowing the App component to receive state in its props */
 const mapStateToProps = (state) => ({
 	campus: (state.session.campuses != null) ? state.session.campuses.find(c => c.id === state.session.selectedCampusId ) : null,
 	building: (state.session.buildings != null) ? state.session.buildings.find(b => b.id === state.session.selectedBuildingId) : null,

@@ -1,3 +1,14 @@
+/* 
+ * Description: Room Selector component for the React web application
+ *				
+ *
+ * Project: Fleet
+ * Group Members: Jordan Collins, Tristan Newmann, Hayden Cheers, Alistair Woodcock
+ * Last modified: 11 October 2016
+ * Last Author: Alistair Woodcock
+ * 
+ */
+
 import React, { Component } from 'react';
 import { browserHistory } from 'react-router'
 import { bindActionCreators } from 'redux';
@@ -11,10 +22,12 @@ class RoomSelect extends Component{
 
 	}
 
+	/* fetch list of rooms within building before component renders */
 	componentWillMount() {
 	 	this.props.actions.fetchRooms(this.props.state.session.selectedBuildingId);
 	}
 
+	/* handles room selection commited and changes to next view */
 	selectRoom() {
 		this.props.actions.commitRoomSelection();
 		browserHistory.push('/workstationSelect');
@@ -54,7 +67,7 @@ class RoomSelect extends Component{
 	}
 }
 
-
+/* Redux functions for mapping state to props */
 const mapStateToProps = state => ({
 		state: state,
 		rooms: state.session.rooms,

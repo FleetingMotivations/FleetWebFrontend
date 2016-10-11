@@ -1,3 +1,5 @@
+/** React Sidebar component rendering sidebar for the currently running session */ 
+
 import React, { Component } from 'react';
 import WorkstationStatus from './WorkstationStatus';
 
@@ -20,7 +22,7 @@ export default class SessionDetails extends Component{
 	          <h3>Workgroup</h3>
 	          <ul>
 	            {workgroup.map(workstation => {  
-	              	return <li onMouseOut={this.exitHoverWorkstation} onMouseOver={this.hoverWorkstation} data-workstation-id={workstation.id}><span className="name">{workstation.name}</span> <WorkstationStatus status={workstation.status} /> <div className="remove" onClick={() => {removeWorkstationFromWorkgroup(workstation.id)}}></div></li>
+	              	return <li data-workstation-id={workstation.id}><span className="name">{workstation.name}</span> <WorkstationStatus status={workstation.status} /> <div className="remove" onClick={() => {removeWorkstationFromWorkgroup(workstation.id)}}></div></li>
 	            })}
 	          </ul>
 	        </div>
@@ -28,7 +30,7 @@ export default class SessionDetails extends Component{
 	          <h3>Available Workstations</h3>
 	          <ul>
 	            {workstations.map(workstation => {
-	              return <li onMouseOut={this.exitHoverWorkstation} onMouseOver={this.hoverWorkstation} data-workstation-id={workstation.id}><span className="name">{workstation.name}</span> <WorkstationStatus status={workstation.status} /> <div className="add" onClick={() => {addWorkstationToWorkgroup(workstation.id)}}></div></li> 
+	              return <li data-workstation-id={workstation.id}><span className="name">{workstation.name}</span> <WorkstationStatus status={workstation.status} /> <div className="add" onClick={() => {addWorkstationToWorkgroup(workstation.id)}}></div></li> 
 	          	})}
 	          </ul>
 	        </div>
@@ -36,26 +38,12 @@ export default class SessionDetails extends Component{
 	          <h3>Unavailable Workstations</h3>
 	          <ul>
 	            {unavailableWorkstations.map(workstation => {
-	              return <li onMouseOut={this.exitHoverWorkstation} onMouseOver={this.hoverWorkstation} data-workstation-id={workstation.id}><span className="name">{workstation.name}</span> <WorkstationStatus status={workstation.status} /> </li> 
+	              return <li data-workstation-id={workstation.id}><span className="name">{workstation.name}</span> <WorkstationStatus status={workstation.status} /> </li> 
 	          	})}
 	          </ul>
 	        </div>
 	      </div>
 		</div>
     );
-  }
-
-  hoverWorkstation(e){
-    // var hoverWorkstationId = e.target.getAttribute('data-workstation-id');
-    // var result = document.querySelectorAll('.workstations .workstation[data-workstation-id="'+hoverWorkstationId+'"]');
-    // var workstation = result[0];
-    // workstation.className += ' selected';
-  }
-
-  exitHoverWorkstation(e){
-    // var hoverWorkstationId = e.target.getAttribute('data-workstation-id');
-    // var result = document.querySelectorAll('.workstations .workstation[data-workstation-id="'+hoverWorkstationId+'"]');
-    // var workstation = result[0];
-    // workstation.className = 'workstation';
   }
 }

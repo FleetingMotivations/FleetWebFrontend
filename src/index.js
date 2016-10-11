@@ -1,3 +1,7 @@
+/** 
+	React entrypoint
+**/
+
 import 'babel-polyfill'
 import React from 'react';
 import { render } from 'react-dom';
@@ -7,10 +11,11 @@ import Root from './containers/Root';
 import configureStore from './store/configureStore';
 import { loadState, saveState } from './localStorage';
 
+/* Retreives persisted state for entry into the redux storage configuration */ 
 const persistedState = loadState();
-
 const store = configureStore(persistedState);
 
+/* Persist state session and user details changes accross page loads */
 store.subscribe(() => {
 	const session = store.getState().session;
 

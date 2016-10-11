@@ -1,6 +1,9 @@
+/** 
+	Combines and applies all the redux reducers in the reducers directory
+**/
 import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
-/** Here we want to import reducers from this reducers folder **/
+
 import user from './user';
 import sessionHistory from './sessionHistory';
 import session from './session';
@@ -12,6 +15,11 @@ const fleetAppReducer = combineReducers({
 	routing: routerReducer
 })
 
+/** 
+	We apply rootReducer before returning the fleetAppReducer so 
+	we can catch actions like logout, where we need to reset the app 
+	state stored in persistence. 
+**/
 const rootReducer = (state, action) => {
 
 	switch(action.type)
@@ -22,7 +30,6 @@ const rootReducer = (state, action) => {
 		} break;
 
 		default:
-
 	}
 
 	return fleetAppReducer(state, action)

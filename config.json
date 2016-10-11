@@ -1,10 +1,10 @@
 {
 	"dev":{
 		"apiURL": "http://htcc-win1.uncle.newcastle.edu.au/FleetApi/api/",
-		"pollInterval": 200
+		"pollInterval": 5000
 	},
 	"prod":{
 		"apiURL": "",
-		"pollInterval": 7000
+		"pollInterval": 1000
 	}
 }

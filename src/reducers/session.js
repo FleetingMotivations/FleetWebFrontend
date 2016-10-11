@@ -1,5 +1,13 @@
+/** Redux reducer for session setup and state **/ 
+
+
 import moment from 'moment';
 
+/** 
+	workstationInitialStatePart is a const we use to apply 
+	additional workstation details that are required for application state
+	but do not exist when fetched from the server 
+**/
 const workstationInitialStatePart = {
 	canShare: false,
 	inWorkgroup: false,
@@ -9,6 +17,7 @@ const workstationInitialStatePart = {
 	requestAddToWorkgroup: false
 }
 
+/* This initialState is applied for when an application loads with no persistent session state */
 const initialState = {
 	id: null,
 
@@ -37,26 +46,30 @@ const initialState = {
 
 	allSharingDisabled: false,
 
-	workstations: [],
+	workstations: [], //Stores workstation data from server + workstationinitialStatePart
 
-	workgroup: [],
+	workgroup: [], // ids array of workstations stored in workstations array
 
-	selectedWorkstations:[],
+	selectedWorkstations:[], // ids array of workstations
 
 	campuses: [],
 	buildings: [],
 	rooms: []
 }
 
+/** Redux session reducer returns new state applied as a result of application actions **/ 
 export default function session(state = initialState, action) {
 
+	/** 
+		Common use case is sending workstationId, gets the workstation details rather than 
+		accessing it every time in the following cases 
+	**/
 	var givenWorkstation = null;
 	if(action && action.workstationId) {
 		givenWorkstation = state.workstations.find(w => {return w.id === action.workstationId});
 	}
 
 	switch(action.type) {
-
 		
 		case 'CREATE_SESSION_FROM_PREVIOUS':{
 			return Object.assign({}, state, {creatingFromPrevious: true, createFailed: false })
@@ -159,13 +172,19 @@ export default function session(state = initialState, action) {
 				return state;
 			}
 
+			// apply changes to workstations we have fetched
 			let workstations = state.workstations.map(w => {
+				/* 
+					we only care if canShare and available have changed on workstations
+					outside of our workgroup because we don't have control over them but want to
+					update the workstations interface with their current status 
+				*/
 				var newW = action.response.find(f => r.id === w.id)
 
 				return {
 					...w,
 					canShare: newW.sharingEnabled,
-					available: newW.available,
+					available: newW.available
 				}
 			})			
 
@@ -188,7 +207,7 @@ export default function session(state = initialState, action) {
 					canShare: newW.sharingEnabled,
 					available: newW.available,
 					lastSeen: newW.lastSeen,
-					inWorkgroup: true
+					inWorkgroup: true // we got it requesting an update of our workgroup, therefore always in our workgroup
 				}
 			})
 
@@ -201,17 +220,19 @@ export default function session(state = initialState, action) {
 
 			let selectedWorkstations = state.selectedWorkstations.slice();
 			
-			if(!givenWorkstation || givenWorkstation.selected
-			|| !givenWorkstation.available && !givenWorkstation.inWorkgroup
-			|| selectedWorkstations.find(id => {return id === givenWorkstation.id}))
+			if(!givenWorkstation 
+			||  givenWorkstation.selected
+			|| (!givenWorkstation.available && !givenWorkstation.inWorkgroup)
+			||  selectedWorkstations.find(id => id === givenWorkstation.id))
 			{
 				return state;
 			}
+
 			givenWorkstation.selected = true;
 
-			let workstations = state.workstations.filter(w => {return w.id !== givenWorkstation.id })
-
+			let workstations = state.workstations.filter(w => w.id !== givenWorkstation.id)
 			workstations.push(givenWorkstation);
+
 			selectedWorkstations.push(givenWorkstation.id);
 
 			return Object.assign({}, state, {selectedWorkstations, workstations })
@@ -224,8 +245,8 @@ export default function session(state = initialState, action) {
 
 			givenWorkstation.selected = false;
 
-			let selectedWorkstations = state.selectedWorkstations.filter((w)=>{return w !== givenWorkstation.id })
-			let workstations = state.workstations.filter((w)=>{ return w.id !== givenWorkstation.id })
+			let selectedWorkstations = state.selectedWorkstations.filter(w => w !== givenWorkstation.id)
+			let workstations = state.workstations.filter(w => w.id !== givenWorkstation.id)
 
 			workstations.push(givenWorkstation);
 
@@ -238,10 +259,10 @@ export default function session(state = initialState, action) {
 					return {...w, selected: true }
 				}
 
-				return {...w };
+				return w;
 			});
 
-			let selectedWorkstations = workstations.filter((w)=>{return w.available}).map((w)=>{return w.id});
+			let selectedWorkstations = workstations.filter(w => w.available).map((w) =>{return w.id});
 
 			return Object.assign({}, state, {selectedWorkstations, workstations })
 
@@ -283,14 +304,11 @@ export default function session(state = initialState, action) {
 					workgroup: [],
 					selectedWorkstations:[]
 				})
-			} else {
-				return Object.assign({}, state, { 
-					requestingStart: false,
-					requestFailed: true
-				})	
 			}
-		
-
+			return Object.assign({}, state, { 
+				requestingStart: false,
+				requestFailed: true
+			})	
 		}
 		case 'REQUEST_ENABLE_WORKSTATION':{
 
@@ -347,14 +365,15 @@ export default function session(state = initialState, action) {
 				return state;
 			}
 
+			// setup givenWorkstation so we only need to do one .map of workstations array
 			givenWorkstation.requestDisable = false;
 			givenWorkstation.selected = false;
 
 			if(!action.error) {
-				givenWorkstation.canShare = !action.success
+				givenWorkstation.canShare = !action.success // successful action means it can't share etc
 			}
 
-			let selectedWorkstations = state.selectedWorkstations.filter(id => {return id !== givenWorkstation.id})
+			let selectedWorkstations = state.selectedWorkstations.filter(id => id !== givenWorkstation.id)
 
 			let workstations = state.workstations.map(w =>{
 				if(w.id === givenWorkstation.id) {
@@ -369,9 +388,10 @@ export default function session(state = initialState, action) {
 		case 'REQUEST_ENABLE_ALL_WORKSTATIONS':{
 
 			let workstations = state.workstations.map(w => {
-				let wi = state.workgroup.find(id => {return id === w.id})	
+				let wi = state.workgroup.find(id => id === w.id)	
 
-				if(wi >= 0){
+				// only enable workstations in our workgroup
+				if(wi !== undefined){
 					return {...w, requestEnable: true} 
 				}
 
@@ -384,11 +404,17 @@ export default function session(state = initialState, action) {
 		case 'RESPONSE_ENABLE_ALL_WORKSTATIONS':{
 
 			let workstations = state.workstations.map(w => {
-				let wi = state.workgroup.find(id => {return id === w.id})	
+				let wi = state.workgroup.find(id => id === w.id)	
 
-				if(wi >= 0){
+				// only disable workstations in our workgroup
+				if(wi !== undefined){
 					let nw = {...w, requestEnable: false}
 
+					/** 
+						we don't want nw.canShare = action.success
+						because if the action failed it may still
+						be able to share
+					**/
 					if(action.success) {
 						nw.canShare = true
 					}
@@ -413,9 +439,10 @@ export default function session(state = initialState, action) {
 		}
 		case 'REQUEST_DISABLE_ALL_WORKSTATIONS':{
 			let workstations = state.workstations.map(w => {
-				let wi = state.workgroup.find(id => {return id === w.id})	
+				let wi = state.workgroup.find(id => id === w.id)	
 
-				if(wi >= 0){
+				/* only disable workstations in our workgroup */
+				if(wi !== undefined){
 					return {...w, requestDisable: true} 
 				}
 
@@ -427,10 +454,13 @@ export default function session(state = initialState, action) {
 		}
 		case 'RESPONSE_DISABLE_ALL_WORKSTATIONS':{
 			let workstations = state.workstations.map(w => {
-				let wi = state.workgroup.find(id => {return id === w.id})	
-
-				if(wi >= 0){
+				let wi = state.workgroup.find(id => id === w.id)	
+				
+				/* only disable our workgroup workstations */
+				if(wi !== undefined){
 					let nw = {...w, requestDisable: false}
+					
+					/* not nw.canShare = action.success because if the action failed it might still be able to share */
 					if(action.success) {
 						nw.canShare = true;
 					}
@@ -461,7 +491,7 @@ export default function session(state = initialState, action) {
 					return {...w, requestAddToWorkgroup: true }
 				}
 
-				return {...w};
+				return w;
 			})
 			
 			return Object.assign({}, state, {workstations})
@@ -475,6 +505,10 @@ export default function session(state = initialState, action) {
 
 			let workgroup = state.workgroup.slice();
 
+			/**
+				setup givenWorkstation before so we can do a single .map call
+				previously had many calls that were not neccessary and optimized out
+			**/
 			givenWorkstation.requestAddToWorkgroup = false
 			givenWorkstation.selected = false
 
@@ -486,7 +520,7 @@ export default function session(state = initialState, action) {
 				}
 			}
 
-			let selectedWorkstations = state.selectedWorkstations.filter(id => {return id !== givenWorkstation.id})
+			let selectedWorkstations = state.selectedWorkstations.filter(id => id !== givenWorkstation.id)
 
 			let workstations = state.workstations.map(w => {
 				if(w.id === givenWorkstation.id) {
@@ -509,7 +543,7 @@ export default function session(state = initialState, action) {
 					return {...w, requestRemoveFromWorkgroup: true}
 				}
 
-				return {...w};
+				return w;
 			})	
 			
 			return Object.assign({}, state, {workstations})
@@ -522,7 +556,11 @@ export default function session(state = initialState, action) {
 			}
 
 			let workgroup = state.workgroup.slice();
-
+			
+			/**
+				setup givenWorkstation before so we can do a single .map call
+				previously had many calls that were not neccessary and optimized out
+			**/
 			givenWorkstation.requestRemoveFromWorkgroup = false
 			givenWorkstation.selected = false
 
@@ -530,11 +568,11 @@ export default function session(state = initialState, action) {
 				givenWorkstation.inWorkgroup = !action.success;
 
 				if(action.success) {
-					workgroup = workgroup.filter(id => {return id !== givenWorkstation.id})
+					workgroup = workgroup.filter(id => id !== givenWorkstation.id)
 				}
 			}
 
-			let selectedWorkstations = state.selectedWorkstations.filter(id => {return id !== givenWorkstation.id})
+			let selectedWorkstations = state.selectedWorkstations.filter(id => id !== givenWorkstation.id)
 
 			let workstations = state.workstations.map(w => {
 				if(w.id === givenWorkstation.id) {

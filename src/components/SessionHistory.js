@@ -1,3 +1,7 @@
+/** React component displaying previous sessions and their details
+    receives session data and control functions as props
+**/ 
+
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
 import WorkstationsDisplay from './WorkstationsDisplay';
@@ -8,6 +12,7 @@ export default class SessionHistory extends Component{
     createSessionClick: PropTypes.func.isRequired
   }
 
+  /* Returns details (as jsx) of a single session */
   renderSession(session){
 
     const { viewSession } = this.props;
@@ -23,6 +28,10 @@ export default class SessionHistory extends Component{
     );
   }
 
+  /** Returns all details (as jsx) of the given session 
+      uses startSession and backToAllSessions function props to 
+      handle click events
+  **/
   renderSelectedSession(session){
 
         const { startSession, backToAllSessions } = this.props;
@@ -52,15 +61,14 @@ export default class SessionHistory extends Component{
       )
   }
 
+  /** Renders Session History component based on properties supplied **/
   render(){
     var {isFetching, sessions , fetchError, fetchingSessionDetails, selectedSession } = this.props;
 
     var prevSessions = null;
 
     if(selectedSession) {
-
       prevSessions = this.renderSelectedSession.bind(this)(selectedSession)
-
     } else if (isFetching || fetchingSessionDetails) {
       prevSessions = <div><i><div className="loader">Loading...</div></i></div>
     } else if(fetchError){

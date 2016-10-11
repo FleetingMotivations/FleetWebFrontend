@@ -1,3 +1,5 @@
+/** React navbar component **/
+
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import logo from '../images/UoNHorse.png';

@@ -1,3 +1,9 @@
+/** 
+	React Router implements url path page routing
+	requireAuthentication(..) is called to check if a user has logged into the session and 
+	redirects the user to login if they don't have access
+**/
+
 import React from 'react';
 import { Route, IndexRoute } from 'react-router';
 

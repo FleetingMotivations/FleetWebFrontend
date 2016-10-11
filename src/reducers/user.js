@@ -1,3 +1,6 @@
+/** Redux reducer for getting previous sessions **/ 
+
+/* initialState for when application loads with no persisted state */
 const initialState = {
 	loggedIn: false,
 	loginError: false,
@@ -10,6 +13,7 @@ const initialState = {
 	tokenExpiry: null
 }
 
+/** Redux user reducer returns new state applied as a result of application actions **/ 
 export default function user(state = initialState, action) {
 	switch(action.type) {
 		
@@ -43,7 +47,7 @@ export default function user(state = initialState, action) {
 			return Object.assign({}, state, {loginError: true})
 
 		case 'LOGOUT':
-				return initialState
+				return initialState // on logout we return the initial state to reset
 		
 		default:
 			return state

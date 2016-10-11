@@ -1,3 +1,14 @@
+/* 
+ * Description: Building Selector component for the React web application
+ *				
+ *
+ * Project: Fleet
+ * Group Members: Jordan Collins, Tristan Newmann, Hayden Cheers, Alistair Woodcock
+ * Last modified: 11 October 2016
+ * Last Author: Alistair Woodcock
+ * 
+ */
+
 import React, { Component } from 'react';
 import { browserHistory } from 'react-router'
 import { bindActionCreators } from 'redux';
@@ -8,10 +19,12 @@ import Selector from '../components/Selector';
 
 class RoomSelect extends Component{
 	
+	/* Before the component is displayed, fetches the buildings in the selected campus */
 	componentWillMount() {
 		this.props.actions.fetchBuildings(this.props.state.session.selectedCampusId);
 	}
 
+	/* handles completeing the building selection and navigating to the next view */
 	selectBuilding(){
 		this.props.actions.commitBuildingSelection();
 		browserHistory.push('/roomSelect');
@@ -51,7 +64,7 @@ class RoomSelect extends Component{
 	}
 }
 
-
+/** Redux functions for accessing state in props */
 const mapStateToProps = state => ({
 		state: state,
 		buildings: state.session.buildings,
