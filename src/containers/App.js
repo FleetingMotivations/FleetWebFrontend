@@ -21,9 +21,11 @@ class App extends Component {
 
 		var navTitle = '';
 
-		if(sessionStarted || requestingStart || this.props.location.pathname == '/workstationSelect'){
-
-		   navTitle = campus.name + " | " + building.name + " | "+ room.name
+		if(sessionStarted || requestingStart || this.props.location.pathname == '/workstationSelect')
+		{
+			if(campus && building && room ){
+		   		navTitle = campus.name + " | " + building.name + " | "+ room.name
+			}
 		}
 		
 		return (
