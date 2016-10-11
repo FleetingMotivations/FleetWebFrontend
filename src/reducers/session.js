@@ -37,40 +37,15 @@ const initialState = {
 
 	allSharingDisabled: false,
 
-	workstations: [
-	{
-		"lastSeen": "2016-10-06T10:30:30.8524639+11:00",
-		"identifier": "sample string 1",
-		"topXRoomOffset": 20.1,
-		"topYRoomOffset": 3.1,
-		"available": true,
-		"colour": "sample string 5",
-		"name": "sample string 6",
-		"id": 7,
-		canShare: false,
-		inWorkgroup: false
-	},
-	{
-		"lastSeen": "2016-10-06T10:30:30.8524639+11:00",
-		"identifier": "sample string 1",
-		"topXRoomOffset": 2.1,
-		"topYRoomOffset": 3.1,
-		"available": true,
-		"colour": "sample string 5",
-		"name": "sample string 6",
-		"id": 6,
-		canShare: true,
-		inWorkgroup: true,
-	}
-	],
+	workstations: [],
 
-	workgroup: [6],
+	workgroup: [],
 
 	selectedWorkstations:[],
 
-	campuses: [{id:0, name:'test'},{id:1, name:'Singapore'},{id:2, name:'Callaghan'}],
-	buildings: [{id:'ICT', name:'ICT'},{id:'EE', name:'EE'},{id:'EA', name:'EA'}],
-	rooms: [{id:'RM123', name: 'RM123'}, {id:'RM124', name: 'RM124'}, {id:'RM125', name: 'RM125'}, {id:'RM126', name: 'RM126'}]
+	campuses: [],
+	buildings: [],
+	rooms: []
 }
 
 export default function session(state = initialState, action) {
@@ -145,7 +120,7 @@ export default function session(state = initialState, action) {
 			if(action.error) {
 				return Object.assign({}, state, {fetchError: true, fetchingRooms: false })
 			}
-			return Object.assign({}, state, {fetchingRooms: false, buildings: action.buildings })
+			return Object.assign({}, state, {fetchingRooms: false, rooms: action.rooms })
 
 		}
 		case 'SELECT_ROOM':{
@@ -174,14 +149,60 @@ export default function session(state = initialState, action) {
 					return {...w, ...workstationInitialStatePart}
 				}) 
 			})
+		}
+
+		case 'REQUEST_WORKSTATIONS_UPDATE':{
+			return state;
+		}
+		case 'RESPONSE_WORKSTATIONS_UPDATE':{
+			if(action.error) {
+				return state;
+			}
+
+			let workstations = state.workstations.map(w => {
+				var newW = action.response.find(f => r.id === w.id)
+
+				return {
+					...w,
+					canShare: newW.sharingEnabled,
+					available: newW.available,
+				}
+			})			
+
+			return Object.assign({}, state, { workstations })
 
 		}
+		case 'REQUEST_WORKGROUP_UPDATE':{
+			return state;
+		}
+		case 'RESPONSE_WORKGROUP_UPDATE':{
+			if(action.error) {
+				return state;
+			}
+
+			let workstations = state.workstations.map(w => {
+				var newW = action.response.find(f => f.id === w.id)
+
+				return {
+					...w,
+					canShare: newW.sharingEnabled,
+					available: newW.available,
+					lastSeen: newW.lastSeen,
+					inWorkgroup: true
+				}
+			})
+
+			let workgroup = workstations.filter(w => w.inWorkgroup).map(w => {return w.id});
+
+			return Object.assign({}, state, { workstations, workgroup })
+		}
+
 		case 'SELECT_WORKSTATION':{
 
 			let selectedWorkstations = state.selectedWorkstations.slice();
 			
 			if(!givenWorkstation || givenWorkstation.selected
-			|| !givenWorkstation.available
+			|| !givenWorkstation.available && !givenWorkstation.inWorkgroup
 			|| selectedWorkstations.find(id => {return id === givenWorkstation.id}))
 			{
 				return state;
@@ -251,23 +272,24 @@ export default function session(state = initialState, action) {
 					requestingStart: false,
 					requestFailed: true
 				})	
-			} else {
-				if(action.success) {					
-					return Object.assign({}, state, { 
-						started: true,
-						requestingStart: false,
-						requestFailed: false,
-						id: action.result.id,
-						workgroup: state.selectedWorkstations.slice(),
-						selectedWorkstations:[]
-					})
-				} else {
-					return Object.assign({}, state, { 
-						requestingStart: false,
-						requestFailed: true
-					})	
-				}
 			}
+
+			if(action.success) {					
+				return Object.assign({}, state, { 
+					started: true,
+					requestingStart: false,
+					requestFailed: false,
+					id: action.result.id,
+					workgroup: [],
+					selectedWorkstations:[]
+				})
+			} else {
+				return Object.assign({}, state, { 
+					requestingStart: false,
+					requestFailed: true
+				})	
+			}
+		
 
 		}
 		case 'REQUEST_ENABLE_WORKSTATION':{

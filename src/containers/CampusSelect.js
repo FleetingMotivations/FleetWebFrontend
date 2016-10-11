@@ -55,7 +55,7 @@ class RoomSelect extends Component{
 const mapStateToProps = state => ({
 		state: state,
 		campuses: state.session.campuses,
-		selectedCampus: (state.session.selectedCampusId != null) ? state.session.campuses[state.session.selectedCampusId] : null,
+		selectedCampus: (state.session.selectedCampusId != null) ? state.session.campuses.find(c => {return c.id === state.session.selectedCampusId}) : null,
 		campusCommited: state.session.campusCommited,
 		fetchingCampuses: state.session.fetchingCampuses
 })

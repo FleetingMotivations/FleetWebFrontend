@@ -37,7 +37,8 @@ export const login = () => (dispatch, getState) => {
 				lastname: "Woodcock",
 				username: "c3138738",
 				token: "boopbooptoken20-i1f0inefg8394ghbw[e0g8h3489pf-hw",
-				tokenExpiry: "never-cool-okay"
+				tokenExpiry: "never-cool-okay",
+				userId: 2
 			}
 			, null)
 		);
@@ -63,6 +64,7 @@ export const fetchCampuses = () => (dispatch) => { return query(dispatch, reques
 export const requestBuildings = () => ({type: 'REQUEST_BUILDINGS'});
 export const receiveBuildings = (buildings, error) => ({type: 'RECEIVE_BUILDINGS', buildings, error });
 export const fetchBuildings = (campusId) => (dispatch, getState) => { 
+	console.log(campusId)
 	return query(dispatch, requestBuildings, receiveBuildings, 'campuses/'+campusId+'/buildings') 
 }
 
@@ -84,8 +86,8 @@ export const fetchWorkstations = (roomId) => (dispatch, getState) => {
 export const requestSessionHistory = () => ({type: 'REQUEST_SESSION_HISTORY'});
 export const receiveSessionHistory = (history, error) => ({type: 'RECEIVE_SESSION_HISTORY', history, error});
 export const fetchSessionHistory = () => (dispatch, getState) => {
-  const { username } = getState().user;
-  return query(dispatch, requestSessionHistory, receiveSessionHistory, 'users/'+username+'/workgroups?count=6')
+  const { userId } = getState().user;
+  return query(dispatch, requestSessionHistory, receiveSessionHistory, 'users/'+userId+'/workgroups?count=6')
 }
 
 export const removePreviousSessionDetails = (sessionId) => ({type: 'REMOVE_PREVIOUS_SESSION_DETAILS', sessionId});
@@ -95,6 +97,8 @@ export const getPreviousSessionDetails = (workgroupId) => (dispatch, getState) =
 	dispatch(requestPreviousSessionDetails());
 
 	const { userId } = getState().user;
+
+
 
 	return fetch(apiURL+'users/'+userId+'/workgroups/'+workgroupId)
 			.then(response => response.json())
@@ -126,7 +130,7 @@ export const selectAllWorkstations = () => ({type: 'SELECT_ALL_WORKSTATIONS'});
 
 export const endSession = () => ({type: 'END_SESSION'});
 export const requestStartSession = () => ({type: 'REQUEST_START_SESSION'});
-export const receiveStartSessionResponse = (result, error) => ({type: 'RECEIVE_START_SESSION_RESPONSE', result, error});
+export const receiveStartSessionResponse = (result, success, error) => ({type: 'RECEIVE_START_SESSION_RESPONSE', result, success, error});
 
 export const commitSession = () => (dispatch, getState) => {
 	dispatch(requestStartSession());
@@ -136,7 +140,7 @@ export const commitSession = () => (dispatch, getState) => {
 	var durationMinutes = -moment().diff(moment(state.session.endTime), 'minutes');
 	
 	var data = {
-		userId: state.user.username,
+		userId: state.user.userId,
 		roomId: state.session.selectedRoomId,
 		allowedApplications: [],
 		workstations: state.session.selectedWorkstations,
@@ -150,20 +154,21 @@ export const commitSession = () => (dispatch, getState) => {
 		  		headers: {"Content-Type": "application/json"}
 			})
 			.then(response => response.json())
-		  	.then(json => dispatch(receiveStartSessionResponse(json, null)))
-		  	.catch(err => dispatch(receiveStartSessionResponse(null, err)))
+		  	.then(json => dispatch(receiveStartSessionResponse(json, true, null)))
+		  	.catch(err => dispatch(receiveStartSessionResponse(null, false, err)))
 };
 
 export const creatingSessionFromPrevious = (sessionId) => ({type: 'CREATING_SESSION_FROM_PREVIOUS', sessionId});
 export const creatingSessionFromPreviousFailed = (error) => ({type: 'CREATING_SESSION_FROM_PREVIOUS_FAILED', error})
 export const createSessionFromPrevious = (sessionId) => (dispatch, getState) => {
 	dispatch(creatingSessionFromPrevious());
-
+ 	
 	const { selectedSession } = getState().sessionHistory;
 
 	return fetch(apiURL+'rooms/'+selectedSession.room.id)
 			.then(response => response.json())
 		  	.then(room => {
+
 
 		  		dispatch(fetchCampuses())
 		  		dispatch(fetchBuildings(room.campusId))
@@ -194,9 +199,9 @@ export const enableSharing = (workstationIds) => (dispatch, getState) => {
 		if(workstation && workstation.inWorkgroup){ 
 			dispatch(requestEnableWorkstation(workstationId));
 
-			const { workgroupId } = getState().session
+			const { id } = getState().session
 
-			return fetch(apiURL+'workgroups/'+workgroupId+'/workstations/'+workstationId+'/sharing')
+			return fetch(apiURL+'workgroups/'+id+'/workstations/'+workstationId+'/sharing')
 			.then(response => response.json())
 			.then(json => dispatch(responseEnableWorkstation(workstationId, true, null)))
 			.catch(err => dispatch(responseEnableWorkstation(workstationId, false, err)))
@@ -215,9 +220,9 @@ export const disableSharing = (workstationIds) => (dispatch, getState) => {
 		if(workstation && workstation.inWorkgroup){ 
 			dispatch(requestDisableWorkstation(workstationId))
 			
-			const { workgroupId } = getState().session
+			const { id } = getState().session
 
-			return fetch(apiURL+'workgroups/'+workgroupId+'/workstations/'+workstationId+'/sharing')
+			return fetch(apiURL+'workgroups/'+id+'/workstations/'+workstationId+'/sharing')
 			.then(response => response.json())
 			.then(json => dispatch(responseDisableWorkstation(workstationId, true, null)))
 			.catch(err => dispatch(responseDisableWorkstation(workstationId, false, err)))
@@ -230,9 +235,9 @@ export const responseEnableAllWorkstations = (success, error) => ({type: 'RESPON
 export const enableSharingAll = () => (dispatch, getState) => {
 	dispatch(requestEnableAllWorkstations())
 
-	const { workgroupId } = getState().session
+	const { id } = getState().session
 
-	return fetch(apiURL+'workgroups/'+workgroupId+'/sharing')
+	return fetch(apiURL+'workgroups/'+id+'/sharing')
 	.then(response => response.json())
 	.then(json => dispatch(responseEnableAllWorkstations(true, null)))
 	.catch(err => dispatch(responseEnableAllWorkstations(false, err)))
@@ -243,9 +248,9 @@ export const responseDisableAllWorkstations = (success, error) => ({type: 'RESPO
 export const disableSharingAll = () => (dispatch, getState) => {
 	dispatch(requestDisableAllWorkstations())
 
-	const { workgroupId } = getState().session
+	const { id } = getState().session
 
-	return fetch(apiURL+'workgroups/'+workgroupId+'/sharing')
+	return fetch(apiURL+'workgroups/'+id+'/sharing')
 	.then(response => response.json())
 	.then(json => dispatch(responseDisableAllWorkstations(true, null)))
 	.catch(err => dispatch(responseDisableAllWorkstations(false, err)))
@@ -257,12 +262,16 @@ export const addWorkstationsToWorkgroup = (workstationIds) => (dispatch, getStat
 	workstationIds.map(workstationId => {
 		dispatch(requestAddWorkstationToWorkgroup(workstationId))
 
-		const { workgroupId } = getState().session
-	
-		return fetch(apiURL+'workgroups/'+workgroupId+'/workstations/'+workstationId, {
-			method: "POST",
-	  		headers: {"Content-Type": "application/json"}
-		})
+		const { id } = getState().session
+		
+		return fetch(apiURL+'workgroups/'+id+'/workstations/'+workstationId, {
+			method: 'POST',
+	  		headers: {
+	  			'Accept': 'application/json',
+	  			"Content-Type": "application/json"
+	  		},
+      		body: ''
+      	})
 		.then(response => response.json())
 		.then(json => dispatch(responseAddWorkstationToWorkgroup(workstationId, true, null)))
 		.catch(err => dispatch(responseAddWorkstationToWorkgroup(workstationId, false, err)))
@@ -275,9 +284,9 @@ export const removeWorkstationsFromWorkgroup = (workstationIds) => (dispatch, ge
 	workstationIds.map(workstationId => {
 		dispatch(requestRemoveWorkstationFromWorkgroup(workstationId))
 
-		const { workgroupId } = getState().session
+		const { id } = getState().session
 
-		return fetch(apiURL+'workgroups/'+workgroupId+'/workstations/'+workstationId, {
+		return fetch(apiURL+'workgroups/'+id+'/workstations/'+workstationId, {
 			method: "DELETE",
 	  		headers: {"Content-Type": "application/json"}
 		})
@@ -299,6 +308,18 @@ export const pollForWorkstations = () => (dispatch, getState) => {
 	.then(response => response.json())
 	.then(json => dispatch(responseWorkstationsUpdate(json, null)))
 	.catch(err => dispatch(responseWorkstationsUpdate(null, err)))
+}
+export const requestingWorkgroupUpdate = () => ({type: 'REQUEST_WORKGROUP_UPDATE'});
+export const responseWorkgroupUpdate = (response, error) => ({type: 'RESPONSE_WORKGROUP_UPDATE', response, error});
+export const pollWorkgroup = () => (dispatch, getState) => {
+	dispatch(requestingWorkgroupUpdate())
+
+	const { id } = getState().session
+
+	return fetch(apiURL+'workstations/'+id+'/workstations')
+	.then(response => response.json())
+	.then(json => dispatch(responseWorkgroupUpdate(json, null)))
+	.catch(err => dispatch(responseWorkgroupUpdate(null, err)))
 }
 
 

@@ -11,7 +11,7 @@ export default class WorkstationsDisplay extends Component{
 		var shareIcon = workstation.canShare ? <img className="share" src={shareOpen} role="presentation"/> : <img className="share" src={shareClosed} role="presentation"/>;
 
 		
-		var wclass = "workstation " + (!workstation.available ? " not-available " : "") 
+		var wclass = "workstation " + (!workstation.available && !workstation.inWorkgroup ? " not-available " : "") 
 									+ (workstation.selected ? " selected " : "")
 									+ (workstation.inWorkgroup ? " in-workgroup " : "");
 

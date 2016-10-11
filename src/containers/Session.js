@@ -12,12 +12,13 @@ import * as config from '../../config.json';
 const pollInterval = config.dev.pollInterval;
 var pollIntervalId = null;
 var countdownIntervalId = null;
+var workgroupPollId = null
 
 class Session extends Component{
 	componentDidMount(){
 		this.props.actions.checkSessionRunning()
 
-
+		workgroupPollId = window.setInterval(this.props.actions.pollWorkgroups, pollInterval);
 		pollIntervalId = window.setInterval(this.props.actions.pollForWorkstations, pollInterval);
 		countdownIntervalId = window.setInterval(this.props.actions.timerCountdown, 1000);
 	}

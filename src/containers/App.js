@@ -41,11 +41,10 @@ class App extends Component {
 	}
 }
 
-
 const mapStateToProps = (state) => ({
-	campus: (state.session.selectedCampusId != null) ? state.session.campuses[state.session.selectedCampusId] : null,
-	building: (state.session.selectedBuildingId != null) ? state.session.buildings[state.session.selectedBuildingId] : null,
-	room : (state.session.selectedRoomId != null) ? state.session.rooms[state.session.selectedRoomId] : null,
+	campus: (state.session.campuses != null) ? state.session.campuses.find(c => c.id === state.session.selectedCampusId ) : null,
+	building: (state.session.buildings != null) ? state.session.buildings.find(b => b.id === state.session.selectedBuildingId) : null,
+	room : (state.session.rooms != null) ? state.session.rooms.find(r => r.id === state.session.selectedRoomId) : null,
 	loggedIn: state.user.loggedIn,
 	sessionStarted: state.session.started,
 	requestingStart: state.session.requestingStart

@@ -35,7 +35,8 @@ export default function user(state = initialState, action) {
 					lastname: action.result.lastname,
 					username: action.result.username,
 					token: action.result.token,
-					tokenExpiry: action.result.expires
+					tokenExpiry: action.result.expires,
+					userId: action.result.userId
 				})	
 			}
 

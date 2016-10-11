@@ -38,7 +38,7 @@ class RoomSelect extends Component{
 			
 			var btnClass = "btn small right " + ((val == null) ? "grey" : "green");
 
-			var display = <Selector val={val} options={options} btnClass={btnClass} select={select} deselect={deselect} cont={cont} />
+			var display = <Selector val={val} options={rooms} btnClass={btnClass} select={select} deselect={deselect} cont={cont} />
 		}
 		
 		return(
@@ -58,7 +58,7 @@ class RoomSelect extends Component{
 const mapStateToProps = state => ({
 		state: state,
 		rooms: state.session.rooms,
-		selectedRoom: (state.session.selectedRoomId != null) ? state.session.rooms[state.session.selectedRoomId] : null,
+		selectedRoom: (state.session.rooms != null) ? state.session.rooms.find(r => r.id === state.session.selectedRoomId) : null,
 		roomCommited: state.session.roomCommited,
 		fetchingRooms: state.session.fetchingRooms
 })

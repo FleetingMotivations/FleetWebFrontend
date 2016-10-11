@@ -1,7 +1,7 @@
 {
 	"dev":{
-		"apiURL": "http://fleetp-api-docs.surge.sh/api/",
-		"pollInterval": 7000
+		"apiURL": "http://htcc-win1.uncle.newcastle.edu.au/FleetApi/api/",
+		"pollInterval": 200
 	},
 	"prod":{
 		"apiURL": "",

@@ -7,7 +7,7 @@ export default class Selector extends Component{
   valueChange(val){
   	const { select, deselect } = this.props;
 
-  	if(val) {
+    if(val) {
   		select(val.value)
   	} else {
   		deselect()
@@ -27,7 +27,7 @@ export default class Selector extends Component{
 				<Select
 					name="room-select"
 					value={val}
-					options={options.map((option, index) => {return {value: index, label: option.name}})}
+					options={options.map((option, index) => {return {value: option.id, label: option.name}})}
 					onChange={this.valueChange.bind(this)}
 				/>
 			</div>
