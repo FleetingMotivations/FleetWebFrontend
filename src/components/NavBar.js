@@ -1,4 +1,12 @@
-/** React navbar component **/
+/* 
+ * Description: React navbar component
+ *
+ * Project: Fleet
+ * Group Members: Jordan Collins, Tristan Newmann, Hayden Cheers, Alistair Woodcock
+ * Last modified: 11 October 2016
+ * Last Author: Alistair Woodcock
+ * 
+ */ 
 
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';

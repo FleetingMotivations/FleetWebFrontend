@@ -1,6 +1,13 @@
-/** 
-	Combines and applies all the redux reducers in the reducers directory
-**/
+/* 
+ * Description: Combines and applies all the redux reducers in the reducers directory
+ *
+ * Project: Fleet
+ * Group Members: Jordan Collins, Tristan Newmann, Hayden Cheers, Alistair Woodcock
+ * Last modified: 11 October 2016
+ * Last Author: Alistair Woodcock
+ * 
+ */
+
 import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
 

@@ -1,4 +1,12 @@
-/** React selector component for displaying and handling dropdown lists **/
+/* 
+ * Description: React selector component for displaying and handling dropdown lists
+ *
+ * Project: Fleet
+ * Group Members: Jordan Collins, Tristan Newmann, Hayden Cheers, Alistair Woodcock
+ * Last modified: 11 October 2016
+ * Last Author: Alistair Woodcock
+ * 
+ */ 
 
 import React, { Component } from 'react';
 import Select from 'react-select';

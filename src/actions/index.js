@@ -1,4 +1,13 @@
-/** Defines all application actions that dispatch to the reducers **/ 
+/* 
+ * Description: Defines all application actions that dispatch to the reducers
+ *
+ * Project: Fleet
+ * Group Members: Jordan Collins, Tristan Newmann, Hayden Cheers, Alistair Woodcock
+ * Last modified: 11 October 2016
+ * Last Author: Alistair Woodcock
+ * 
+ */
+
 
 import fetch from 'isomorphic-fetch';
 import * as config from '../../config.json';

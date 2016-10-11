@@ -1,6 +1,13 @@
-/** 
-	React entrypoint
-**/
+/* 
+ * Description: React entrypoint
+ * 				
+ *
+ * Project: Fleet
+ * Group Members: Jordan Collins, Tristan Newmann, Hayden Cheers, Alistair Woodcock
+ * Last modified: 11 October 2016
+ * Last Author: Alistair Woodcock
+ * 
+ */
 
 import 'babel-polyfill'
 import React from 'react';

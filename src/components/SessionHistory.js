@@ -1,6 +1,13 @@
-/** React component displaying previous sessions and their details
-    receives session data and control functions as props
-**/ 
+/* 
+ * Description: React component displaying previous sessions and their details receives session data and control functions as props
+ *
+ * Project: Fleet
+ * Group Members: Jordan Collins, Tristan Newmann, Hayden Cheers, Alistair Woodcock
+ * Last modified: 11 October 2016
+ * Last Author: Alistair Woodcock
+ * 
+ */ 
+
 
 import React, { Component, PropTypes } from 'react';
 import moment from 'moment';

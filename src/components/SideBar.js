@@ -1,4 +1,12 @@
-/** React Sidebar component rendering sidebar for the currently running session */ 
+/* 
+ * Description: React Sidebar component rendering sidebar for the currently running session
+ *
+ * Project: Fleet
+ * Group Members: Jordan Collins, Tristan Newmann, Hayden Cheers, Alistair Woodcock
+ * Last modified: 11 October 2016
+ * Last Author: Alistair Woodcock
+ * 
+ */ 
 
 import React, { Component } from 'react';
 import WorkstationStatus from './WorkstationStatus';

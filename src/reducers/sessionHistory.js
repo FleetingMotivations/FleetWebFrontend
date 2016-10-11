@@ -1,4 +1,12 @@
-/** Redux reducer for getting previous sessions **/ 
+/* 
+ * Description: Redux reducer for getting previous sessions
+ *
+ * Project: Fleet
+ * Group Members: Jordan Collins, Tristan Newmann, Hayden Cheers, Alistair Woodcock
+ * Last modified: 11 October 2016
+ * Last Author: Alistair Woodcock
+ * 
+ */
 
 /* initialState for when application loads with no persisted state */
 const initialState = {

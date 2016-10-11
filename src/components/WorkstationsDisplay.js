@@ -1,6 +1,14 @@
-/** React Workstation Display Component
-	Outputs the group of workstations and their styles based on the session state
-**/ 
+/* 
+ * Description: React Workstation Display Component
+ * 				Outputs the group of workstations and their styles based on the session state
+ *
+ * Project: Fleet
+ * Group Members: Jordan Collins, Tristan Newmann, Hayden Cheers, Alistair Woodcock
+ * Last modified: 11 October 2016
+ * Last Author: Alistair Woodcock
+ * 
+ */
+
 
 import React, { Component } from 'react';
 import workstationImg from '../images/workstation.png';

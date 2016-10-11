@@ -1,5 +1,12 @@
-/** Redux reducer for session setup and state **/ 
-
+/* 
+ * Description: Redux reducer for session setup and state
+ *
+ * Project: Fleet
+ * Group Members: Jordan Collins, Tristan Newmann, Hayden Cheers, Alistair Woodcock
+ * Last modified: 11 October 2016
+ * Last Author: Alistair Woodcock
+ * 
+ */
 
 import moment from 'moment';
 
