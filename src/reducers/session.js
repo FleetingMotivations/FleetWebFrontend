@@ -186,13 +186,13 @@ export default function session(state = initialState, action) {
 					outside of our workgroup because we don't have control over them but want to
 					update the workstations interface with their current status 
 				*/
-				var newW = action.response.find(f => r.id === w.id)
-
-				return {
-					...w,
-					canShare: newW.sharingEnabled,
-					available: newW.available
+				var newW = action.response.find(r => r.id === w.id)
+				if(newW !== undefined)
+				{
+					return {...w, ...newW }
 				}
+
+				return w;
 			})			
 
 			return Object.assign({}, state, { workstations })
@@ -209,13 +209,16 @@ export default function session(state = initialState, action) {
 			let workstations = state.workstations.map(w => {
 				var newW = action.response.find(f => f.id === w.id)
 
-				return {
-					...w,
-					canShare: newW.sharingEnabled,
-					available: newW.available,
-					lastSeen: newW.lastSeen,
-					inWorkgroup: true // we got it requesting an update of our workgroup, therefore always in our workgroup
+				if(newW !== undefined)
+				{
+					return {
+						...w,
+						...newW,
+						inWorkgroup: true // we got it requesting an update of our workgroup, therefore always in our workgroup
+					}
 				}
+
+				return w;
 			})
 
 			let workgroup = workstations.filter(w => w.inWorkgroup).map(w => {return w.id});
@@ -262,14 +265,14 @@ export default function session(state = initialState, action) {
 		}
 		case 'SELECT_ALL_WORKSTATIONS':{
 			let workstations = state.workstations.map(w =>{
-				if(w.available) {
+				if(w.available || w.inWorkgroup) {
 					return {...w, selected: true }
 				}
 
 				return w;
 			});
 
-			let selectedWorkstations = workstations.filter(w => w.available).map((w) =>{return w.id});
+			let selectedWorkstations = workstations.filter(w => w.available || w.inWorkgroup).map((w) =>{return w.id});
 
 			return Object.assign({}, state, {selectedWorkstations, workstations })
 
@@ -302,14 +305,35 @@ export default function session(state = initialState, action) {
 				})	
 			}
 
-			if(action.success) {					
+			if(action.success) {
+				let workgroup = state.selectedWorkstations;
+				let selectedWorkstations = [];
+
+				let workstations = state.workstations.map(w => {
+					if(workgroup.find(id => id === w.id) !== undefined){
+						return Object.assign({}, w, {selected:false, inWorkgroup:true});
+					}
+
+					return Object.assign({}, w, {selected:false});
+				})
+
+				let allSharingDisabled = true;
+				workgroup.map(id => {
+					let w = workstations.find(i => i === id);
+					if(w !== undefined && w.canShare){
+						allSharingDisabled = false;
+					}
+				})
+
 				return Object.assign({}, state, { 
 					started: true,
 					requestingStart: false,
 					requestFailed: false,
 					id: action.result.id,
-					workgroup: [],
-					selectedWorkstations:[]
+					workgroup,
+					selectedWorkstations,
+					workstations,
+					allSharingDisabled
 				})
 			}
 			return Object.assign({}, state, { 
@@ -435,7 +459,7 @@ export default function session(state = initialState, action) {
 			let allSharingDisabled = state.allSharingDisabled;
 
 			if(!action.error){
-				allSharingDisabled = action.success;
+				allSharingDisabled = !action.success;
 			}
 
 			return Object.assign({}, state, {
@@ -467,9 +491,9 @@ export default function session(state = initialState, action) {
 				if(wi !== undefined){
 					let nw = {...w, requestDisable: false}
 					
-					/* not nw.canShare = action.success because if the action failed it might still be able to share */
+					/* not nw.canShare = !action.success because if the action failed it might still not be able to share */
 					if(action.success) {
-						nw.canShare = true;
+						nw.canShare = false;
 					}
 					return nw;
 				}			
@@ -479,7 +503,7 @@ export default function session(state = initialState, action) {
 			let allSharingDisabled = state.allSharingDisabled;
 
 			if(!action.error){
-				allSharingDisabled = !action.success;
+				allSharingDisabled = action.success;
 			}
 
 			return Object.assign({}, state, {
@@ -570,6 +594,7 @@ export default function session(state = initialState, action) {
 			**/
 			givenWorkstation.requestRemoveFromWorkgroup = false
 			givenWorkstation.selected = false
+			givenWorkstation.canShare = true
 
 			if(!action.error){
 				givenWorkstation.inWorkgroup = !action.success;

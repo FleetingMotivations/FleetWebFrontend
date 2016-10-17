@@ -29,11 +29,12 @@ class App extends Component {
 
 	/* renders the base structure of the application */
 	render(){
-		const { children, room, building, campus, loggedIn, sessionStarted, requestingStart } = this.props;
+		const { state, children, room, building, campus, loggedIn, sessionStarted, requestingStart } = this.props;
+
 
 		var navTitle = '';
 
-		if(sessionStarted || requestingStart || this.props.location.pathname == '/workstationSelect')
+		if(sessionStarted || requestingStart || this.props.location.pathname === '/workstationSelect')
 		{
 			if(campus && building && room ){
 		   		navTitle = campus.name + " | " + building.name + " | "+ room.name

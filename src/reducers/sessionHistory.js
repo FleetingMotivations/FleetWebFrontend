@@ -39,7 +39,7 @@ export default function sessionHistory(state = initialState, action) {
 				return Object.assign({}, state, {fetchingSessionDetails: false, fetchError: action.error})
 			} 
 
-			return Object.assign({}, state, {fetchingSessionDetails: false, selectedSession: action.session})
+			return Object.assign({}, state, {fetchingSessionDetails: false, selectedSession: action.sessionDetails})
 
 		case 'REMOVE_PREVIOUS_SESSION_DETAILS':
 			return Object.assign({}, state, {selectedSession: null})

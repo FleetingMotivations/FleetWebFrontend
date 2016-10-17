@@ -56,7 +56,11 @@ class WorkstationSelect extends Component{
 		var mmt = moment().add('m', 15 - moment().minute() % 15);
 		var mmtMidnight = mmt.clone().hour(23).minute(59).second(59);
 
+
 		var diffHours = mmtMidnight.diff(mmt, 'hours');
+		//TODO(AL):Remove this diff bit
+		diffHours = 4;
+
 
 		for(var i = 0; i < diffHours*4; i++)
 		{	

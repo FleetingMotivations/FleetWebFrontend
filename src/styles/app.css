@@ -430,12 +430,26 @@ ul {
 .home .prev-sessions .selected-session .duration-wrapper{
   width: 100%;
   height: 20px;
+  margin-top:5px;
+  margin-bottom: 5px;
 }
 
 .home .prev-sessions .selected-session .duration-label{
   font-size: 14px;
   font-weight: bold;
   float: left;
+}
+.home .prev-sessions .selected-session .workstation-label{
+  float:left;
+  text-align: left;
+  font-weight: bold;
+  height:20px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.home .prev-sessions .selected-session .workstations{
+  margin-top: 45px;
+  margin-bottom: 20px;
 }
 
 .home .prev-sessions .selected-session .duration{
@@ -444,11 +458,20 @@ ul {
   color: #7d7d7d;
   margin-left: 10px;
 }
+.home .prev-sessions .selected-session .start-session-wrapper{
+    width: 100%;
+    height: 50px;
+    margin-bottom: 20px;
+}
+.home .prev-sessions .selected-session .start-session-wrapper .start-label{
+  font-weight: bold;
+  
+}
 
-.home .prev-sessions .selected-session .btn.launch-session{
-    float: right;
-    width: 125px;
-    margin-right: 10px;
+.home .prev-sessions .selected-session .start-session-wrapper .btn.launch-session{
+    float: left;
+    padding: 5px;
+    font-size: 12px;
 }
 
 #sidebar{
@@ -638,6 +661,7 @@ ul {
 #workstation-display .workstation{
   position: absolute;
   width: 7%;
+  min-width: 60px;
   top: 3.1%;
   left: 20.1%;
   padding: 0px;

@@ -55,15 +55,20 @@ export default class SessionHistory extends Component{
           <div className="selected-session">
             <div className="btn red exit" onClick={backToAllSessions}>x</div>
             <div className="room-name">{session.room.name}</div>
+            <div className="start-session-wrapper">
+              <div className="start-label">Start new session with this configuration:</div>
+              <div className="btn green launch-session" onClick={() => {startSession(session.id)}}>Start</div>
+            </div>
             <div className="duration-wrapper">
               <div className="duration-label">Session Duration: </div>
               <div className="duration">{duration}</div>
             </div>
+            <div className="workstation-label">Workstations: </div>
+
             <div className="workstations">
               <WorkstationsDisplay workstations={session.workstations}/>
             </div>
 
-            <div className="btn green launch-session" onClick={() => {startSession(session.id)}}>Start</div>
           </div>
       )
   }

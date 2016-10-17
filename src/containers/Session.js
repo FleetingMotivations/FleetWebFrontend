@@ -23,7 +23,8 @@ import SideBar from '../components/SideBar';
 import * as config from '../../config.json';
 
 /* Polling interval based on environment */
-const pollInterval = (process.env.NODE_ENV === 'production') ? config.prod.pollInterval : config.dev.pollInterval;
+// const pollInterval = (process.env.NODE_ENV === 'production') ? config.prod.pollInterval : config.dev.pollInterval;
+const pollInterval = config.dev.pollInterval
 
 /* Polling Ids set when the component mounts, stored here because they are not necessary for state */
 var workstationPollId = null;
@@ -36,7 +37,7 @@ class Session extends Component{
 	componentDidMount(){
 		this.props.actions.checkSessionRunning()
 
-		workgroupPollId = window.setInterval(this.props.actions.pollWorkgroups, pollInterval);
+		workgroupPollId = window.setInterval(this.props.actions.pollWorkgroup, pollInterval);
 		workstationPollId = window.setInterval(this.props.actions.pollForWorkstations, pollInterval);
 		countdownIntervalId = window.setInterval(this.props.actions.timerCountdown, 1000);
 	}
@@ -99,7 +100,7 @@ class Session extends Component{
 		var { workstations, workgroup, allSharingDisabled, countDown, selectedWorkstations, started, requestingStart } = this.props;
 		
 		var availableWorkstations = workstations.filter(w => {return !w.inWorkgroup && w.available}).sort( (a,b) => {return a.name >= b.name})
-		var takenWorkstations = workstations.filter(w => {return !w.available})
+		var takenWorkstations = workstations.filter(w => {return (!w.available && !w.inWorkgroup)})
 		var workgroupWorkstations = workstations.filter(w => {
 			return workgroup.find(id => {return id === w.id}) !== undefined
 		})

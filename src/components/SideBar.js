@@ -9,7 +9,6 @@
  */ 
 
 import React, { Component } from 'react';
-import WorkstationStatus from './WorkstationStatus';
 
 export default class SessionDetails extends Component{
   render(){
@@ -30,7 +29,7 @@ export default class SessionDetails extends Component{
 	          <h3>Workgroup</h3>
 	          <ul>
 	            {workgroup.map(workstation => {  
-	              	return <li data-workstation-id={workstation.id}><span className="name">{workstation.name}</span> <WorkstationStatus status={workstation.status} /> <div className="remove" onClick={() => {removeWorkstationFromWorkgroup(workstation.id)}}></div></li>
+	              	return <li data-workstation-id={workstation.id}><span className="name">{workstation.name}</span> <div className="remove" onClick={() => {removeWorkstationFromWorkgroup(workstation.id)}}></div></li>
 	            })}
 	          </ul>
 	        </div>
@@ -38,7 +37,7 @@ export default class SessionDetails extends Component{
 	          <h3>Available Workstations</h3>
 	          <ul>
 	            {workstations.map(workstation => {
-	              return <li data-workstation-id={workstation.id}><span className="name">{workstation.name}</span> <WorkstationStatus status={workstation.status} /> <div className="add" onClick={() => {addWorkstationToWorkgroup(workstation.id)}}></div></li> 
+	              return <li data-workstation-id={workstation.id}><span className="name">{workstation.name}</span> <div className="add" onClick={() => {addWorkstationToWorkgroup(workstation.id)}}></div></li> 
 	          	})}
 	          </ul>
 	        </div>
@@ -46,7 +45,7 @@ export default class SessionDetails extends Component{
 	          <h3>Unavailable Workstations</h3>
 	          <ul>
 	            {unavailableWorkstations.map(workstation => {
-	              return <li data-workstation-id={workstation.id}><span className="name">{workstation.name}</span> <WorkstationStatus status={workstation.status} /> </li> 
+	              return <li data-workstation-id={workstation.id}><span className="name">{workstation.name}</span> </li> 
 	          	})}
 	          </ul>
 	        </div>

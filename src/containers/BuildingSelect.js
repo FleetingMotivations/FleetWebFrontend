@@ -32,7 +32,7 @@ class RoomSelect extends Component{
 	
 	render() {
 
-		var {buildings, selectedBuilding, buildingCommited, fetchingBuildings } = this.props;
+		var {buildings, selectedBuilding, fetchingBuildings } = this.props;
 		
 		var instruction = "Please select your building";
 		var display = null;
@@ -48,7 +48,7 @@ class RoomSelect extends Component{
 			
 			var btnClass = "btn small right " + ((val == null) ? "grey" : "green");
 
-			var display = <Selector val={val} options={options} btnClass={btnClass} select={select} deselect={deselect} cont={cont} />
+			display = <Selector val={val} options={options} btnClass={btnClass} select={select} deselect={deselect} cont={cont} />
 		}	
 
 		return(

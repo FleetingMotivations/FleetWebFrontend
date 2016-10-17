@@ -15,7 +15,8 @@ import { browserHistory } from 'react-router'
 import moment from 'moment';
 
 /* Sets api URL from config based on environment */
-const apiURL = (process.env.NODE_ENV === 'production') ? config.dev.apiURL : config.prod.apiURL;
+// const apiURL = (process.env.NODE_ENV === 'production') ? config.dev.apiURL : config.prod.apiURL;
+const apiURL = config.dev.apiURL;
 
 /** Query function for general api enpoint query structures **/
 function query(dispatch, request, receive, endpoint) {
@@ -25,8 +26,9 @@ function query(dispatch, request, receive, endpoint) {
 	/** make request to api using isomorphic-fetch and return result to 
 		action function 'receive' 
 	**/
+	console.log(apiURL+endpoint);
 	return fetch(apiURL+endpoint)
-			.then(response => response.json())
+			.then(response => { return response.json()})
 			.then(json => dispatch(receive(json, null)))
 			.catch(err => dispatch(receive(null, err)))	
 }
@@ -41,14 +43,40 @@ export const receiveLoginResult = (success, result, error) => ({type: 'RECEIVE_L
 export const logout = () => ({type: 'LOGOUT'});
 export const login = () => (dispatch, getState) => {
 
-	const login = getState().user;
+	const login = getState().user;		
+ 
+	if(login.username === "c3138738" && login.password === "lolthx") {
+		dispatch(receiveLoginResult(
+			true,
+			{
+				loggedIn: true,
+				firstname: "Alistair",
+				lastname: "Woodcock",
+				username: "c3138738",
+				token: "boopbooptoken20-i1f0inefg8394ghbw[e0g8h3489pf-hw",
+				tokenExpiry: "never-cool-okay",
+				userId: 2
+			}
+			, null)
+		);
+	} else {
+		dispatch(receiveLoginResult(false, null, 'error here'));
+	}
 
-	dispatch(requestLogin());
 
-	return fetch(apiURL+'login?username='+login.username+'&password='+login.password)
-			.then(response => response.json())
-			.then(json => dispatch(receiveLoginResult(json, null)))
-			.catch(err => dispatch(receiveLoginResult(null, err)))
+	// dispatch(requestLogin());
+
+	// return fetch(apiURL+'login?username='+login.username+'&password='+login.password)
+	// .then(response => {
+	//	 
+	// else if (response.status === 422) {
+		// console.log(response);
+            // throw new Error("Bad request to API");
+        // }
+		// response.json()
+	// })
+	// .then(json => dispatch(receiveLoginResult(json, null)))
+	// .catch(err => dispatch(receiveLoginResult(null, err)))
 }
 
 
@@ -97,7 +125,14 @@ export const getPreviousSessionDetails = (workgroupId) => (dispatch, getState) =
 	const { userId } = getState().user;
 
 	return fetch(apiURL+'users/'+userId+'/workgroups/'+workgroupId)
-			.then(response => response.json())
+			.then(response => {
+				
+				if (response.status === 422) {
+            		console.log(response);
+            		throw new Error("Bad request to API");
+        		}
+				return response.json()
+			})
 		  	.then(json => {dispatch(receivePreviousSessionDetails(json, null)) })
 		  	.catch(err => dispatch(receivePreviousSessionDetails(null, err)))
 }
@@ -121,7 +156,6 @@ export const selectEndTime = (time) => ({type: 'SELECT_END_TIME', time});
 export const deselectAllWorkstations = () => ({type: 'DESELECT_ALL_WORKSTATIONS'});
 export const selectAllWorkstations = () => ({type: 'SELECT_ALL_WORKSTATIONS'});
 
-export const endSession = () => ({type: 'END_SESSION'});
 export const requestStartSession = () => ({type: 'REQUEST_START_SESSION'});
 export const receiveStartSessionResponse = (result, success, error) => ({type: 'RECEIVE_START_SESSION_RESPONSE', result, success, error});
 
@@ -152,7 +186,14 @@ export const commitSession = () => (dispatch, getState) => {
 		  		body: JSON.stringify(data),
 		  		headers: {"Content-Type": "application/json"}
 			})
-			.then(response => response.json())
+			.then(response => {
+				 
+				if (response.status === 422) {
+            		console.log(response);
+            		throw new Error("Bad request to API");
+        		}
+				return response.json()
+			})
 		  	.then(json => dispatch(receiveStartSessionResponse(json, true, null)))
 		  	.catch(err => dispatch(receiveStartSessionResponse(null, false, err)))
 };
@@ -164,35 +205,27 @@ export const createSessionFromPrevious = (sessionId) => (dispatch, getState) => 
  	
 	const { selectedSession } = getState().sessionHistory;
 
-	return fetch(apiURL+'rooms/'+selectedSession.room.id)
-			.then(response => response.json())
-		  	.then(room => {
+	/** All these dispatches are required to fetch and setup the 
+		data to view the workstation select page. It's essentially running
+		throug the normal flow but instead with data retrieved regarding the
+		selected previous session	
+	**/
+	dispatch(fetchCampuses())
+	dispatch(fetchBuildings(selectedSession.room.campusId))
+	dispatch(fetchRooms(selectedSession.room.id))
+	dispatch(selectCampus(selectedSession.room.campusId))
+	dispatch(selectBuilding(selectedSession.room.buildingId))
+	dispatch(selectRoom(selectedSession.room.id))
 
-		  		/** All these dispatches are required to fetch and setup the 
-		  			data to view the workstation select page. It's essentially running
-		  			throug the normal flow but instead with data retrieved regarding the
-		  			selected previous session	
-		  		**/
-		  		dispatch(fetchCampuses())
-		  		dispatch(fetchBuildings(room.campusId))
-		  		dispatch(fetchRooms(room.id))
-		  		dispatch(selectCampus(room.campusId))
-		  		dispatch(selectBuilding(room.buildingId))
-		  		dispatch(selectRoom(room.id))
+	/* select all workstations that were in previous session */
+	selectedSession.workstations.map(w => {
+		dispatch(selectWorkstation(w.id)) 
+	})
+	
+	dispatch(selectEndTime(moment().add(selectedSession.duration, 'minutes')))
 
-		  		/* select all workstations that were in previous session */
-		  		selectedSession.workstations.map(w => {
-		  			dispatch(selectWorkstation(w.id)) 
-		  		})
-		  		
-		  		dispatch(selectEndTime(moment().add(selectedSession.duration, 'minutes')))
-
-		  		/* jump to workstation select page */
-		  		browserHistory.push('/workstationSelect')
-
-		  	})
-		  	.catch(err => {dispatch(creatingSessionFromPreviousFailed(err))})
-
+	/* jump to workstation select page */
+	browserHistory.push('/workstationSelect')
 };
 
 /** SESSION CONTROL **/
@@ -204,14 +237,20 @@ export const enableSharing = (workstationIds) => (dispatch, getState) => {
 
 		const workstation = getState().session.workstations.find(w => w.id === workstationId)
 
-		if(workstation && workstation.inWorkgroup){ 
+		if(workstation && workstation.inWorkgroup && !workstation.canShare){ 
 			dispatch(requestEnableWorkstation(workstationId));
 
 			const { id } = getState().session
 
-			return fetch(apiURL+'workgroups/'+id+'/workstations/'+workstationId+'/sharing')
-					.then(response => response.json())
-					.then(json => dispatch(responseEnableWorkstation(workstationId, true, null)))
+			return fetch(apiURL+'workgroups/'+id+'/workstations/'+workstationId+'/sharing',{method: 'PUT'})
+					.then(response => {
+						
+						if (response.status === 422) {
+            				console.log(response);
+            				throw new Error("Bad request to API");
+        				}
+        				dispatch(responseEnableWorkstation(workstationId, true, null));
+					})
 					.catch(err => dispatch(responseEnableWorkstation(workstationId, false, err)))
 		}
 
@@ -226,14 +265,20 @@ export const disableSharing = (workstationIds) => (dispatch, getState) => {
 
 		const workstation = getState().session.workstations.find(w => {return w.id === workstationId})
 
-		if(workstation && workstation.inWorkgroup){ 
+		if(workstation && workstation.inWorkgroup && workstation.canShare){ 
 			dispatch(requestDisableWorkstation(workstationId))
 			
 			const { id } = getState().session
 
-			return fetch(apiURL+'workgroups/'+id+'/workstations/'+workstationId+'/sharing')
-			.then(response => response.json())
-			.then(json => dispatch(responseDisableWorkstation(workstationId, true, null)))
+			return fetch(apiURL+'workgroups/'+id+'/workstations/'+workstationId+'/sharing', {method:'PUT'})
+			.then(response => {
+				
+				if (response.status === 422) {
+            		console.log(response);
+            		throw new Error("Bad request to API");
+        		}
+				dispatch(responseDisableWorkstation(workstationId, true, null));	
+			})
 			.catch(err => dispatch(responseDisableWorkstation(workstationId, false, err)))
 		}
 	})
@@ -246,9 +291,15 @@ export const enableSharingAll = () => (dispatch, getState) => {
 
 	const { id } = getState().session
 
-	return fetch(apiURL+'workgroups/'+id+'/sharing')
-			.then(response => response.json())
-			.then(json => dispatch(responseEnableAllWorkstations(true, null)))
+	return fetch(apiURL+'workgroups/'+id+'/sharing', {method: 'PUT'})
+			.then(response => {
+				
+				if (response.status === 422) {
+            		console.log(response);
+            		throw new Error("Bad request to API");
+        		}
+				dispatch(responseEnableAllWorkstations(true, null))
+			})
 			.catch(err => dispatch(responseEnableAllWorkstations(false, err)))
 }
 
@@ -259,9 +310,14 @@ export const disableSharingAll = () => (dispatch, getState) => {
 
 	const { id } = getState().session
 
-	return fetch(apiURL+'workgroups/'+id+'/sharing')
-	.then(response => response.json())
-	.then(json => dispatch(responseDisableAllWorkstations(true, null)))
+	return fetch(apiURL+'workgroups/'+id+'/sharing', {method:'PUT'})
+	.then(response => {
+		if (response.status === 422) {		
+        	throw new Error("Bad request to API");
+        }
+		
+		dispatch(responseDisableAllWorkstations(true, null))	
+	})
 	.catch(err => dispatch(responseDisableAllWorkstations(false, err)))
 }
 
@@ -274,16 +330,17 @@ export const addWorkstationsToWorkgroup = (workstationIds) => (dispatch, getStat
 
 		const { id } = getState().session
 		
-		return fetch(apiURL+'workgroups/'+id+'/workstations/'+workstationId, {
-			method: 'POST',
-	  		headers: {
-	  			'Accept': 'application/json',
-	  			"Content-Type": "application/json"
-	  		},
-      		body: ''
-      	})
-		.then(response => response.json())
-		.then(json => dispatch(responseAddWorkstationToWorkgroup(workstationId, true, null)))
+		return fetch(apiURL+'workgroups/'+id+'/workstations/'+workstationId, {method: 'POST', })
+		.then(response => {
+
+			if (response.status === 422) {
+	    		console.log(response);
+	    		throw new Error("Bad request to API");
+        	}
+        	
+        	dispatch(responseAddWorkstationToWorkgroup(workstationId, true, null));
+
+		})
 		.catch(err => dispatch(responseAddWorkstationToWorkgroup(workstationId, false, err)))
 	})
 }
@@ -297,14 +354,31 @@ export const removeWorkstationsFromWorkgroup = (workstationIds) => (dispatch, ge
 
 		const { id } = getState().session
 
-		return fetch(apiURL+'workgroups/'+id+'/workstations/'+workstationId, {
-			method: "DELETE",
-	  		headers: {"Content-Type": "application/json"}
+		return fetch(apiURL+'workgroups/'+id+'/workstations/'+workstationId, {method: "DELETE"})
+		.then(response => {
+		 	
+			if (response.status === 422) {
+	            throw new Error("Bad request to API");
+		    }
+
+		    dispatch(responseRemoveWorkstationFromWorkgroup(workstationId, true, null))
 		})
-		.then(response => response.json())
-		.then(json => dispatch(responseRemoveWorkstationFromWorkgroup(workstationId, true, null)))
 		.catch(err => dispatch(responseRemoveWorkstationFromWorkgroup(workstationId, false, err)))
 	})
+}
+
+
+export const sessionEnded = () => ({type: 'END_SESSION'});
+export const requestEndSession = () => ({type: 'REQUEST_END_SESSION'});
+export const endSession = () => (dispatch, getState) => {
+
+	const { workgroup } = getState().session;
+
+	workgroup.map(id => {
+		removeWorkstationsFromWorkgroup(id)
+	})
+
+	dispatch(sessionEnded());
 }
 
 /** SESSION SERVER UPDATES (POLLING) **/
@@ -316,7 +390,14 @@ export const pollForWorkstations = () => (dispatch, getState) => {
 	const { selectedRoomId } = getState().session
 
 	return fetch(apiURL+'rooms/'+selectedRoomId+'/workstations')
-			.then(response => response.json())
+			.then(response => {
+				
+				if (response.status === 422) {
+            		console.log(response);
+            		throw new Error("Bad request to API");
+        		}
+				return response.json()
+			})
 			.then(json => dispatch(responseWorkstationsUpdate(json, null)))
 			.catch(err => dispatch(responseWorkstationsUpdate(null, err)))
 }
@@ -327,8 +408,15 @@ export const pollWorkgroup = () => (dispatch, getState) => {
 
 	const { id } = getState().session
 
-	return fetch(apiURL+'workstations/'+id+'/workstations')
-			.then(response => response.json())
+	return fetch(apiURL+'workgroups/'+id+'/workstations')
+			.then(response => {
+				
+				if (response.status === 422) {
+            		console.log(response);
+            		throw new Error("Bad request to API");
+        		}
+				return response.json()
+			})
 			.then(json => dispatch(responseWorkgroupUpdate(json, null)))
 			.catch(err => dispatch(responseWorkgroupUpdate(null, err)))
 }
