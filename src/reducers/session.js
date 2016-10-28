@@ -16,7 +16,7 @@ import moment from 'moment';
 	but do not exist when fetched from the server 
 **/
 const workstationInitialStatePart = {
-	canShare: false,
+	canShare: true,
 	inWorkgroup: false,
 	requestDisable: false,
 	requestEnable: false,
@@ -47,6 +47,7 @@ const initialState = {
 
 	creatingFromPrevious: false,
 	createFailed: false,
+	previousWorkgroup: [],
 
 	requestingStart: false,
 	requestFailed: false,
@@ -56,6 +57,7 @@ const initialState = {
 	workstations: [], //Stores workstation data from server + workstationinitialStatePart
 
 	workgroup: [], // ids array of workstations stored in workstations array
+
 
 	selectedWorkstations:[], // ids array of workstations
 
@@ -78,7 +80,7 @@ export default function session(state = initialState, action) {
 
 	switch(action.type) {
 		
-		case 'CREATE_SESSION_FROM_PREVIOUS':{
+		case 'CREATING_SESSION_FROM_PREVIOUS':{
 			return Object.assign({}, state, {creatingFromPrevious: true, createFailed: false })
 
 		}
@@ -86,6 +88,11 @@ export default function session(state = initialState, action) {
 			return Object.assign({}, state, {creatingFromPrevious: false, createFailed: true })
 			
 		}
+
+		case 'PREVIOUS_SESSION_WORKGROUP':{
+			return Object.assign({}, state, {previousWorkgroup: action.workgroup})
+		}
+
 		case 'REQUEST_CAMPUSES':{
 			return Object.assign({}, state, {fetchingCampuses: true })
 
@@ -163,11 +170,36 @@ export default function session(state = initialState, action) {
 			if(action.error) {
 				return Object.assign({}, state, {fetchError: true, fetchingWorkstations: false })
 			}
+			
+			let selectedWorkstations = [];
+
+			if(state.creatingFromPrevious){
+				let workstations = action.workstations.map(w => {
+					var prevSessionWorkstation = state.previousWorkgroup.find(id => id === w.id);
+					if(prevSessionWorkstation !== undefined && w.available)
+					{
+						selectedWorkstations.push(w.id);
+						return {...w, ...workstationInitialStatePart, selected: true}
+					}
+
+					return {...w, ...workstationInitialStatePart}
+				});
+
+				return Object.assign({}, state, {
+					fetchingWorkstations: false,
+					creatingFromPrevious: false,
+					createFailed: false,
+					workstations,
+					selectedWorkstations
+				});
+			}
+
 			return Object.assign({}, state, {
 				fetchingWorkstations: false,
 				workstations: action.workstations.map(w => {
 					return {...w, ...workstationInitialStatePart}
-				}) 
+				}),
+				selectedWorkstations 
 			})
 		}
 
@@ -621,15 +653,23 @@ export default function session(state = initialState, action) {
 			if(state.endTime) {
 				var end = moment(state.endTime)
 				let totalSec = end.diff(moment(), 'seconds');
-				let hours = parseInt( totalSec / 3600, 10 ) % 24;
-				let minutes = parseInt( totalSec / 60, 10 ) % 60;
-				let seconds = totalSec % 60;
 
-				let result = (hours < 10 ? "0" + hours : hours) + "-" + (minutes < 10 ? "0" + minutes : minutes) + "-" + (seconds  < 10 ? "0" + seconds : seconds);
+				if(end.isAfter(moment())){
+					let hours = parseInt( totalSec / 3600, 10 ) % 24;
+					let minutes = parseInt( totalSec / 60, 10 ) % 60;
+					let seconds = totalSec % 60;
 
-	    		return Object.assign({}, state, {
-					countDown: result
-				})
+					let result = (hours < 10 ? "0" + hours : hours) + "-" + (minutes < 10 ? "0" + minutes : minutes) + "-" + (seconds  < 10 ? "0" + seconds : seconds);
+
+		    		return Object.assign({}, state, {
+						countDown: result
+					})
+				} else {
+					return Object.assign({}, state,{
+						countDown: "Session Ended"
+					});
+				}
+
 			}
 
 			return state;

@@ -21,6 +21,15 @@ export default class SessionDetails extends Component{
 		removeWorkstationFromWorkgroup 
   	} = this.props;
 
+	function sortFunc(a, b){
+		if(a.name < b.name) return -1;
+		if(a.name > b.name) return 1;
+		return 0;
+	}
+
+  	var sortedWorkgroup = workgroup.sort(sortFunc);
+  	var sortedUnavailableWorkstations = unavailableWorkstations.sort(sortFunc);
+  	var sortedWorkstations = workstations.sort(sortFunc);
 
   	return(
 		<div id="sidebar">
@@ -28,7 +37,7 @@ export default class SessionDetails extends Component{
 	        <div className="workgroup-list">
 	          <h3>Workgroup</h3>
 	          <ul>
-	            {workgroup.map(workstation => {  
+	            {sortedWorkgroup.map(workstation => {  
 	              	return <li data-workstation-id={workstation.id}><span className="name">{workstation.name}</span> <div className="remove" onClick={() => {removeWorkstationFromWorkgroup(workstation.id)}}></div></li>
 	            })}
 	          </ul>
@@ -36,7 +45,7 @@ export default class SessionDetails extends Component{
 	        <div className="workstation-list">
 	          <h3>Available Workstations</h3>
 	          <ul>
-	            {workstations.map(workstation => {
+	            {sortedWorkstations.map(workstation => {
 	              return <li data-workstation-id={workstation.id}><span className="name">{workstation.name}</span> <div className="add" onClick={() => {addWorkstationToWorkgroup(workstation.id)}}></div></li> 
 	          	})}
 	          </ul>
@@ -44,7 +53,7 @@ export default class SessionDetails extends Component{
 	        <div className="workstation-list">
 	          <h3>Unavailable Workstations</h3>
 	          <ul>
-	            {unavailableWorkstations.map(workstation => {
+	            {sortedUnavailableWorkstations.map(workstation => {
 	              return <li data-workstation-id={workstation.id}><span className="name">{workstation.name}</span> </li> 
 	          	})}
 	          </ul>

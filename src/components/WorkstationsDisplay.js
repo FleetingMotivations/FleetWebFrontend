@@ -45,9 +45,7 @@ export default class WorkstationsDisplay extends Component{
 				<div className={wclass} 
 					 key={workstation.id} 
 					 onClick={()=>{workstationClicked(workstation.id)}}  
-					 data-workstation-id={workstation.id} 
-					 style={{top: workstation.topYRoomOffset+'%', left:workstation.topXRoomOffset+'%'}}
-				>
+					 data-workstation-id={workstation.id}>
 					{shareIcon}
 					{loading}
 					<img className="workstationImg" src={workstationImg} role="presentation"/>
@@ -55,7 +53,6 @@ export default class WorkstationsDisplay extends Component{
 				</div>
 		);
 	}
-
 	/** Returns the workstation display component jsx based on the given state props */
 	render(){
 		var { workstations, fetchingWorkstations } = this.props;
@@ -69,6 +66,12 @@ export default class WorkstationsDisplay extends Component{
 			
 			return( <div><i>There are no workstations in this room</i></div> );
 		}
+
+		var orderedWorkstations = workstations.sort(function(a, b){
+			if(a.name < b.name) return -1;
+			if(a.name > b.name) return 1;
+			return 0;
+		})
 
 		return(
 				<div id="workstation-display" className="workstations">

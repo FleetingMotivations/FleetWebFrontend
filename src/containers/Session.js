@@ -104,6 +104,16 @@ class Session extends Component{
 		var workgroupWorkstations = workstations.filter(w => {
 			return workgroup.find(id => {return id === w.id}) !== undefined
 		})
+
+		var sessionEndedOverlay = null;
+		if(started === false){
+			sessionEndedOverlay = <div className="session-ended-overlay">
+									<div className="alert-notice">Your Session Has Ended!</div>
+									<div className="alert-buttons">
+										<div class="close-session" onClick={this.endSession.bind(this)}>Close Session</div>
+									</div>
+								  </div>;
+		}
 		
 
 		if(requestingStart) {

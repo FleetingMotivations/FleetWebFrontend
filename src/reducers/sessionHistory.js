@@ -39,7 +39,14 @@ export default function sessionHistory(state = initialState, action) {
 				return Object.assign({}, state, {fetchingSessionDetails: false, fetchError: action.error})
 			} 
 
-			return Object.assign({}, state, {fetchingSessionDetails: false, selectedSession: action.sessionDetails})
+			let sessionDetails = action.sessionDetails;
+
+			sessionDetails.workstations = sessionDetails.workstations.map(w => {
+				w.inWorkgroup = true;
+				return w; 
+			})
+
+			return Object.assign({}, state, {fetchingSessionDetails: false, selectedSession: sessionDetails})
 
 		case 'REMOVE_PREVIOUS_SESSION_DETAILS':
 			return Object.assign({}, state, {selectedSession: null})

@@ -111,9 +111,9 @@ export const fetchWorkstations = (roomId) => (dispatch, getState) => {
 /** SESSION HISTORY **/
 export const requestSessionHistory = () => ({type: 'REQUEST_SESSION_HISTORY'});
 export const receiveSessionHistory = (history, error) => ({type: 'RECEIVE_SESSION_HISTORY', history, error});
-export const fetchSessionHistory = () => (dispatch, getState) => {
+export const fetchSessionHistory = (sessionNum) => (dispatch, getState) => {
   const { userId } = getState().user;
-  return query(dispatch, requestSessionHistory, receiveSessionHistory, 'users/'+userId+'/workgroups?count=6')
+  return query(dispatch, requestSessionHistory, receiveSessionHistory, 'users/'+userId+'/workgroups?count='+sessionNum)
 }
 
 export const removePreviousSessionDetails = (sessionId) => ({type: 'REMOVE_PREVIOUS_SESSION_DETAILS', sessionId});
@@ -199,7 +199,8 @@ export const commitSession = () => (dispatch, getState) => {
 };
 
 export const creatingSessionFromPrevious = (sessionId) => ({type: 'CREATING_SESSION_FROM_PREVIOUS', sessionId});
-export const creatingSessionFromPreviousFailed = (error) => ({type: 'CREATING_SESSION_FROM_PREVIOUS_FAILED', error})
+export const creatingSessionFromPreviousFailed = (error) => ({type: 'CREATING_SESSION_FROM_PREVIOUS_FAILED', error});
+export const setPrevSessionWorkgroup = (workgroup) => ({type: 'PREVIOUS_SESSION_WORKGROUP', workgroup}); 
 export const createSessionFromPrevious = (sessionId) => (dispatch, getState) => {
 	dispatch(creatingSessionFromPrevious());
  	
@@ -210,18 +211,14 @@ export const createSessionFromPrevious = (sessionId) => (dispatch, getState) => 
 		throug the normal flow but instead with data retrieved regarding the
 		selected previous session	
 	**/
-	dispatch(fetchCampuses())
 	dispatch(fetchBuildings(selectedSession.room.campusId))
 	dispatch(fetchRooms(selectedSession.room.id))
 	dispatch(selectCampus(selectedSession.room.campusId))
 	dispatch(selectBuilding(selectedSession.room.buildingId))
 	dispatch(selectRoom(selectedSession.room.id))
-
-	/* select all workstations that were in previous session */
-	selectedSession.workstations.map(w => {
-		dispatch(selectWorkstation(w.id)) 
-	})
 	
+	dispatch(setPrevSessionWorkgroup(selectedSession.workstations.map(w=>{return w.id})));
+
 	dispatch(selectEndTime(moment().add(selectedSession.duration, 'minutes')))
 
 	/* jump to workstation select page */
@@ -378,7 +375,9 @@ export const endSession = () => (dispatch, getState) => {
 		removeWorkstationsFromWorkgroup(id)
 	})
 
-	dispatch(sessionEnded());
+	//NOTE(AL): This is a simple workaround, because we don't have a promise library yet
+	setTimeout(function() {dispatch(sessionEnded())}, 500);
+	
 }
 
 /** SESSION SERVER UPDATES (POLLING) **/
@@ -423,11 +422,17 @@ export const pollWorkgroup = () => (dispatch, getState) => {
 
 
 /** SESSION COUNTDOWN **/
-export const timerCountdown = () => ({type: 'TIMER_COUNTDOWN', seconds: 1});
+export const timerTick = () => ({type: 'TIMER_COUNTDOWN', seconds: 1});
 export const checkSessionRunning = () => (dispatch, getState) => {
 	const { session } = getState()
 
 	if(moment(session.endTime) < moment()) {
 		dispatch(endSession())
+		browserHistory.push('/');
 	}
-}
+};
+export const timerCountdown = () => (dispatch, getState) => {
+	dispatch(checkSessionRunning());
+	dispatch(timerTick());
+};
+

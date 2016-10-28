@@ -24,12 +24,12 @@ import WorkstationsDisplay from '../components/WorkstationsDisplay';
 class WorkstationSelect extends Component{
 
 	componentWillMount() {
-	 	this.props.actions.fetchWorkstations(this.props.state.session.selectedRoomId);
+		this.props.actions.fetchWorkstations(this.props.state.session.selectedRoomId);
 	}
 
 	workstationClicked(workstationId){
-		var filter = this.props.selectedWorkstations.filter((w)=>{return w === workstationId});
-		if(filter.length > 0){
+		var find = this.props.selectedWorkstations.find(id => id === workstationId);
+		if(find !== undefined ){
 			this.props.actions.deselectWorkstation(workstationId);
 		} else {
 			this.props.actions.selectWorkstation(workstationId);

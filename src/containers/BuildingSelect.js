@@ -68,7 +68,7 @@ class RoomSelect extends Component{
 const mapStateToProps = state => ({
 		state: state,
 		buildings: state.session.buildings,
-		selectedBuilding: (state.session.selectedBuildingId != null) ? state.session.buildings.find(b => {return b.id === state.session.selectedBuildingId}) : null,
+		selectedBuilding: (state.session.selectedBuildingId != null && state.session.buildings != null) ? state.session.buildings.find(b => {return b.id === state.session.selectedBuildingId}) : null,
 		buildingCommited: state.session.buildingCommited,
 		fetcingBuildings: state.session.fetcingBuildings
 })
