@@ -271,13 +271,23 @@ ul {
 }
 
 #nav .logo{
+    cursor: pointer;
   float: left;
-  width:20%;
+  width:100%;
   height: 60px;
 }
 #nav .logo img{
   height: 80%;
-  padding:10%;
+}
+#nav .logo .home-button{
+    float: right;
+    padding-right: 16px;
+    line-height: 60px;
+    color: #FFF;
+}
+#nav .logo .home-button:hover{
+    color: #59b5ff;
+    transition-duration: 0.2s;
 }
 
 #nav .dashboard-top{

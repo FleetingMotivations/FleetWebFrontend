@@ -30,7 +30,7 @@ export default class NavBar extends Component{
       <div id="nav">
         <div className="sidebar-top">
           <Link to="/">
-          <div className="logo"><img role="presentation" src={logo} /></div>
+          <div className="logo"><img role="presentation" src={logo} /> <div className="home-button">Home</div></div>
           </Link>
         </div>
 

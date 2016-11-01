@@ -369,15 +369,17 @@ export const sessionEnded = () => ({type: 'END_SESSION'});
 export const requestEndSession = () => ({type: 'REQUEST_END_SESSION'});
 export const endSession = () => (dispatch, getState) => {
 
-	const { workgroup } = getState().session;
+	const { workgroup, id } = getState().session;
 
-	workgroup.map(id => {
-		removeWorkstationsFromWorkgroup(id)
-	})
+	return fetch(apiURL+'workgroups/'+id, {method: "DELETE"})
+			.then(response => {
+			 	
+				if (response.status === 422) {
+		            throw new Error("Bad request to API");
+			    }
 
-	//NOTE(AL): This is a simple workaround, because we don't have a promise library yet
-	setTimeout(function() {dispatch(sessionEnded())}, 500);
-	
+			    dispatch(sessionEnded())
+			})
 }
 
 /** SESSION SERVER UPDATES (POLLING) **/
